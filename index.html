@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет работ: Шпонирование и Распил</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 16px; max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 1.25rem; margin-bottom: 16px; text-align: center; color: var(--primary); }
+        h2 { font-size: 1rem; margin: 20px 0 10px; color: var(--text-secondary); border-bottom: 2px solid var(--border); padding-bottom: 4px; }
+        
+        .card { background: var(--surface); border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: 1 / -1; }
+        label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
+        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background: var(--surface); }
+        input:focus, select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        
+        .btn { padding: 12px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 8px; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 0.85rem; }
+        .btn-secondary { background: var(--border); color: var(--text); padding: 8px 16px; font-size: 0.9rem; margin-right: 8px; margin-bottom: 8px; }
+        
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-box { background: var(--primary); color: white; padding: 16px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; }
+        .stat-label { font-size: 0.85rem; opacity: 0.9; }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-secondary); font-weight: 600; }
+        .amount { font-weight: bold; color: var(--success); }
+        
+        .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .hidden { display: none; }
+        
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            th, td { padding: 8px 4px; font-size: 0.8rem; }
+            .hide-mobile { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📋 Учет работ оператора</h1>
+
+    <!-- Сводка -->
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-value" id="totalHours">0</div>
+            <div class="stat-label">Всего часов</div>
+        </div>
+        <div class="stat-box" style="background: var(--success);">
+            <div class="stat-value" id="totalEarnings">0 ₽</div>
+            <div class="stat-label">Общий заработок</div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="card">
+        <div class="filters">
+            <input type="text" id="filterWorker" placeholder="Имя оператора..." style="flex: 1;">
+            <input type="date" id="filterDate" style="flex: 1;">
+            <button class="btn btn-secondary" onclick="applyFilters()">Применить</button>
+            <button class="btn btn-secondary" onclick="resetFilters()">Сброс</button>
+        </div>
+    </div>
+
+    <!-- Форма добавления -->
+    <div class="card">
+        <h2>➕ Новая запись</h2>
+        <form id="workForm" onsubmit="addRecord(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Дата</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Оператор</label>
+                    <input type="text" id="worker" list="workersList" placeholder="Иванов И.И." required>
+                    <datalist id="workersList"></datalist>
+                </div>
+                <div class="form-group">
+                    <label>Тип работ</label>
+                    <select id="operation" required>
+                        <option value="Распил">Распил листового материала</option>
+                        <option value="Шпонирование">Шпонирование</option>
+                        <option value="Кромление">Кромление</option>
+                        <option value="Прочее">Прочие работы</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Описание / Детали</label>
+                    <input type="text" id="description" placeholder="ДСП 16мм, 10 листов">
+                </div>
+                <div class="form-group">
+                    <label>Начало</label>
+                    <input type="time" id="startTime" required onchange="calcDuration()">
+                </div>
+                <div class="form-group">
+                    <label>Конец</label>
+                    <input type="time" id="endTime" required onchange="calcDuration()">
+                </div>
+                <div class="form-group">
+                    <label>Часов (автоматически)</label>
+                    <input type="number" id="duration" step="0.1" readonly style="background: #f1f5f9;">
+                </div>
+                <div class="form-group">
+                    <label>Ставка (₽/час)</label>
+                    <input type="number" id="tariff" value="500" required oninput="calcTotal()">
+                </div>
+                <div class="form-group full">
+                    <label>Итого к оплате: <strong id="previewTotal" style="color: var(--success); font-size: 1.2rem;">0 ₽</strong></label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">💾 Сохранить запись</button>
+        </form>
+    </div>
+
+    <!-- Таблица данных -->
+    <div class="card">
+        <h2>📊 Журнал работ</h2>
+        <div style="overflow-x: auto;">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Оператор</th>
+                        <th>Работа</th>
+                        <th class="hide-mobile">Часы</th>
+                        <th>Сумма</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Управление данными -->
+    <div class="card">
+        <h2>⚙️ Сохранение и перенос данных</h2>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+            ⚠️ Данные хранятся только в этом браузере. Регулярно делайте резервную копию!
+        </p>
+        <button class="btn btn-secondary" onclick="exportData()">📥 Экспорт в JSON</button>
+        <button class="btn btn-secondary" onclick="exportCSV()">📥 Экспорт в CSV (Excel)</button>
+        <label class="btn btn-secondary" style="display: inline-block; cursor: pointer;">
+            📤 Импорт JSON
+            <input type="file" id="importFile" accept=".json" onchange="importData(this)" style="display: none;">
+        </label>
+        <button class="btn btn-danger" onclick="clearAllData()" style="margin-top: 8px;">🗑️ Очистить всё</button>
+    </div>
+
+    <script>
+        // Инициализация
+        const STORAGE_KEY = 'production_tracker_v1';
+        let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        // Установка текущей даты по умолчанию
+        document.getElementById('date').valueAsDate = new Date();
+        document.getElementById('filterDate').valueAsDate = new Date();
+
+        // Автозаполнение списка операторов
+        function updateWorkersList() {
+            const workers = [...new Set(records.map(r => r.worker))];
+            const datalist = document.getElementById('workersList');
+            datalist.innerHTML = workers.map(w => `<option value="${w}">`).join('');
+        }
+        updateWorkersList();
+
+        // Расчет продолжительности
+        function calcDuration() {
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            if (start && end) {
+                const startDate = new Date(`2000-01-01T${start}`);
+                const endDate = new Date(`2000-01-01T${end}`);
+                let diff = (endDate - startDate) / (1000 * 60 * 60); // в часах
+                if (diff < 0) diff += 24; // Переход через полночь
+                document.getElementById('duration').value = diff.toFixed(1);
+                calcTotal();
+            }
+        }
+
+        // Расчет суммы
+        function calcTotal() {
+            const duration = parseFloat(document.getElementById('duration').value) || 0;
+            const tariff = parseFloat(document.getElementById('tariff').value) || 0;
+            const total = duration * tariff;
+            document.getElementById('previewTotal').textContent = total.toLocaleString('ru-RU') + ' ₽';
+        }
+
+        // Добавление записи
+        function addRecord(e) {
+            e.preventDefault();
+            const record = {
+                id: Date.now().toString(),
+                date: document.getElementById('date').value,
+                worker: document.getElementById('worker').value.trim(),
+                operation: document.getElementById('operation').value,
+                description: document.getElementById('description').value.trim(),
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                duration: parseFloat(document.getElementById('duration').value),
+                tariff: parseFloat(document.getElementById('tariff').value),
+                total: parseFloat(document.getElementById('duration').value) * parseFloat(document.getElementById('tariff').value)
+            };
+
+            records.push(record);
+            saveData();
+            e.target.reset();
+            document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('tariff').value = 500;
+            document.getElementById('previewTotal').textContent = '0 ₽';
+            updateWorkersList();
+            renderTable();
+        }
+
+        // Сохранение в LocalStorage
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        }
+
+        // Удаление записи
+        function deleteRecord(id) {
+            if (confirm('Удалить эту запись?')) {
+                records = records.filter(r => r.id !== id);
+                saveData();
+                renderTable();
+            }
+        }
+
+        // Рендер таблицы и статистики
+        function renderTable() {
+            const filterWorker = document.getElementById('filterWorker').value.toLowerCase();
+            const filterDate = document.getElementById('filterDate').value;
+
+            const filtered = records.filter(r => {
+                const matchWorker = r.worker.toLowerCase().includes(filterWorker);
+                const matchDate = filterDate ? r.date === filterDate : true;
+                return matchWorker && matchDate;
+            });
+
+            // Сортировка по дате (новые сверху)
+            filtered.sort((a, b) => new Date(b.date + 'T' + b.startTime) - new Date(a.date + 'T' + a.startTime));
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            let totalHours = 0;
+            let totalEarnings = 0;
+
+            filtered.forEach(r => {
+                totalHours += r.duration;
+                totalEarnings += r.total;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${formatDate(r.date)}<br><small style="color:#64748b">${r.startTime}-${r.endTime}</small></td>
+                    <td><strong>${r.worker}</strong><br><small class="hide-mobile">${r.description}</small></td>
+                    <td>${r.operation}</td>
+                    <td class="hide-mobile">${r.duration} ч.</td>
+                    <td class="amount">${r.total.toLocaleString('ru-RU')} ₽</td>
+                    <td><button class="btn btn-danger" onclick="deleteRecord('${r.id}')">×</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('totalHours').textContent = totalHours.toFixed(1);
+            document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString('ru-RU') + ' ₽';
+        }
+
+        function formatDate(dateStr) {
+            const [y, m, d] = dateStr.split('-');
+            return `${d}.${m}.${y}`;
+        }
+
+        function applyFilters() { renderTable(); }
+        function resetFilters() {
+            document.getElementById('filterWorker').value = '';
+            document.getElementById('filterDate').valueAsDate = new Date();
+            renderTable();
+        }
+
+        // Экспорт в JSON
+        function exportData() {
+            const dataStr = JSON.stringify(records, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `production_data_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        // Экспорт в CSV (для Excel)
+        function exportCSV() {
+            const headers = ['Дата', 'Оператор', 'Тип работ', 'Описание', 'Начало', 'Конец', 'Часы', 'Ставка', 'Сумма'];
+            const rows = records.map(r => [
+                r.date, r.worker, r.operation, r.description, r.startTime, r.endTime, r.duration, r.tariff, r.total
+            ]);
+            
+            let csvContent = "\uFEFF"; // BOM для корректного отображения кириллицы в Excel
+            csvContent += headers.join(';') + '\n';
+            rows.forEach(row => {
+                csvContent += row.join(';') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `production_report_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        // Импорт из JSON
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        if (confirm(`Импортировать ${imported.length} записей? Это добавит данные к существующим.`)) {
+                            records = [...records, ...imported];
+                            // Удаление дубликатов по ID
+                            records = records.filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i);
+                            saveData();
+                            updateWorkersList();
+                            renderTable();
+                            alert('Данные успешно импортированы!');
+                        }
+                    } else {
+                        alert('Неверный формат файла');
+                    }
+                } catch (err) {
+                    alert('Ошибка чтения файла');
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; // Сброс для повторного выбора
+        }
+
+        // Очистка
+        function clearAllData() {
+            if (confirm('ВНИМАНИЕ! Это удалит ВСЕ записи безвозвратно. Продолжить?')) {
+                records = [];
+                saveData();
+                renderTable();
+                updateWorkersList();
+            }
+        }
+
+        // Первичный рендер
+        renderTable();
+    </script>
+</body>
+</html>
