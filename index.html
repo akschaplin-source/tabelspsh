@@ -3,149 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учет работ: Шпонирование и Распил</title>
+    <title>Производственный Учет 2.0</title>
     <style>
         :root {
             --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --bg: #f8fafc;
+            --bg: #f1f5f9;
             --surface: #ffffff;
-            --text: #0f172a;
-            --text-secondary: #64748b;
-            --border: #e2e8f0;
-            --danger: #ef4444;
-            --success: #22c55e;
+            --text: #1e293b;
+            --border: #cbd5e1;
+            --success: #16a34a;
+            --danger: #dc2626;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 16px; max-width: 800px; margin: 0 auto; }
-        h1 { font-size: 1.25rem; margin-bottom: 16px; text-align: center; color: var(--primary); }
-        h2 { font-size: 1rem; margin: 20px 0 10px; color: var(--text-secondary); border-bottom: 2px solid var(--border); padding-bottom: 4px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 15px; max-width: 900px; margin: 0 auto; }
         
-        .card { background: var(--surface); border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px; }
+        h1 { text-align: center; margin-bottom: 20px; font-size: 1.4rem; }
+        .card { background: var(--surface); border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group.full { grid-column: 1 / -1; }
-        label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
-        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background: var(--surface); }
-        input:focus, select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        /* Статистика */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--primary); color: white; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-val { font-size: 1.5rem; font-weight: bold; }
+        .stat-lbl { font-size: 0.8rem; opacity: 0.9; }
+
+        /* Форма */
+        .form-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 140px; display: flex; flex-direction: column; }
+        label { font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #64748b; }
+        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; width: 100%; }
+        input:focus { outline: 2px solid var(--primary); border-color: transparent; }
         
-        .btn { padding: 12px; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
-        .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 8px; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 0.85rem; }
-        .btn-secondary { background: var(--border); color: var(--text); padding: 8px 16px; font-size: 0.9rem; margin-right: 8px; margin-bottom: 8px; }
+        /* Динамические поля */
+        .dynamic-inputs { display: none; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border); margin-bottom: 12px; }
+        .dynamic-inputs.active { display: block; }
         
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .stat-box { background: var(--primary); color: white; padding: 16px; border-radius: 8px; text-align: center; }
-        .stat-value { font-size: 1.5rem; font-weight: bold; }
-        .stat-label { font-size: 0.85rem; opacity: 0.9; }
-        
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-sm { padding: 5px 10px; font-size: 0.8rem; width: auto; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        /* Таблица */
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); }
-        th { color: var(--text-secondary); font-weight: 600; }
-        .amount { font-weight: bold; color: var(--success); }
+        th { text-align: left; padding: 10px; border-bottom: 2px solid var(--border); color: #64748b; font-size: 0.8rem; }
+        td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .money { font-weight: bold; color: var(--success); }
         
-        .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-        .hidden { display: none; }
-        
+        /* Адаптив */
         @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; }
-            th, td { padding: 8px 4px; font-size: 0.8rem; }
-            .hide-mobile { display: none; }
+            .hide-mob { display: none; }
+            .form-group { min-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <h1>📋 Учет работ оператора</h1>
+    <h1>🏭 Учет работ (Многопрофильный)</h1>
 
     <!-- Сводка -->
-    <div class="stats">
-        <div class="stat-box">
-            <div class="stat-value" id="totalHours">0</div>
-            <div class="stat-label">Всего часов</div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val" id="totalSum">0 ₽</div>
+            <div class="stat-lbl">Заработок (фильтр)</div>
         </div>
-        <div class="stat-box" style="background: var(--success);">
-            <div class="stat-value" id="totalEarnings">0 ₽</div>
-            <div class="stat-label">Общий заработок</div>
+        <div class="stat-card" style="background: var(--success);">
+            <div class="stat-val" id="totalCount">0</div>
+            <div class="stat-lbl">Записей</div>
         </div>
     </div>
 
     <!-- Фильтры -->
     <div class="card">
-        <div class="filters">
-            <input type="text" id="filterWorker" placeholder="Имя оператора..." style="flex: 1;">
-            <input type="date" id="filterDate" style="flex: 1;">
-            <button class="btn btn-secondary" onclick="applyFilters()">Применить</button>
-            <button class="btn btn-secondary" onclick="resetFilters()">Сброс</button>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Оператор</label>
+                <input type="text" id="filterWorker" placeholder="Все..." oninput="renderTable()">
+            </div>
+            <div class="form-group">
+                <label>Дата с</label>
+                <input type="date" id="filterDateStart" onchange="renderTable()">
+            </div>
+            <div class="form-group">
+                <label>По</label>
+                <input type="date" id="filterDateEnd" onchange="renderTable()">
+            </div>
         </div>
     </div>
 
-    <!-- Форма добавления -->
+    <!-- Форма ввода -->
     <div class="card">
-        <h2>➕ Новая запись</h2>
+        <h3 style="margin-bottom: 15px;">➕ Добавить работу</h3>
         <form id="workForm" onsubmit="addRecord(event)">
-            <div class="form-grid">
+            
+            <div class="form-row">
                 <div class="form-group">
                     <label>Дата</label>
                     <input type="date" id="date" required>
                 </div>
                 <div class="form-group">
                     <label>Оператор</label>
-                    <input type="text" id="worker" list="workersList" placeholder="Иванов И.И." required>
+                    <input type="text" id="worker" list="workersList" placeholder="Иванов" required>
                     <datalist id="workersList"></datalist>
                 </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Тип работы (выбор меняет поля ниже)</label>
+                <select id="jobType" onchange="updateFormFields()" required style="font-weight: bold; color: var(--primary);">
+                    <option value="cut_mdf">Распил МДФ/ЛДСП (м²)</option>
+                    <option value="veneer">Шпонирование (м²)</option>
+                    <option value="edge">Кромление (пог. м)</option>
+                    <option value="assembly">Сборка/Прочее (шт)</option>
+                    <option value="hourly">Почасовая оплата (часы)</option>
+                </select>
+            </div>
+
+            <!-- Контейнер для динамических полей -->
+            <div id="dynamicArea">
+                <!-- Сюда JS будет вставлять нужные инпуты -->
+            </div>
+
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Тип работ</label>
-                    <select id="operation" required>
-                        <option value="Распил">Распил листового материала</option>
-                        <option value="Шпонирование">Шпонирование</option>
-                        <option value="Кромление">Кромление</option>
-                        <option value="Прочее">Прочие работы</option>
-                    </select>
+                    <label>Ставка (₽ за ед.)</label>
+                    <input type="number" id="rate" step="0.01" required oninput="calcPreview()">
                 </div>
                 <div class="form-group">
-                    <label>Описание / Детали</label>
-                    <input type="text" id="description" placeholder="ДСП 16мм, 10 листов">
-                </div>
-                <div class="form-group">
-                    <label>Начало</label>
-                    <input type="time" id="startTime" required onchange="calcDuration()">
-                </div>
-                <div class="form-group">
-                    <label>Конец</label>
-                    <input type="time" id="endTime" required onchange="calcDuration()">
-                </div>
-                <div class="form-group">
-                    <label>Часов (автоматически)</label>
-                    <input type="number" id="duration" step="0.1" readonly style="background: #f1f5f9;">
-                </div>
-                <div class="form-group">
-                    <label>Ставка (₽/час)</label>
-                    <input type="number" id="tariff" value="500" required oninput="calcTotal()">
-                </div>
-                <div class="form-group full">
-                    <label>Итого к оплате: <strong id="previewTotal" style="color: var(--success); font-size: 1.2rem;">0 ₽</strong></label>
+                    <label>Итого: <span id="previewSum" style="color:var(--success); font-size:1.2rem">0 ₽</span></label>
                 </div>
             </div>
+
             <button type="submit" class="btn btn-primary">💾 Сохранить запись</button>
         </form>
     </div>
 
-    <!-- Таблица данных -->
+    <!-- Таблица -->
     <div class="card">
-        <h2>📊 Журнал работ</h2>
+        <h3 style="margin-bottom: 10px;">📊 Журнал</h3>
         <div style="overflow-x: auto;">
             <table id="dataTable">
                 <thead>
                     <tr>
-                        <th>Дата</th>
-                        <th>Оператор</th>
-                        <th>Работа</th>
-                        <th class="hide-mobile">Часы</th>
+                        <th>Дата / Кто</th>
+                        <th>Работа / Детали</th>
+                        <th>Объем</th>
                         <th>Сумма</th>
-                        <th>Действие</th>
+                        <th>Действ.</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -154,225 +157,304 @@
     </div>
 
     <!-- Управление данными -->
-    <div class="card">
-        <h2>⚙️ Сохранение и перенос данных</h2>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
-            ⚠️ Данные хранятся только в этом браузере. Регулярно делайте резервную копию!
-        </p>
-        <button class="btn btn-secondary" onclick="exportData()">📥 Экспорт в JSON</button>
-        <button class="btn btn-secondary" onclick="exportCSV()">📥 Экспорт в CSV (Excel)</button>
-        <label class="btn btn-secondary" style="display: inline-block; cursor: pointer;">
-            📤 Импорт JSON
-            <input type="file" id="importFile" accept=".json" onchange="importData(this)" style="display: none;">
+    <div class="card" style="text-align: center;">
+        <button class="btn btn-sm" style="background:#e2e8f0; margin:5px;" onclick="exportCSV()">📥 Скачать Excel (CSV)</button>
+        <button class="btn btn-sm" style="background:#e2e8f0; margin:5px;" onclick="exportJSON()">💾 Бэкап (JSON)</button>
+        <label class="btn btn-sm" style="background:#e2e8f0; margin:5px; display:inline-block; cursor:pointer;">
+            📤 Восстановить
+            <input type="file" onchange="importJSON(this)" style="display:none" accept=".json">
         </label>
-        <button class="btn btn-danger" onclick="clearAllData()" style="margin-top: 8px;">🗑️ Очистить всё</button>
+        <br><br>
+        <button class="btn btn-sm btn-danger" onclick="clearData()">🗑️ Очистить всё</button>
     </div>
 
     <script>
-        // Инициализация
-        const STORAGE_KEY = 'production_tracker_v1';
+        // --- КОНФИГУРАЦИЯ ТИПОВ РАБОТ ---
+        const JOB_CONFIG = {
+            'cut_mdf': { 
+                label: 'Распил (м²)', 
+                inputs: ['length', 'width', 'qty'], // длина, ширина, кол-во
+                defaultRate: 65,
+                unit: 'м²'
+            },
+            'veneer': { 
+                label: 'Шпонирование (м²)', 
+                inputs: ['area_manual'], // ручной ввод площади
+                defaultRate: 1000,
+                unit: 'м²'
+            },
+            'edge': { 
+                label: 'Кромление (пог.м)', 
+                inputs: ['meters'], // ручной ввод метров
+                defaultRate: 50, // Пример ставки
+                unit: 'пог.м'
+            },
+            'assembly': { 
+                label: 'Сборка (шт)', 
+                inputs: ['qty_only'], 
+                defaultRate: 500,
+                unit: 'шт'
+            },
+            'hourly': { 
+                label: 'Почасовая', 
+                inputs: ['time_range'], // время начало/конец
+                defaultRate: 300,
+                unit: 'час'
+            }
+        };
+
+        const STORAGE_KEY = 'factory_db_v2';
         let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-        // Установка текущей даты по умолчанию
+        // Инициализация
         document.getElementById('date').valueAsDate = new Date();
-        document.getElementById('filterDate').valueAsDate = new Date();
-
-        // Автозаполнение списка операторов
-        function updateWorkersList() {
-            const workers = [...new Set(records.map(r => r.worker))];
-            const datalist = document.getElementById('workersList');
-            datalist.innerHTML = workers.map(w => `<option value="${w}">`).join('');
-        }
         updateWorkersList();
+        updateFormFields(); // Создать поля для первого типа
+        renderTable();
 
-        // Расчет продолжительности
-        function calcDuration() {
-            const start = document.getElementById('startTime').value;
-            const end = document.getElementById('endTime').value;
-            if (start && end) {
-                const startDate = new Date(`2000-01-01T${start}`);
-                const endDate = new Date(`2000-01-01T${end}`);
-                let diff = (endDate - startDate) / (1000 * 60 * 60); // в часах
-                if (diff < 0) diff += 24; // Переход через полночь
-                document.getElementById('duration').value = diff.toFixed(1);
-                calcTotal();
+        // --- ЛОГИКА ФОРМЫ ---
+
+        function updateFormFields() {
+            const type = document.getElementById('jobType').value;
+            const config = JOB_CONFIG[type];
+            const container = document.getElementById('dynamicArea');
+            
+            // Сброс значения ставки на дефолтное для этого типа
+            document.getElementById('rate').value = config.defaultRate;
+            
+            let html = '';
+
+            // Генерация полей в зависимости от типа
+            if (config.inputs.includes('length')) {
+                // Для распила: Длина, Ширина, Кол-во -> Считаем площадь автоматически
+                html += `
+                    <div class="form-row dynamic-inputs active">
+                        <div class="form-group"><label>Длина (мм)</label><input type="number" id="inp_l" placeholder="2800" oninput="calcAutoArea()"></div>
+                        <div class="form-group"><label>Ширина (мм)</label><input type="number" id="inp_w" placeholder="2070" oninput="calcAutoArea()"></div>
+                        <div class="form-group"><label>Кол-во (шт)</label><input type="number" id="inp_q" value="1" oninput="calcAutoArea()"></div>
+                    </div>
+                    <div class="form-row dynamic-inputs active" style="background:#e0f2fe">
+                        <div class="form-group"><label>Итого площадь (м²)</label><input type="number" id="calc_area" readonly style="background:#fff; font-weight:bold;"></div>
+                    </div>
+                `;
+            } else if (config.inputs.includes('area_manual')) {
+                html += `<div class="form-row dynamic-inputs active"><div class="form-group"><label>Площадь (м²)</label><input type="number" step="0.01" id="inp_area" placeholder="0.00" oninput="calcPreview()"></div></div>`;
+            } else if (config.inputs.includes('meters')) {
+                html += `<div class="form-row dynamic-inputs active"><div class="form-group"><label>Погонные метры</label><input type="number" step="0.1" id="inp_meters" placeholder="0.0" oninput="calcPreview()"></div></div>`;
+            } else if (config.inputs.includes('qty_only')) {
+                html += `<div class="form-row dynamic-inputs active"><div class="form-group"><label>Количество (шт)</label><input type="number" id="inp_qty" placeholder="0" oninput="calcPreview()"></div></div>`;
+            } else if (config.inputs.includes('time_range')) {
+                html += `
+                    <div class="form-row dynamic-inputs active">
+                        <div class="form-group"><label>Начало</label><input type="time" id="time_start" oninput="calcHours()"></div>
+                        <div class="form-group"><label>Конец</label><input type="time" id="time_end" oninput="calcHours()"></div>
+                        <div class="form-group"><label>Часов</label><input type="number" id="calc_hours" readonly style="background:#fff"></div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            calcPreview();
+        }
+
+        // Авто-расчет площади для распила (мм -> м²)
+        function calcAutoArea() {
+            const l = parseFloat(document.getElementById('inp_l').value) || 0;
+            const w = parseFloat(document.getElementById('inp_w').value) || 0;
+            const q = parseFloat(document.getElementById('inp_q').value) || 0;
+            // мм * мм / 1 000 000 = м²
+            const area = (l * w * q) / 1000000;
+            document.getElementById('calc_area').value = area.toFixed(3);
+            calcPreview();
+        }
+
+        // Авто-расчет часов
+        function calcHours() {
+            const s = document.getElementById('time_start').value;
+            const e = document.getElementById('time_end').value;
+            if(s && e) {
+                let start = new Date("2000-01-01 " + s);
+                let end = new Date("2000-01-01 " + e);
+                if (end < start) end.setDate(end.getDate() + 1); // переход через полночь
+                const diff = (end - start) / 3600000;
+                document.getElementById('calc_hours').value = diff.toFixed(2);
+                calcPreview();
             }
         }
 
-        // Расчет суммы
-        function calcTotal() {
-            const duration = parseFloat(document.getElementById('duration').value) || 0;
-            const tariff = parseFloat(document.getElementById('tariff').value) || 0;
-            const total = duration * tariff;
-            document.getElementById('previewTotal').textContent = total.toLocaleString('ru-RU') + ' ₽';
+        // Предпросмотр суммы
+        function calcPreview() {
+            const rate = parseFloat(document.getElementById('rate').value) || 0;
+            const type = document.getElementById('jobType').value;
+            let qty = 0;
+
+            if (type === 'cut_mdf') qty = parseFloat(document.getElementById('calc_area').value) || 0;
+            else if (type === 'veneer') qty = parseFloat(document.getElementById('inp_area').value) || 0;
+            else if (type === 'edge') qty = parseFloat(document.getElementById('inp_meters').value) || 0;
+            else if (type === 'assembly') qty = parseFloat(document.getElementById('inp_qty').value) || 0;
+            else if (type === 'hourly') qty = parseFloat(document.getElementById('calc_hours').value) || 0;
+
+            const total = qty * rate;
+            document.getElementById('previewSum').innerText = Math.round(total) + ' ₽';
+            return { qty, total };
         }
 
-        // Добавление записи
+        // --- СОХРАНЕНИЕ ---
+
         function addRecord(e) {
             e.preventDefault();
+            const { qty, total } = calcPreview();
+            if (qty <= 0) { alert('Укажите объем работ!'); return; }
+
+            const type = document.getElementById('jobType').value;
+            const config = JOB_CONFIG[type];
+            
+            // Формируем описание для истории
+            let desc = '';
+            if(type === 'cut_mdf') {
+                const l = document.getElementById('inp_l').value;
+                const w = document.getElementById('inp_w').value;
+                const q = document.getElementById('inp_q').value;
+                desc = `${l}x${w} мм (${q} шт)`;
+            }
+
             const record = {
-                id: Date.now().toString(),
+                id: Date.now(),
                 date: document.getElementById('date').value,
                 worker: document.getElementById('worker').value.trim(),
-                operation: document.getElementById('operation').value,
-                description: document.getElementById('description').value.trim(),
-                startTime: document.getElementById('startTime').value,
-                endTime: document.getElementById('endTime').value,
-                duration: parseFloat(document.getElementById('duration').value),
-                tariff: parseFloat(document.getElementById('tariff').value),
-                total: parseFloat(document.getElementById('duration').value) * parseFloat(document.getElementById('tariff').value)
+                typeKey: type,
+                typeName: config.label,
+                desc: desc,
+                qty: qty,
+                unit: config.unit,
+                rate: parseFloat(document.getElementById('rate').value),
+                total: total
             };
 
             records.push(record);
             saveData();
-            e.target.reset();
-            document.getElementById('date').valueAsDate = new Date();
-            document.getElementById('tariff').value = 500;
-            document.getElementById('previewTotal').textContent = '0 ₽';
-            updateWorkersList();
+            
+            // Сброс формы (частичный)
+            document.getElementById('worker').focus(); // фокус на имя для следующего
+            // Очищаем инпуты объема, но оставляем дату и работника
+            const inputs = document.querySelectorAll('#dynamicArea input');
+            inputs.forEach(i => i.value = '');
+            if(type === 'cut_mdf') document.getElementById('inp_q').value = 1;
+            calcPreview();
             renderTable();
         }
 
-        // Сохранение в LocalStorage
         function saveData() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            updateWorkersList();
         }
 
-        // Удаление записи
-        function deleteRecord(id) {
-            if (confirm('Удалить эту запись?')) {
+        function updateWorkersList() {
+            const workers = [...new Set(records.map(r => r.worker))];
+            document.getElementById('workersList').innerHTML = workers.map(w => `<option value="${w}">`).join('');
+        }
+
+        // --- ТАБЛИЦА И ФИЛЬТРЫ ---
+
+        function renderTable() {
+            const fWorker = document.getElementById('filterWorker').value.toLowerCase();
+            const fStart = document.getElementById('filterDateStart').value;
+            const fEnd = document.getElementById('filterDateEnd').value;
+
+            const filtered = records.filter(r => {
+                const matchW = r.worker.toLowerCase().includes(fWorker);
+                const matchD = (!fStart || r.date >= fStart) && (!fEnd || r.date <= fEnd);
+                return matchW && matchD;
+            }).sort((a,b) => b.id - a.id); // Новые сверху
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            let sum = 0;
+            
+            filtered.forEach(r => {
+                sum += r.total;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight:bold">${r.date.split('-').reverse().join('.')}</div>
+                        <div style="color:#64748b">${r.worker}</div>
+                    </td>
+                    <td>
+                        <div style="font-weight:bold; color:var(--primary)">${r.typeName}</div>
+                        <div style="font-size:0.85rem">${r.desc || '-'}</div>
+                    </td>
+                    <td>
+                        <div>${r.qty} <small>${r.unit}</small></div>
+                        <div style="font-size:0.8rem; color:#64748b">по ${r.rate}₽</div>
+                    </td>
+                    <td class="money">${Math.round(r.total)} ₽</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="del(${r.id})">×</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('totalSum').innerText = Math.round(sum) + ' ₽';
+            document.getElementById('totalCount').innerText = filtered.length;
+        }
+
+        function del(id) {
+            if(confirm('Удалить запись?')) {
                 records = records.filter(r => r.id !== id);
                 saveData();
                 renderTable();
             }
         }
 
-        // Рендер таблицы и статистики
-        function renderTable() {
-            const filterWorker = document.getElementById('filterWorker').value.toLowerCase();
-            const filterDate = document.getElementById('filterDate').value;
-
-            const filtered = records.filter(r => {
-                const matchWorker = r.worker.toLowerCase().includes(filterWorker);
-                const matchDate = filterDate ? r.date === filterDate : true;
-                return matchWorker && matchDate;
-            });
-
-            // Сортировка по дате (новые сверху)
-            filtered.sort((a, b) => new Date(b.date + 'T' + b.startTime) - new Date(a.date + 'T' + a.startTime));
-
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-
-            let totalHours = 0;
-            let totalEarnings = 0;
-
-            filtered.forEach(r => {
-                totalHours += r.duration;
-                totalEarnings += r.total;
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${formatDate(r.date)}<br><small style="color:#64748b">${r.startTime}-${r.endTime}</small></td>
-                    <td><strong>${r.worker}</strong><br><small class="hide-mobile">${r.description}</small></td>
-                    <td>${r.operation}</td>
-                    <td class="hide-mobile">${r.duration} ч.</td>
-                    <td class="amount">${r.total.toLocaleString('ru-RU')} ₽</td>
-                    <td><button class="btn btn-danger" onclick="deleteRecord('${r.id}')">×</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('totalHours').textContent = totalHours.toFixed(1);
-            document.getElementById('totalEarnings').textContent = totalEarnings.toLocaleString('ru-RU') + ' ₽';
-        }
-
-        function formatDate(dateStr) {
-            const [y, m, d] = dateStr.split('-');
-            return `${d}.${m}.${y}`;
-        }
-
-        function applyFilters() { renderTable(); }
-        function resetFilters() {
-            document.getElementById('filterWorker').value = '';
-            document.getElementById('filterDate').valueAsDate = new Date();
-            renderTable();
-        }
-
-        // Экспорт в JSON
-        function exportData() {
-            const dataStr = JSON.stringify(records, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `production_data_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-        }
-
-        // Экспорт в CSV (для Excel)
+        // --- ЭКСПОРТ/ИМПОРТ ---
+        
         function exportCSV() {
-            const headers = ['Дата', 'Оператор', 'Тип работ', 'Описание', 'Начало', 'Конец', 'Часы', 'Ставка', 'Сумма'];
-            const rows = records.map(r => [
-                r.date, r.worker, r.operation, r.description, r.startTime, r.endTime, r.duration, r.tariff, r.total
-            ]);
-            
-            let csvContent = "\uFEFF"; // BOM для корректного отображения кириллицы в Excel
-            csvContent += headers.join(';') + '\n';
-            rows.forEach(row => {
-                csvContent += row.join(';') + '\n';
+            let csv = '\uFEFFДата;Оператор;Тип работы;Описание;Объем;Ед.изм;Ставка;Сумма\n';
+            records.forEach(r => {
+                csv += `${r.date};${r.worker};${r.typeName};${r.desc};${r.qty};${r.unit};${r.rate};${r.total}\n`;
             });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `production_report_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
+            downloadFile(csv, 'report.csv', 'text/csv');
         }
 
-        // Импорт из JSON
-        function importData(input) {
+        function exportJSON() {
+            downloadFile(JSON.stringify(records, null, 2), 'backup.json', 'application/json');
+        }
+
+        function importJSON(input) {
             const file = input.files[0];
-            if (!file) return;
-            
+            if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (e) => {
                 try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported)) {
-                        if (confirm(`Импортировать ${imported.length} записей? Это добавит данные к существующим.`)) {
-                            records = [...records, ...imported];
-                            // Удаление дубликатов по ID
-                            records = records.filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i);
-                            saveData();
-                            updateWorkersList();
-                            renderTable();
-                            alert('Данные успешно импортированы!');
-                        }
-                    } else {
-                        alert('Неверный формат файла');
+                    const data = JSON.parse(e.target.result);
+                    if(Array.isArray(data)) {
+                        records = [...records, ...data];
+                        // Убираем дубликаты по ID
+                        records = records.filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i);
+                        saveData();
+                        renderTable();
+                        alert('Данные восстановлены!');
                     }
-                } catch (err) {
-                    alert('Ошибка чтения файла');
-                }
+                } catch(err) { alert('Ошибка файла'); }
             };
             reader.readAsText(file);
-            input.value = ''; // Сброс для повторного выбора
         }
 
-        // Очистка
-        function clearAllData() {
-            if (confirm('ВНИМАНИЕ! Это удалит ВСЕ записи безвозвратно. Продолжить?')) {
+        function downloadFile(content, fileName, mimeType) {
+            const a = document.createElement('a');
+            const blob = new Blob([content], {type: mimeType});
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            a.click();
+        }
+
+        function clearData() {
+            if(confirm('ТОЧНО УДАЛИТЬ ВСЁ?')) {
                 records = [];
                 saveData();
                 renderTable();
-                updateWorkersList();
             }
         }
-
-        // Первичный рендер
-        renderTable();
     </script>
 </body>
 </html>
