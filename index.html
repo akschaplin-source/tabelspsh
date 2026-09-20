@@ -458,7 +458,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
         <div id="errbox" class="err-box">❌ <span id="err-msg"></span></div>
     </div>
     <div class="info">
-        <strong>💡 Формат кода:</strong>
+        <strong> Формат кода:</strong>
         <code>НП162100 800/522 500-ВБ-154.002</code><br>
         Пробел — между длиной и шириной<br>
         <code>/</code> — между парами размеров<br>
@@ -472,7 +472,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
         <div class="total-amt"><span id="total">0</span> ₽</div>
     </div>
     <div class="h-list" id="h-list"></div>
-    <div class="btn-row" style="margin-top:16px;display:flex;gap:10px">
+    <div style="margin-top:16px;display:flex;gap:10px">
         <button class="btn btn-d" onclick="clearHist()" style="flex:1">🗑️ Очистить всё</button>
         <button class="btn btn-s" onclick="exportCSV()" style="flex:1">📥 CSV</button>
     </div>
@@ -492,7 +492,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
         <button class="btn btn-p" onclick="exportAll()">📤 Экспорт (JSON)</button>
         <button class="btn btn-s" onclick="document.getElementById('imp').click()">📥 Импорт</button>
         <input type="file" id="imp" style="display:none" accept=".json" onchange="doImport(event)">
-        <button class="btn btn-d" onclick="resetAll()" style="margin-top:8px">🗑️ Сбросить всё</button>
+        <button class="btn btn-d" onclick="resetAll()" style="margin-top:8px">️ Сбросить всё</button>
     </div>
     <div class="info">
         <strong>📌 О приложении:</strong>
@@ -591,9 +591,9 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
     <div class="step">
         <div class="step-title"><span class="step-num">5</span>Формула и тариф</div>
         <div class="fg">
-            <div class="fl">Формула расчета (вставляется автоматически)</div>
-            <textarea id="m-formula" class="fi" placeholder="Автоматически" readonly style="opacity:0.7"></textarea>
-            <div class="hint" id="formula-hint">Выберите тип расчета выше</div>
+            <div class="fl">Формула расчета</div>
+            <textarea id="m-formula" class="fi" placeholder="(Длина * Ширина / 1000000)"></textarea>
+            <div class="hint" id="formula-hint">Выберите тип расчета выше — формула вставится автоматически</div>
         </div>
         <div class="fg">
             <div class="fl">Тариф в рублях</div>
@@ -614,21 +614,21 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
     </div>
 
     <div class="test-box">
-        <div class="fl">🧪 Тест — введите код и проверьте</div>
+        <div class="fl"> Тест — введите код и проверьте</div>
         <input type="text" id="m-test" class="fi" placeholder="НП162100 800/522 500-ВБ-154.002" style="margin-bottom:10px">
         <button class="btn btn-s btn-sm" onclick="testCode()">Проверить</button>
         <div id="m-test-res"></div>
     </div>
 
-    <button class="btn btn-g" onclick="saveWT()" style="margin-top:10px"> Сохранить тип работы</button>
+    <button class="btn btn-g" onclick="saveWT()" style="margin-top:10px">💾 Сохранить тип работы</button>
     <button class="btn btn-s" onclick="closeModal()">Отмена</button>
 </div>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="go('input',this)"><div class="nav-icon"></div>Ввод</button>
+    <button class="nav-item active" onclick="go('input',this)"><div class="nav-icon">📱</div>Ввод</button>
     <button class="nav-item" onclick="go('history',this)"><div class="nav-icon">📋</div>История</button>
-    <button class="nav-item" onclick="go('workTypes',this)"><div class="nav-icon"></div>Типы</button>
+    <button class="nav-item" onclick="go('workTypes',this)"><div class="nav-icon">🔧</div>Типы</button>
     <button class="nav-item" onclick="go('settings',this)"><div class="nav-icon">⚙️</div>Ещё</button>
 </div>
 
@@ -637,6 +637,7 @@ let hist = JSON.parse(localStorage.getItem('wh')||'[]');
 let types = JSON.parse(localStorage.getItem('wt')||'[]');
 let editIdx = -1, curParams = [];
 let currentMode = 'area';
+let formulaManuallyEdited = false;
 
 if(!types.length){
     types = [
@@ -686,7 +687,10 @@ function parseCode(code){
     const sorted = [...types].sort((a,b)=>b.prefix.length-a.prefix.length);
     for(const wt of sorted){
         if(code.startsWith(wt.prefix.toUpperCase())){
-            try{ return parseWT(code,wt) }catch(e){ continue }
+            try{ return parseWT(code,wt) }catch(e){ 
+                console.error('Ошибка парсинга типа '+wt.prefix+':', e);
+                continue 
+            }
         }
     }
     return null;
@@ -699,7 +703,7 @@ function parseWT(code, wt){
 
     for(const p of paramsWithStarts){
         const v = code.substring(p.start, p.start+p.length);
-        if(!v) throw new Error('Код слишком короткий');
+        if(!v) throw new Error('Код слишком короткий для параметра "'+p.name+'"');
         const n = parseFloat(v);
         params[p.name] = isNaN(n)?0:n;
         display.push(p.name+': '+(isNaN(n)?v:n)+(p.unit?' '+p.unit:''));
@@ -726,13 +730,13 @@ function parseWT(code, wt){
         for(let i=0; i<pairs.length; i++){
             const dims = pairs[i].trim().split(/\s+/);
             if(dims.length !== dimNames.length){
-                throw new Error('Пара '+(i+1)+': ожидалось '+dimNames.length+' чисел');
+                throw new Error('Пара '+(i+1)+': ожидалось '+dimNames.length+' чисел через пробел, получено '+dims.length);
             }
             const pairParams = {...params};
             const pairDisplay = [];
             for(let j=0; j<dimNames.length; j++){
                 const val = parseFloat(dims[j]);
-                if(isNaN(val)) throw new Error('Не число в паре '+(i+1));
+                if(isNaN(val)) throw new Error('Не число в паре '+(i+1)+': "'+dims[j]+'"');
                 pairParams[dimNames[j]] = val;
                 pairDisplay.push(dimNames[j]+': '+val+(dimUnits[j]?' '+dimUnits[j]:''));
             }
@@ -767,15 +771,33 @@ function parseWT(code, wt){
 }
 
 function evalFormula(formula, params){
+    if(!formula || !formula.trim()) throw new Error('Формула пустая');
+    
     let f = formula.replace(/\s+/g,'');
+    
+    // Проверяем что формула не пустая после удаления пробелов
+    if(!f) throw new Error('Формула пустая');
+    
     const names = Object.keys(params).sort((a,b)=>b.length-a.length);
     for(const n of names){
         f = f.replace(new RegExp(n,'g'),'('+params[n]+')');
     }
-    if(!/^[0-9+\-*/().eE]+$/.test(f)) throw new Error('Неизвестные символы в формуле');
-    const r = new Function('return '+f)();
-    if(typeof r!=='number'||!isFinite(r)) throw new Error('Неверный результат формулы');
-    return r;
+    
+    // Проверяем что остались только разрешенные символы
+    if(!/^[0-9+\-*/().eE]+$/.test(f)) {
+        // Показываем какие символы недопустимы
+        const invalid = f.match(/[^0-9+\-*/().eE]/g);
+        throw new Error('Недопустимые символы в формуле: "'+invalid.join('','')+'"');
+    }
+    
+    try {
+        const r = new Function('return '+f)();
+        if(typeof r!=='number'||!isFinite(r)) throw new Error('Неверный результат формулы');
+        return r;
+    } catch(e) {
+        if(e.message.includes('Неверный результат')) throw e;
+        throw new Error('Ошибка вычисления: '+e.message);
+    }
 }
 
 const ci = document.getElementById('code-input');
@@ -855,7 +877,7 @@ function renderHist(){
         if(r.amount!==undefined && r.unit){
             amountHtml='<div class="h-amount">'+r.amount.toFixed(4)+' '+r.unit+'</div>';
         }
-        d.innerHTML='<div class="h-item-left"><div class="h-code">'+r.code+'</div><div class="h-type">'+r.type+'</div><div class="h-part">'+r.part+'</div>'+sz+amountHtml+'<div class="h-time">'+r.ts+'</div></div><div class="h-pay">'+r.pay.toLocaleString('ru-RU')+' ₽</div><button class="h-delete" onclick="deleteHist('+realIdx+')" title="Удалить">🗑️</button>';
+        d.innerHTML='<div class="h-item-left"><div class="h-code">'+r.code+'</div><div class="h-type">'+r.type+'</div><div class="h-part">'+r.part+'</div>'+sz+amountHtml+'<div class="h-time">'+r.ts+'</div></div><div class="h-pay">'+r.pay.toLocaleString('ru-RU')+' ₽</div><button class="h-delete" onclick="deleteHist('+realIdx+')" title="Удалить">️</button>';
         el.appendChild(d);
     });
     document.getElementById('total').textContent=total.toLocaleString('ru-RU');
@@ -922,7 +944,10 @@ function selectMode(mode){
         document.getElementById('m-sz-n1').value='Длина';
     }
     
-    updateFormula();
+    // Обновляем формулу только если она не редактировалась вручную
+    if(!formulaManuallyEdited){
+        updateFormula();
+    }
     updatePreview();
 }
 
@@ -940,11 +965,19 @@ function updateFormula(){
         hint.textContent='Длина в погонных метрах (мм → м)';
         unitField.value='₽/м.п.';
     }
+    formulaManuallyEdited = false;
 }
+
+// Отслеживаем ручное редактирование формулы
+document.getElementById('m-formula').addEventListener('input', function(){
+    formulaManuallyEdited = true;
+});
 
 function openModal(idx){
     editIdx=idx===undefined?-1:idx;
     curParams=[];
+    formulaManuallyEdited = false;
+    
     if(editIdx>=0){
         const w=types[editIdx];
         document.getElementById('m-title').textContent='Редактировать';
@@ -961,14 +994,21 @@ function openModal(idx){
         document.getElementById('m-sz-n1').value=(sg.dims&&sg.dims[0])||'Длина';
         document.getElementById('m-sz-n2').value=(sg.dims&&sg.dims[1])||'Ширина';
         currentMode = sg.mode || 'area';
-        selectMode(currentMode);
+        // Не вызываем selectMode чтобы не перезаписать формулу
+        document.getElementById('mode-area').classList.toggle('active', currentMode==='area');
+        document.getElementById('mode-linear').classList.toggle('active', currentMode==='linear');
+        document.querySelector('#mode-area input').checked = currentMode==='area';
+        document.querySelector('#mode-linear input').checked = currentMode==='linear';
+        document.getElementById('n2-container').style.display = currentMode==='area'?'block':'none';
         document.getElementById('m-example').value='';
     } else {
         document.getElementById('m-title').textContent='Новый тип';
         document.getElementById('m-prefix').value='';
         document.getElementById('m-name').value='';
         document.getElementById('m-part-sep').value='-';
+        document.getElementById('m-formula').value='';
         document.getElementById('m-rate').value='500';
+        document.getElementById('m-unit').value='₽/м²';
         document.getElementById('m-sz-on').checked=false;
         document.getElementById('m-sz-pair').value='/';
         currentMode = 'area';
@@ -996,7 +1036,7 @@ function renderParams(){
     const withStarts = calcParamStarts(curParams, prefixLen);
     curParams.forEach((p,i)=>{
         const r=document.createElement('div');r.className='param-row';
-        r.innerHTML='<div><input class="fi" value="'+p.name+'" placeholder="Имя" onchange="curParams['+i+'].name=this.value;renderParams()"></div><div><input type="number" class="fi" value="'+p.length+'" min="1" placeholder="дл." onchange="curParams['+i+'].length=+this.value;renderParams()"></div><button class="btn btn-d btn-sm" onclick="curParams.splice('+i+',1);renderParams()">✖</button>';
+        r.innerHTML='<div><input class="fi" value="'+p.name+'" placeholder="Имя" onchange="curParams['+i+'].name=this.value;renderParams()"></div><div><input type="number" class="fi" value="'+p.length+'" min="1" placeholder="дл." onchange="curParams['+i+'].length=+this.value;renderParams()"></div><button class="btn btn-d btn-sm" onclick="curParams.splice('+i+',1);renderParams()"></button>';
         el.appendChild(r);
         const hint=document.createElement('div');
         hint.className='hint';
@@ -1131,6 +1171,20 @@ function saveWT(){
     if(!wt.name){alert('Укажите название');return}
     if(!wt.formula){alert('Укажите формулу');return}
     if(!wt.params.length && !(wt.sizeGroup&&wt.sizeGroup.on)){alert('Добавьте параметры или включите размеры');return}
+    
+    // Проверяем формулу перед сохранением
+    try {
+        const testParams = {};
+        wt.params.forEach(p => testParams[p.name] = 100);
+        if(wt.sizeGroup && wt.sizeGroup.on){
+            wt.sizeGroup.dims.forEach(d => testParams[d] = 1000);
+        }
+        evalFormula(wt.formula, testParams);
+    } catch(e) {
+        alert('️ Ошибка в формуле: '+e.message+'\n\nПроверьте что формула содержит только цифры, операторы (+,-,*,/) и имена параметров.');
+        return;
+    }
+    
     if(editIdx>=0) types[editIdx]=wt; else types.push(wt);
     saveTypes();closeModal();renderWT();
     alert('✅ Сохранено!');
@@ -1162,7 +1216,7 @@ function doImport(e){
 }
 
 function resetAll(){
-    if(confirm('⚠️ Удалить ВСЕ данные?')){
+    if(confirm('️ Удалить ВСЕ данные?')){
         if(confirm('Точно?')){localStorage.removeItem('wt');localStorage.removeItem('wh');location.reload()}
     }
 }
