@@ -5,109 +5,425 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Учет работ</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--yel:#fc0;--org:#ff6b00;--bg:#1a1a1a;--card:#2a2a2a;--inp:#333;--t1:#fff;--t2:#999;--ok:#4caf50;--err:#f44336;--r:16px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;padding-bottom:80px;font-size:16px;line-height:1.5}
-.header{background:linear-gradient(135deg,var(--yel),var(--org));padding:18px 15px 28px;border-radius:0 0 24px 24px;box-shadow:0 4px 20px rgba(255,187,0,.3);position:sticky;top:0;z-index:100}
-.header h1{font-size:22px;font-weight:700;color:#000;text-align:center}
-.header-sub{font-size:12px;color:rgba(0,0,0,.6);text-align:center;margin-top:2px}
-.content{padding:12px;margin-top:-8px}
-.panel{display:none;animation:fadeIn .25s}
+:root{
+  --glass-bg:rgba(255,255,255,0.08);
+  --glass-border:rgba(255,255,255,0.15);
+  --glass-shadow:0 8px 32px rgba(0,0,0,0.3);
+  --blur:blur(20px);
+  --yel:#fc0;
+  --org:#ff6b00;
+  --bg1:#1a1a2e;
+  --bg2:#16213e;
+  --bg3:#0f3460;
+  --t1:#fff;
+  --t2:rgba(255,255,255,0.7);
+  --ok:#4caf50;
+  --err:#f44336;
+  --r:20px;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
+  background-attachment:fixed;
+  color:var(--t1);
+  min-height:100vh;
+  padding-bottom:90px;
+  font-size:16px;
+  line-height:1.5;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';
+  position:fixed;
+  top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:radial-gradient(circle at 20% 30%,rgba(252,204,0,0.1) 0%,transparent 50%),
+             radial-gradient(circle at 80% 70%,rgba(255,107,0,0.08) 0%,transparent 50%);
+  z-index:-1;
+  animation:float 20s ease-in-out infinite;
+}
+@keyframes float{
+  0%,100%{transform:translate(0,0) rotate(0deg)}
+  50%{transform:translate(-2%,2%) rotate(180deg)}
+}
+.header{
+  background:var(--glass-bg);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border);
+  border-radius:0 0 var(--r) var(--r);
+  padding:20px 15px 24px;
+  box-shadow:var(--glass-shadow);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.header h1{
+  font-size:24px;
+  font-weight:700;
+  background:linear-gradient(135deg,var(--yel),var(--org));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  text-align:center;
+}
+.header-sub{
+  font-size:12px;
+  color:var(--t2);
+  text-align:center;
+  margin-top:4px;
+}
+.content{padding:16px;margin-top:-8px}
+.panel{display:none;animation:fadeIn .3s}
 .panel.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
-.card-title{font-size:17px;font-weight:600;margin-bottom:12px}
-.code-input{width:100%;padding:18px 12px;background:var(--inp);border:2px solid #444;border-radius:12px;font-size:22px;font-family:'Courier New',monospace;color:var(--t1);text-transform:uppercase;letter-spacing:1px;text-align:center;transition:border-color .2s}
-.code-input:focus{outline:none;border-color:var(--yel);background:#3a3a3a}
-.code-input::placeholder{color:#555;font-size:15px;letter-spacing:0;font-family:inherit}
-.btn{width:100%;padding:16px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .15s;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn:active{transform:scale(.97)}
-.btn-p{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;box-shadow:0 4px 12px rgba(255,187,0,.3)}
-.btn-s{background:#444;color:var(--t1)}
-.btn-g{background:var(--ok);color:#fff}
-.btn-d{background:var(--err);color:#fff}
-.btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:8px}
-.decoded{background:linear-gradient(135deg,#1b5e20,#2e7d32);border-radius:12px;padding:18px;margin:12px 0;display:none;border-left:4px solid var(--ok)}
-.decoded.show{display:block;animation:fadeIn .25s}
-.decoded h3{font-size:15px;margin-bottom:10px}
-.decoded p{font-size:14px;margin:6px 0;color:rgba(255,255,255,.9)}
-.sizes-box{background:rgba(255,255,255,.1);border-radius:8px;padding:10px;margin:8px 0}
-.sz-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.15);font-size:13px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r);
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:var(--glass-shadow);
+}
+.card-title{
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.code-input{
+  width:100%;
+  padding:18px 16px;
+  background:rgba(0,0,0,0.3);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  font-size:22px;
+  font-family:'Courier New',monospace;
+  color:var(--t1);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  text-align:center;
+  transition:all .3s;
+  margin-bottom:12px;
+}
+.code-input:focus{
+  outline:none;
+  border-color:var(--yel);
+  background:rgba(0,0,0,0.4);
+  box-shadow:0 0 20px rgba(252,204,0,0.2);
+}
+.code-input::placeholder{color:rgba(255,255,255,0.3);font-size:15px;letter-spacing:0;font-family:inherit}
+.btn{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .2s;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  position:relative;
+  overflow:hidden;
+}
+.btn:active{transform:scale(0.97)}
+.btn::before{
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+  transition:left .5s;
+}
+.btn:hover::before{left:100%}
+.btn-p{
+  background:linear-gradient(135deg,var(--yel),var(--org));
+  color:#000;
+  box-shadow:0 4px 20px rgba(252,204,0,0.4);
+}
+.btn-s{
+  background:rgba(255,255,255,0.1);
+  color:var(--t1);
+  border:1px solid rgba(255,255,255,0.2);
+}
+.btn-g{background:linear-gradient(135deg,#4caf50,#45a049);color:#fff;box-shadow:0 4px 15px rgba(76,175,80,0.4)}
+.btn-d{background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;box-shadow:0 4px 15px rgba(244,67,54,0.4)}
+.btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:10px}
+.btn-row{display:flex;gap:10px}
+.btn-row .btn{flex:1;margin:0}
+.decoded{
+  background:linear-gradient(135deg,rgba(76,175,80,0.15),rgba(69,160,73,0.1));
+  border:1px solid rgba(76,175,80,0.3);
+  border-radius:16px;
+  padding:18px;
+  margin:12px 0;
+  display:none;
+  backdrop-filter:blur(10px);
+}
+.decoded.show{display:block;animation:fadeIn .3s}
+.decoded h3{font-size:16px;margin-bottom:12px;color:#4caf50}
+.decoded p{font-size:14px;margin:8px 0;color:rgba(255,255,255,0.9)}
+.sizes-box{
+  background:rgba(0,0,0,0.2);
+  border-radius:10px;
+  padding:12px;
+  margin:10px 0;
+}
+.sz-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px}
 .sz-row:last-child{border:none}
-.sz-lbl{opacity:.8}
+.sz-lbl{opacity:0.8}
 .sz-val{font-weight:600;color:var(--yel)}
-.pay-box{background:rgba(255,255,255,.2);padding:14px;border-radius:8px;margin-top:12px;text-align:center}
-.pay-lbl{font-size:13px;opacity:.9}
-.pay-amt{font-size:30px;font-weight:700}
-.err-box{background:linear-gradient(135deg,#b71c1c,#d32f2f);border-radius:12px;padding:14px;margin:12px 0;display:none;color:#fff;font-size:14px}
+.pay-box{
+  background:linear-gradient(135deg,rgba(252,204,0,0.2),rgba(255,107,0,0.15));
+  border:1px solid rgba(252,204,0,0.3);
+  padding:16px;
+  border-radius:12px;
+  margin-top:14px;
+  text-align:center;
+}
+.pay-lbl{font-size:13px;opacity:0.9;margin-bottom:4px}
+.pay-amt{font-size:32px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.err-box{
+  background:linear-gradient(135deg,rgba(244,67,54,0.15),rgba(211,47,47,0.1));
+  border:1px solid rgba(244,67,54,0.3);
+  border-radius:12px;
+  padding:14px;
+  margin:12px 0;
+  display:none;
+  color:#ff6b6b;
+  font-size:14px;
+}
 .err-box.show{display:block}
-.total-card{background:linear-gradient(135deg,var(--yel),var(--org));border-radius:var(--r);padding:22px;margin-bottom:16px;text-align:right;box-shadow:0 4px 12px rgba(255,187,0,.3)}
-.total-lbl{font-size:13px;color:rgba(0,0,0,.6)}
-.total-amt{font-size:34px;font-weight:700;color:#000}
-.h-list{background:var(--card);border-radius:var(--r);overflow:hidden}
-.h-item{padding:14px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center}
-.h-item:last-child{border:none}
-.h-code{font-family:'Courier New',monospace;font-size:15px;font-weight:600;color:var(--yel);word-break:break-all;margin-bottom:4px}
+.total-card{
+  background:linear-gradient(135deg,rgba(252,204,0,0.2),rgba(255,107,0,0.15));
+  border:1px solid rgba(252,204,0,0.3);
+  border-radius:var(--r);
+  padding:24px;
+  margin-bottom:16px;
+  text-align:right;
+  box-shadow:0 8px 32px rgba(252,204,0,0.2);
+}
+.total-lbl{font-size:13px;color:var(--t2);margin-bottom:6px}
+.total-amt{font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.h-list{display:flex;flex-direction:column;gap:10px}
+.h-item{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  transition:all .2s;
+}
+.h-item:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
+.h-item-left{flex:1;min-width:0}
+.h-code{font-family:'Courier New',monospace;font-size:14px;font-weight:600;color:var(--yel);word-break:break-all;margin-bottom:4px}
 .h-type{font-size:13px;color:var(--t2)}
-.h-part{font-size:12px;color:var(--t2)}
-.h-sizes{font-size:11px;color:#777;margin-top:2px}
-.h-time{font-size:11px;color:#555;margin-top:3px}
-.h-pay{font-size:18px;font-weight:700;color:var(--ok);text-align:right;white-space:nowrap}
-.wt-card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--yel)}
-.wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.h-part{font-size:12px;color:var(--t2);margin-top:2px}
+.h-sizes{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px}
+.h-time{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px}
+.h-pay{font-size:18px;font-weight:700;color:#4caf50;text-align:right;white-space:nowrap}
+.h-delete{
+  background:rgba(244,67,54,0.2);
+  border:1px solid rgba(244,67,54,0.3);
+  color:#ff6b6b;
+  width:32px;height:32px;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  font-size:16px;
+  transition:all .2s;
+  flex-shrink:0;
+}
+.h-delete:hover{background:rgba(244,67,54,0.3);transform:scale(1.1)}
+.wt-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+  border-left:3px solid var(--yel);
+}
+.wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .wt-name{font-size:15px;font-weight:600}
-.wt-code{background:var(--yel);color:#000;padding:3px 8px;border-radius:5px;font-family:'Courier New',monospace;font-weight:700;font-size:13px}
-.wt-info{font-size:12px;color:var(--t2);margin:4px 0}
-.wt-formula{background:var(--inp);padding:8px;border-radius:6px;font-family:'Courier New',monospace;font-size:12px;margin:8px 0;word-break:break-all}
+.wt-code{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;padding:4px 10px;border-radius:6px;font-family:'Courier New',monospace;font-weight:700;font-size:13px}
+.wt-info{font-size:12px;color:var(--t2);margin:6px 0}
+.wt-formula{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;font-family:'Courier New',monospace;font-size:12px;margin:10px 0;word-break:break-all}
 .wt-rate{font-size:13px;color:var(--yel);font-weight:600}
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:1000;align-items:flex-end;justify-content:center}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:flex-end;justify-content:center;backdrop-filter:blur(5px)}
 .modal.show{display:flex}
-.modal-body{background:var(--card);width:100%;max-height:92vh;border-radius:20px 20px 0 0;padding:20px 16px 30px;overflow-y:auto;animation:slideUp .3s}
+.modal-body{
+  background:linear-gradient(180deg,rgba(30,30,50,0.98),rgba(20,20,40,0.98));
+  backdrop-filter:blur(30px);
+  width:100%;
+  max-height:92vh;
+  border-radius:24px 24px 0 0;
+  padding:24px 18px 32px;
+  overflow-y:auto;
+  animation:slideUp .3s;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.modal-title{font-size:19px;font-weight:700}
-.close-btn{background:none;border:none;color:var(--t2);font-size:28px;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.close-btn{background:none;border:none;color:var(--t2);font-size:28px;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:color .2s}
+.close-btn:hover{color:var(--t1)}
 .fg{margin-bottom:14px}
 .fl{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--t2)}
-.fi{width:100%;padding:13px;background:var(--inp);border:2px solid #444;border-radius:10px;color:var(--t1);font-size:15px;transition:border-color .2s}
-.fi:focus{outline:none;border-color:var(--yel)}
-.fi::placeholder{color:#555}
-textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
-.step{background:rgba(255,255,255,.03);border:1px solid #3a3a3a;border-radius:12px;padding:14px;margin-bottom:12px}
-.step-num{display:inline-block;background:var(--yel);color:#000;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:13px;margin-right:8px}
-.step-title{font-weight:600;font-size:14px;margin-bottom:10px}
-.param-row{display:grid;grid-template-columns:1fr 80px auto;gap:6px;margin-bottom:6px;align-items:end}
+.fi{
+  width:100%;
+  padding:14px;
+  background:rgba(0,0,0,0.3);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  color:var(--t1);
+  font-size:15px;
+  transition:all .3s;
+}
+.fi:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 15px rgba(252,204,0,0.15)}
+.fi::placeholder{color:rgba(255,255,255,0.3)}
+textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
+.step{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.step-num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--yel),var(--org));
+  color:#000;
+  width:26px;height:26px;
+  border-radius:50%;
+  font-weight:700;
+  font-size:13px;
+  margin-right:8px;
+}
+.step-title{font-weight:600;font-size:15px;margin-bottom:12px;display:flex;align-items:center}
+.param-row{display:grid;grid-template-columns:1fr 80px auto;gap:8px;margin-bottom:8px;align-items:end}
 .param-row input{font-size:13px;padding:10px 8px}
 .param-row button{padding:10px;font-size:12px;margin:0}
-.sz-toggle{display:flex;align-items:center;gap:10px;padding:12px;background:var(--inp);border-radius:10px;margin-bottom:12px;cursor:pointer}
-.sz-toggle input[type=checkbox]{width:20px;height:20px;accent-color:var(--yel)}
+.sz-toggle{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  background:rgba(0,0,0,0.2);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.sz-toggle:hover{background:rgba(0,0,0,0.3)}
+.sz-toggle input[type=checkbox]{width:22px;height:22px;accent-color:var(--yel)}
 .sz-toggle span{font-size:14px;font-weight:600}
-.sz-settings{background:rgba(252,204,0,.08);border:1px solid rgba(252,204,0,.2);border-radius:10px;padding:14px;margin-bottom:12px;display:none}
+.sz-settings{
+  background:rgba(252,204,0,0.05);
+  border:1px solid rgba(252,204,0,0.2);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:14px;
+  display:none;
+}
 .sz-settings.show{display:block}
-.sz-row-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:4px 8px;color:var(--t2);font-size:10px;cursor:pointer;border:none;background:none;transition:color .2s}
+.sz-row-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bottom-nav{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:rgba(20,20,40,0.95);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.1);
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0 calc(10px + env(safe-area-inset-bottom));
+  z-index:100;
+}
+.nav-item{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:6px 8px;
+  color:var(--t2);
+  font-size:11px;
+  cursor:pointer;
+  border:none;
+  background:none;
+  transition:all .2s;
+}
 .nav-item.active{color:var(--yel)}
-.nav-icon{font-size:22px;margin-bottom:2px}
-.info{background:rgba(252,204,0,.08);border-left:3px solid var(--yel);padding:12px;border-radius:8px;margin:12px 0;font-size:13px;line-height:1.5}
-.info strong{color:var(--yel);display:block;margin-bottom:4px}
-.info code{background:var(--inp);padding:2px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:12px}
-.test-box{background:rgba(255,255,255,.05);border:1px dashed #555;border-radius:10px;padding:12px;margin:12px 0}
-.test-ok{color:var(--ok);font-size:13px;margin-top:8px;line-height:1.6}
-.test-err{color:var(--err);font-size:13px;margin-top:8px}
-.empty{text-align:center;padding:30px;color:#555;font-size:14px}
-.preview-code{background:#000;color:var(--yel);padding:12px;border-radius:8px;font-family:'Courier New',monospace;font-size:14px;word-break:break-all;margin:8px 0;border:1px solid #444}
-.preview-code .hl-prefix{background:var(--org);color:#000;padding:1px 3px;border-radius:3px}
-.preview-code .hl-param{background:#1976d2;color:#fff;padding:1px 3px;border-radius:3px}
-.preview-code .hl-size{background:#7b1fa2;color:#fff;padding:1px 3px;border-radius:3px}
-.preview-code .hl-part{background:#388e3c;color:#fff;padding:1px 3px;border-radius:3px}
-.preview-code .hl-sep{color:#888}
-.hint{font-size:11px;color:#666;margin-top:4px;line-height:1.4}
-@media(min-width:768px){body{max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.5)}.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}.header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}}
+.nav-item.active .nav-icon{transform:scale(1.1)}
+.nav-icon{font-size:24px;margin-bottom:3px;transition:transform .2s}
+.info{
+  background:rgba(252,204,0,0.08);
+  border-left:3px solid var(--yel);
+  padding:14px;
+  border-radius:10px;
+  margin:14px 0;
+  font-size:13px;
+  line-height:1.6;
+}
+.info strong{color:var(--yel);display:block;margin-bottom:6px}
+.info code{background:rgba(0,0,0,0.3);padding:3px 8px;border-radius:5px;font-family:'Courier New',monospace;font-size:12px;display:inline-block;margin:2px 0}
+.test-box{
+  background:rgba(255,255,255,0.03);
+  border:1px dashed rgba(255,255,255,0.15);
+  border-radius:12px;
+  padding:14px;
+  margin:14px 0;
+}
+.test-ok{color:#4caf50;font-size:13px;margin-top:10px;line-height:1.6}
+.test-err{color:#f44336;font-size:13px;margin-top:10px}
+.empty{text-align:center;padding:40px;color:rgba(255,255,255,0.3);font-size:14px}
+.hint{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.4}
+.scanner-container{
+  background:rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:16px;
+  margin:12px 0;
+  display:none;
+}
+.scanner-container.show{display:block}
+#qr-reader{width:100%;border-radius:10px;overflow:hidden}
+#qr-reader video{border-radius:10px}
+.scan-result{
+  background:rgba(76,175,80,0.15);
+  border:1px solid rgba(76,175,80,0.3);
+  border-radius:10px;
+  padding:12px;
+  margin-top:10px;
+  font-size:14px;
+  color:#4caf50;
+  display:none;
+}
+.scan-result.show{display:block}
+@media(min-width:768px){
+  body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}
+  .bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}
+  .header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}
+}
 ::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:#444;border-radius:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:3px}
 </style>
 </head>
 <body>
@@ -120,10 +436,25 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
 <div class="content">
 
 <div id="input" class="panel active">
-    <div class="card">
+    <div class="glass">
         <div class="card-title">📱 Ввод кода</div>
         <input type="text" id="code-input" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off" autocapitalize="characters">
         <button class="btn btn-p" onclick="addWork()">✅ Добавить работу</button>
+        
+        <div class="btn-row">
+            <button class="btn btn-s" onclick="toggleScanner()">📷 Сканер</button>
+            <button class="btn btn-s" onclick="pasteCode()">📋 Вставить</button>
+        </div>
+        
+        <div id="scanner-container" class="scanner-container">
+            <div id="qr-reader"></div>
+            <div class="btn-row" style="margin-top:10px">
+                <button class="btn btn-g btn-sm" onclick="startScanner()">▶️ Старт</button>
+                <button class="btn btn-d btn-sm" onclick="stopScanner()">⏹️ Стоп</button>
+            </div>
+            <div id="scan-result" class="scan-result"></div>
+        </div>
+        
         <div id="decoded" class="decoded">
             <h3>📋 Расшифровка</h3>
             <p><b>Тип:</b> <span id="d-type"></span></p>
@@ -138,7 +469,7 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
         <div id="errbox" class="err-box">❌ <span id="err-msg"></span></div>
     </div>
     <div class="info">
-        <strong>💡 Формат кода:</strong>
+        <strong> Формат кода:</strong>
         <code>НП162100 800/522 500-ВБ-154.002</code><br>
         Пробел — между длиной и шириной<br>
         <code>/</code> — между парами размеров<br>
@@ -152,14 +483,14 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
         <div class="total-amt"><span id="total">0</span> ₽</div>
     </div>
     <div class="h-list" id="h-list"></div>
-    <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn btn-d" onclick="clearHist()" style="flex:1">🗑️ Очистить</button>
-        <button class="btn btn-s" onclick="exportCSV()" style="flex:1">📥 CSV</button>
+    <div class="btn-row" style="margin-top:16px">
+        <button class="btn btn-d" onclick="clearHist()">🗑️ Очистить всё</button>
+        <button class="btn btn-s" onclick="exportCSV()"> CSV</button>
     </div>
 </div>
 
 <div id="workTypes" class="panel">
-    <div class="card">
+    <div class="glass">
         <div class="card-title">🔧 Типы работ</div>
         <button class="btn btn-g" onclick="openModal()">➕ Добавить тип работы</button>
     </div>
@@ -167,7 +498,7 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
 </div>
 
 <div id="settings" class="panel">
-    <div class="card">
+    <div class="glass">
         <div class="card-title">⚙️ Данные</div>
         <button class="btn btn-p" onclick="exportAll()">📤 Экспорт (JSON)</button>
         <button class="btn btn-s" onclick="document.getElementById('imp').click()">📥 Импорт</button>
@@ -176,13 +507,13 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
     </div>
     <div class="info">
         <strong>📌 О приложении:</strong>
-        Данные хранятся в браузере. Работает оффлайн. Поддерживает USB/Bluetooth сканеры.
+        Данные хранятся в браузере. Работает оффлайн. Поддерживает USB/Bluetooth сканеры и камеру.
     </div>
 </div>
 
 </div>
 
-<!-- ===== МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ТИПА ===== -->
+<!-- МОДАЛЬНОЕ ОКНО -->
 <div id="modal" class="modal">
 <div class="modal-body">
     <div class="modal-head">
@@ -190,20 +521,18 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
         <button class="close-btn" onclick="closeModal()">&times;</button>
     </div>
 
-    <!-- ШАГ 1: Пример кода -->
     <div class="step">
         <div class="step-title"><span class="step-num">1</span>Пример кода</div>
-        <div class="fl">Введите любой код этого типа — он поможет настроить всё остальное</div>
+        <div class="fl">Введите любой код этого типа для настройки</div>
         <input type="text" id="m-example" class="fi" placeholder="НП162100 800/522 500-ВБ-154.002" oninput="updatePreview()">
-        <div class="hint">Необязательно, но удобно — программа покажет как будет разбираться код</div>
+        <div class="hint">Необязательно, но удобно — программа покажет разбор</div>
     </div>
 
-    <!-- ШАГ 2: Префикс -->
     <div class="step">
-        <div class="step-title"><span class="step-num">2</span>Префикс (первые буквы)</div>
+        <div class="step-title"><span class="step-num">2</span>Префикс и название</div>
         <div class="sz-row-inputs">
             <div class="fg" style="margin:0">
-                <div class="fl">Буквы</div>
+                <div class="fl">Буквы префикса</div>
                 <input type="text" id="m-prefix" class="fi" placeholder="НП" maxlength="5" oninput="updatePreview()">
             </div>
             <div class="fg" style="margin:0">
@@ -211,24 +540,22 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
                 <input type="text" id="m-name" class="fi" placeholder="Наружная панель">
             </div>
         </div>
-        <div class="hint">Первые буквы кода — всегда определяют тип работы</div>
+        <div class="hint">Первые буквы кода всегда определяют тип работы</div>
     </div>
 
-    <!-- ШАГ 3: Обычные параметры -->
     <div class="step">
         <div class="step-title"><span class="step-num">3</span>Параметры после префикса</div>
-        <div class="fl">Например: толщина, материал и т.д. Укажите имя и сколько символов занимает</div>
+        <div class="fl">Например: толщина, материал. Укажите имя и длину</div>
         <div id="m-params"></div>
-        <button class="btn btn-s btn-sm" onclick="addParam()" style="margin-top:6px">➕ Добавить параметр</button>
-        <div class="hint">Позиция считается автоматически — сразу после префикса и предыдущих параметров</div>
+        <button class="btn btn-s btn-sm" onclick="addParam()" style="margin-top:8px">➕ Добавить параметр</button>
+        <div class="hint">Позиция считается автоматически</div>
     </div>
 
-    <!-- ШАГ 4: Группа размеров -->
     <div class="step">
-        <div class="step-title"><span class="step-num">4</span>Размеры (длина × ширина)</div>
+        <div class="step-title"><span class="step-num">4</span>Размеры</div>
         <div class="sz-toggle" onclick="toggleSizeGroup()">
             <input type="checkbox" id="m-sz-on" onchange="updatePreview()">
-            <span>📐 Есть группа размеров</span>
+            <span>📐 Есть группа размеров (длина × ширина)</span>
         </div>
         <div id="m-sz-settings" class="sz-settings">
             <div class="sz-row-inputs">
@@ -237,11 +564,11 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
                     <input type="text" id="m-sz-pair" class="fi" value="/" maxlength="2" oninput="updatePreview()">
                 </div>
                 <div class="fg" style="margin:0">
-                    <div class="fl">Разделитель номера детали</div>
+                    <div class="fl">Разделитель номера</div>
                     <input type="text" id="m-part-sep" class="fi" value="-" maxlength="3" oninput="updatePreview()">
                 </div>
             </div>
-            <div class="sz-row-inputs" style="margin-top:8px">
+            <div class="sz-row-inputs" style="margin-top:10px">
                 <div class="fg" style="margin:0">
                     <div class="fl">Имя 1-го измерения</div>
                     <input type="text" id="m-sz-n1" class="fi" value="Длина" oninput="updatePreview()">
@@ -251,11 +578,10 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
                     <input type="text" id="m-sz-n2" class="fi" value="Ширина" oninput="updatePreview()">
                 </div>
             </div>
-            <div class="hint" style="margin-top:8px">Внутри пары размеры разделяются <b>пробелом</b>. Между парами — символом выше.</div>
+            <div class="hint" style="margin-top:10px">Внутри пары размеры разделяются <b>пробелом</b></div>
         </div>
     </div>
 
-    <!-- ШАГ 5: Формула и тариф -->
     <div class="step">
         <div class="step-title"><span class="step-num">5</span>Формула и тариф</div>
         <div class="fg">
@@ -273,27 +599,25 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
                 <input type="number" id="m-rate" class="fi" value="500" min="0" step="0.01">
             </div>
         </div>
-        <div class="fg" style="margin-top:8px">
+        <div class="fg" style="margin-top:10px">
             <div class="fl">Единица тарифа</div>
             <input type="text" id="m-unit" class="fi" value="₽/м²">
         </div>
     </div>
 
-    <!-- ПРЕДПРОСМОТР -->
-    <div class="step" style="background:rgba(252,204,0,.05);border-color:rgba(252,204,0,.3)">
-        <div class="step-title">👁️ Предпросмотр разбора</div>
-        <div id="preview-box" class="preview-code">Введите пример кода выше...</div>
+    <div class="step" style="background:rgba(252,204,0,0.05);border-color:rgba(252,204,0,0.2)">
+        <div class="step-title">👁️ Предпросмотр</div>
+        <div id="preview-box" style="background:rgba(0,0,0,0.3);padding:14px;border-radius:10px;font-family:'Courier New',monospace;font-size:14px;word-break:break-all;color:rgba(255,255,255,0.5)">Введите пример кода выше...</div>
     </div>
 
-    <!-- ТЕСТ -->
     <div class="test-box">
-        <div class="fl">🧪 Тест — введите код и проверьте расчет</div>
-        <input type="text" id="m-test" class="fi" placeholder="НП162100 800/522 500-ВБ-154.002" style="margin-bottom:8px">
+        <div class="fl">🧪 Тест — введите код и проверьте</div>
+        <input type="text" id="m-test" class="fi" placeholder="НП162100 800/522 500-ВБ-154.002" style="margin-bottom:10px">
         <button class="btn btn-s btn-sm" onclick="testCode()">Проверить</button>
         <div id="m-test-res"></div>
     </div>
 
-    <button class="btn btn-g" onclick="saveWT()" style="margin-top:8px">💾 Сохранить тип работы</button>
+    <button class="btn btn-g" onclick="saveWT()" style="margin-top:10px">💾 Сохранить тип работы</button>
     <button class="btn btn-s" onclick="closeModal()">Отмена</button>
 </div>
 </div>
@@ -309,6 +633,8 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
 let hist = JSON.parse(localStorage.getItem('wh')||'[]');
 let types = JSON.parse(localStorage.getItem('wt')||'[]');
 let editIdx = -1, curParams = [];
+let html5QrCode = null;
+let scannerRunning = false;
 
 if(!types.length){
     types = [
@@ -344,7 +670,6 @@ if(!types.length){
 function saveTypes(){localStorage.setItem('wt',JSON.stringify(types))}
 function saveHist(){localStorage.setItem('wh',JSON.stringify(hist))}
 
-// ========== ПОДСЧЕТ ПОЗИЦИИ ==========
 function calcParamStarts(params, prefixLen){
     let pos = prefixLen;
     return params.map(p=>{
@@ -354,7 +679,6 @@ function calcParamStarts(params, prefixLen){
     });
 }
 
-// ========== ПАРСИНГ ==========
 function parseCode(code){
     code = code.toUpperCase().trim();
     if(!code) return null;
@@ -372,7 +696,6 @@ function parseWT(code, wt){
     const display = [];
     const paramsWithStarts = calcParamStarts(wt.params, wt.prefix.length);
 
-    // 1. Обычные параметры
     for(const p of paramsWithStarts){
         const v = code.substring(p.start, p.start+p.length);
         if(!v) throw new Error('Код слишком короткий');
@@ -385,7 +708,6 @@ function parseWT(code, wt){
     let totalFormulaResult = 0;
     const blockStart = wt.prefix.length + paramsWithStarts.reduce((s,p)=>s+p.length,0);
 
-    // 2. Группа размеров
     if(wt.sizeGroup && wt.sizeGroup.on){
         const sg = wt.sizeGroup;
         const sep = wt.partSep || '-';
@@ -401,10 +723,9 @@ function parseWT(code, wt){
         const dimUnits = sg.units || ['мм','мм'];
 
         for(let i=0; i<pairs.length; i++){
-            // Разделитель внутри пары — пробел
             const dims = pairs[i].trim().split(/\s+/);
             if(dims.length !== dimNames.length){
-                throw new Error('Пара '+(i+1)+': ожидалось '+dimNames.length+' чисел через пробел, получено '+dims.length);
+                throw new Error('Пара '+(i+1)+': ожидалось '+dimNames.length+' чисел через пробел');
             }
             const pairParams = {...params};
             const pairDisplay = [];
@@ -422,7 +743,6 @@ function parseWT(code, wt){
         totalFormulaResult = evalFormula(wt.formula, params);
     }
 
-    // 3. Номер детали
     let partNumber = '—';
     const sep = wt.partSep || '-';
     const idx = code.indexOf(sep, blockStart);
@@ -454,7 +774,6 @@ function evalFormula(formula, params){
     return r;
 }
 
-// ========== ВВОД ==========
 const ci = document.getElementById('code-input');
 ci.addEventListener('input', function(){
     this.value = this.value.toUpperCase();
@@ -506,7 +825,70 @@ function addWork(){
     ci.focus();
 }
 
-// ========== НАВИГАЦИЯ ==========
+// СКАНЕР
+function toggleScanner(){
+    const container = document.getElementById('scanner-container');
+    container.classList.toggle('show');
+    if(!container.classList.contains('show')){
+        stopScanner();
+    }
+}
+
+function startScanner(){
+    if(scannerRunning) return;
+    const resultDiv = document.getElementById('scan-result');
+    resultDiv.classList.remove('show');
+    
+    html5QrCode = new Html5Qrcode("qr-reader");
+    html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess,
+        onScanFailure
+    ).then(()=>{
+        scannerRunning = true;
+    }).catch(err=>{
+        resultDiv.textContent = '❌ Ошибка камеры: ' + err;
+        resultDiv.classList.add('show');
+    });
+}
+
+function stopScanner(){
+    if(html5QrCode && scannerRunning){
+        html5QrCode.stop().then(()=>{
+            html5QrCode.clear();
+            scannerRunning = false;
+        }).catch(err=>console.error(err));
+    }
+}
+
+function onScanSuccess(decodedText){
+    stopScanner();
+    ci.value = decodedText.toUpperCase();
+    ci.dispatchEvent(new Event('input'));
+    
+    const resultDiv = document.getElementById('scan-result');
+    resultDiv.textContent = '✅ Распознано: ' + decodedText;
+    resultDiv.classList.add('show');
+    
+    setTimeout(()=>{
+        resultDiv.classList.remove('show');
+    }, 3000);
+}
+
+function onScanFailure(error){
+    // Игнорируем
+}
+
+function pasteCode(){
+    navigator.clipboard.readText().then(text=>{
+        ci.value = text.toUpperCase();
+        ci.dispatchEvent(new Event('input'));
+    }).catch(()=>{
+        alert('Не удалось вставить из буфера обмена');
+    });
+}
+
 function go(id,el){
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -514,27 +896,36 @@ function go(id,el){
     el.classList.add('active');
     if(id==='history') renderHist();
     if(id==='workTypes') renderWT();
+    if(id!=='input' && scannerRunning) stopScanner();
 }
 
-// ========== ИСТОРИЯ ==========
 function renderHist(){
     const el = document.getElementById('h-list');
     el.innerHTML='';
     let total=0;
     const rev=[...hist].reverse();
     if(!rev.length){el.innerHTML='<div class="empty">Нет записей</div>';document.getElementById('total').textContent='0';return}
-    rev.forEach(r=>{
+    rev.forEach((r,idx)=>{
+        const realIdx = hist.length - 1 - idx;
         total+=r.pay;
         const d=document.createElement('div');d.className='h-item';
         let sz='';
         if(r.sizes&&r.sizes.length) sz='<div class="h-sizes">'+r.sizes.join(' | ')+'</div>';
-        d.innerHTML='<div style="flex:1;min-width:0"><div class="h-code">'+r.code+'</div><div class="h-type">'+r.type+'</div><div class="h-part">'+r.part+'</div>'+sz+'<div class="h-time">'+r.ts+'</div></div><div class="h-pay">'+r.pay.toLocaleString('ru-RU')+' ₽</div>';
+        d.innerHTML='<div class="h-item-left"><div class="h-code">'+r.code+'</div><div class="h-type">'+r.type+'</div><div class="h-part">'+r.part+'</div>'+sz+'<div class="h-time">'+r.ts+'</div></div><div class="h-pay">'+r.pay.toLocaleString('ru-RU')+' ₽</div><button class="h-delete" onclick="deleteHist('+realIdx+')" title="Удалить">🗑️</button>';
         el.appendChild(d);
     });
     document.getElementById('total').textContent=total.toLocaleString('ru-RU');
 }
 
-function clearHist(){if(confirm('Очистить историю?')){hist=[];saveHist();renderHist()}}
+function deleteHist(idx){
+    if(confirm('Удалить эту запись?')){
+        hist.splice(idx,1);
+        saveHist();
+        renderHist();
+    }
+}
+
+function clearHist(){if(confirm('Очистить всю историю?')){hist=[];saveHist();renderHist()}}
 
 function exportCSV(){
     let c='Дата;Код;Тип;Параметры;Размеры;Деталь;Оплата\n';
@@ -547,7 +938,6 @@ function exportCSV(){
     a.download='work_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
 
-// ========== ТИПЫ РАБОТ ==========
 function renderWT(){
     const el=document.getElementById('wt-list');el.innerHTML='';
     if(!types.length){el.innerHTML='<div class="info">Нет типов работ</div>';return}
@@ -557,14 +947,13 @@ function renderWT(){
         let sztxt='';
         if(wt.sizeGroup&&wt.sizeGroup.on){
             const sg=wt.sizeGroup;
-            sztxt='<div class="wt-info">📐 Размеры: пары «'+sg.pairSep+'», внутри — пробел, '+sg.dims.join(' × ')+'</div>';
+            sztxt='<div class="wt-info"> Размеры: пары «'+sg.pairSep+'», внутри — пробел, '+sg.dims.join(' × ')+'</div>';
         }
-        d.innerHTML='<div class="wt-head"><div class="wt-name">'+wt.name+'</div><div class="wt-code">'+wt.prefix+'</div></div><div class="wt-info">Параметры: '+ptxt+'</div>'+sztxt+'<div class="wt-formula">'+wt.formula+(wt.funit?' → '+wt.funit:'')+'</div><div class="wt-rate">'+wt.rate+' '+wt.unit+'</div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn btn-s btn-sm" onclick="editWT('+i+')" style="flex:1">✏️</button><button class="btn btn-d btn-sm" onclick="delWT('+i+')" style="flex:1">🗑️</button></div>';
+        d.innerHTML='<div class="wt-head"><div class="wt-name">'+wt.name+'</div><div class="wt-code">'+wt.prefix+'</div></div><div class="wt-info">Параметры: '+ptxt+'</div>'+sztxt+'<div class="wt-formula">'+wt.formula+(wt.funit?' → '+wt.funit:'')+'</div><div class="wt-rate">'+wt.rate+' '+wt.unit+'</div><div class="btn-row" style="margin-top:10px"><button class="btn btn-s btn-sm" onclick="editWT('+i+')" style="flex:1">✏️</button><button class="btn btn-d btn-sm" onclick="delWT('+i+')" style="flex:1">🗑️</button></div>';
         el.appendChild(d);
     });
 }
 
-// ========== МОДАЛЬНОЕ ОКНО ==========
 function openModal(idx){
     editIdx=idx===undefined?-1:idx;
     curParams=[];
@@ -621,7 +1010,7 @@ function renderParams(){
     const withStarts = calcParamStarts(curParams, prefixLen);
     curParams.forEach((p,i)=>{
         const r=document.createElement('div');r.className='param-row';
-        r.innerHTML='<div><input class="fi" value="'+p.name+'" placeholder="Имя (напр. Толщина)" onchange="curParams['+i+'].name=this.value;renderParams()"></div><div><input type="number" class="fi" value="'+p.length+'" min="1" placeholder="дл." onchange="curParams['+i+'].length=+this.value;renderParams()"></div><button class="btn btn-d btn-sm" onclick="curParams.splice('+i+',1);renderParams()">✖</button>';
+        r.innerHTML='<div><input class="fi" value="'+p.name+'" placeholder="Имя" onchange="curParams['+i+'].name=this.value;renderParams()"></div><div><input type="number" class="fi" value="'+p.length+'" min="1" placeholder="дл." onchange="curParams['+i+'].length=+this.value;renderParams()"></div><button class="btn btn-d btn-sm" onclick="curParams.splice('+i+',1);renderParams()">✖</button>';
         el.appendChild(r);
         const hint=document.createElement('div');
         hint.className='hint';
@@ -639,7 +1028,6 @@ document.getElementById('m-prefix').addEventListener('input',function(){
 
 function addParam(){curParams.push({name:'',length:1,unit:''});renderParams()}
 
-// ========== ПРЕДПРОСМОТР ==========
 function updatePreview(){
     const box = document.getElementById('preview-box');
     const ex = document.getElementById('m-example').value.toUpperCase().trim();
@@ -648,7 +1036,7 @@ function updatePreview(){
     const partSep = document.getElementById('m-part-sep').value || '-';
 
     if(!ex){
-        box.innerHTML='<span style="color:#666">Введите пример кода выше — здесь появится разбор</span>';
+        box.innerHTML='<span style="color:rgba(255,255,255,0.3)">Введите пример кода выше...</span>';
         return;
     }
 
@@ -658,7 +1046,7 @@ function updatePreview(){
     }
 
     if(!ex.startsWith(prefix)){
-        box.innerHTML='<span style="color:var(--err)">Пример не начинается с префикса "'+prefix+'"</span>';
+        box.innerHTML='<span style="color:var(--err)">Пример не начинается с "'+prefix+'"</span>';
         return;
     }
 
@@ -666,16 +1054,15 @@ function updatePreview(){
     const paramsWithStarts = calcParamStarts(curParams, prefixLen);
     const blockStart = prefixLen + paramsWithStarts.reduce((s,p)=>s+p.length,0);
 
-    let html = '<span class="hl-prefix">'+ex.substring(0,prefixLen)+'</span>';
+    let html = '<span style="background:var(--org);color:#000;padding:2px 4px;border-radius:4px">'+ex.substring(0,prefixLen)+'</span>';
 
-    // Параметры
     for(const p of paramsWithStarts){
         const val = ex.substring(p.start, p.start+p.length);
         if(!val){
-            box.innerHTML='<span style="color:var(--err)">Код короче, чем нужно для параметра "'+p.name+'"</span>';
+            box.innerHTML='<span style="color:var(--err)">Код короче, чем нужно для "'+p.name+'"</span>';
             return;
         }
-        html += '<span class="hl-param" title="'+p.name+'">'+val+'</span>';
+        html += '<span style="background:#1976d2;color:#fff;padding:2px 4px;border-radius:4px" title="'+p.name+'">'+val+'</span>';
     }
 
     if(szOn){
@@ -689,22 +1076,22 @@ function updatePreview(){
         const pairSep = document.getElementById('m-sz-pair').value || '/';
         const pairs = block.split(pairSep);
         pairs.forEach((pair,i)=>{
-            if(i>0) html+='<span class="hl-sep">'+pairSep+'</span>';
+            if(i>0) html+='<span style="color:rgba(255,255,255,0.4)">'+pairSep+'</span>';
             const parts = pair.trim().split(/\s+/);
             parts.forEach((pt,j)=>{
-                if(j>0) html+='<span class="hl-sep">␣</span>';
-                html+='<span class="hl-size">'+pt+'</span>';
+                if(j>0) html+='<span style="color:rgba(255,255,255,0.4)">␣</span>';
+                html+='<span style="background:#7b1fa2;color:#fff;padding:2px 4px;border-radius:4px">'+pt+'</span>';
             });
         });
         if(sepIdx !== -1){
-            html += '<span class="hl-sep">'+partSep+'</span>';
-            html += '<span class="hl-part">'+ex.substring(sepIdx+partSep.length)+'</span>';
+            html += '<span style="color:rgba(255,255,255,0.4)">'+partSep+'</span>';
+            html += '<span style="background:#388e3c;color:#fff;padding:2px 4px;border-radius:4px">'+ex.substring(sepIdx+partSep.length)+'</span>';
         }
     } else {
         const sepIdx = ex.indexOf(partSep, blockStart);
         if(sepIdx !== -1){
-            html += '<span class="hl-sep">'+partSep+'</span>';
-            html += '<span class="hl-part">'+ex.substring(sepIdx+partSep.length)+'</span>';
+            html += '<span style="color:rgba(255,255,255,0.4)">'+partSep+'</span>';
+            html += '<span style="background:#388e3c;color:#fff;padding:2px 4px;border-radius:4px">'+ex.substring(sepIdx+partSep.length)+'</span>';
         }
     }
 
@@ -762,7 +1149,6 @@ function saveWT(){
 function editWT(i){openModal(i)}
 function delWT(i){if(confirm('Удалить?')){types.splice(i,1);saveTypes();renderWT()}}
 
-// ========== НАСТРОЙКИ ==========
 function exportAll(){
     const d={v:'3.0',date:new Date().toISOString(),types,hist};
     const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
