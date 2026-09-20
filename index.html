@@ -27,6 +27,9 @@ input:focus{outline:none;border-color:#fc0}
 .error.show{display:block}
 .total{background:linear-gradient(135deg,#fc0,#ff6b00);color:#000;padding:20px;border-radius:15px;text-align:right;margin-bottom:15px}
 .total h3{font-size:32px}
+.total-inline{background:rgba(252,204,0,0.1);border:1px solid #fc0;border-radius:10px;padding:15px;margin-bottom:15px;text-align:center}
+.total-inline .label{font-size:14px;color:#aaa;margin-bottom:5px}
+.total-inline .amount{font-size:28px;font-weight:bold;color:#fc0}
 .history-item{background:#2a2a4a;border-radius:10px;padding:15px;margin-bottom:10px}
 .history-code{color:#fc0;font-family:monospace;font-weight:bold;margin-bottom:5px}
 .history-info{font-size:14px;color:#aaa;margin:5px 0}
@@ -53,6 +56,12 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
 
 <!-- ВВОД -->
 <div id="input" class="panel active">
+    <!-- Сумма заработка на главной -->
+    <div class="total-inline">
+        <div class="label">💰 Всего заработано:</div>
+        <div class="amount"><span id="current-total">0</span> ₽</div>
+    </div>
+    
     <div class="card">
         <h2>📱 Ввод кода</h2>
         <input type="text" id="code" placeholder="ВВЕДИТЕ КОД" autocomplete="off">
@@ -63,7 +72,7 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
             <div id="r-params-block"></div>
             <div><b>Размеры:</b> <span id="r-sizes"></span></div>
             <div><b>Количество:</b> <span id="r-amount"></span></div>
-            <div style="font-size:24px;margin-top:10px;text-align:center"><b>💰 <span id="r-pay"></span> ₽</b></div>
+            <div style="font-size:24px;margin-top:10px;text-align:center"><b> <span id="r-pay"></span> ₽</b></div>
         </div>
         
         <div id="error" class="error"></div>
@@ -111,7 +120,7 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
         
         <label>Параметры (толщина и т.д.)</label>
         <div id="params-container"></div>
-        <button class="btn btn-secondary btn-sm" onclick="addParam()" style="margin-bottom:10px">+ Параметр</button>
+        <button class="btn btn-secondary" onclick="addParam()" style="margin-bottom:10px">+ Параметр</button>
         
         <label>Тип расчета</label>
         <select id="t-mode" onchange="updateFormula()">
@@ -138,8 +147,8 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
 <!-- НАСТРОЙКИ -->
 <div id="settings" class="panel">
     <div class="card">
-        <h2>⚙️ Настройки</h2>
-        <button class="btn btn-primary" onclick="exportData()">📤 Экспорт</button>
+        <h2>️ Настройки</h2>
+        <button class="btn btn-primary" onclick="exportData()"> Экспорт</button>
         <button class="btn btn-secondary" onclick="document.getElementById('import').click()">📥 Импорт</button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
         <button class="btn btn-danger" onclick="resetAll()">🗑️ Сбросить всё</button>
@@ -201,6 +210,14 @@ if(types.length === 0){
 function saveTypes(){localStorage.setItem('workTypes', JSON.stringify(types))}
 function saveHistory(){localStorage.setItem('workHistory', JSON.stringify(history))}
 
+// Обновление суммы на главной странице
+function updateTotalDisplay(){
+    let total = history.reduce((sum, item) => sum + item.payment, 0);
+    let totalStr = total.toLocaleString('ru-RU');
+    document.getElementById('current-total').textContent = totalStr;
+    document.getElementById('total-sum').textContent = totalStr;
+}
+
 // НАВИГАЦИЯ
 function showPanel(id){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -216,7 +233,6 @@ function parseCode(code){
     code = code.toUpperCase().trim();
     if(!code) return null;
     
-    // Ищем подходящий тип по префиксу
     for(let t of types){
         if(code.startsWith(t.prefix)){
             try{
@@ -234,7 +250,6 @@ function extractData(code, type){
     let params = {};
     let displayParams = [];
     
-    // Извлекаем параметры (толщина и т.д.)
     if(type.params && type.params.length > 0){
         for(let p of type.params){
             if(pos + p.length > code.length){
@@ -248,11 +263,9 @@ function extractData(code, type){
         }
     }
     
-    // Извлекаем размеры
     let sizesBlock = '';
     let partNumber = '';
     
-    // Ищем разделитель номера детали (-)
     let dashIndex = code.indexOf('-', pos);
     if(dashIndex > pos){
         sizesBlock = code.substring(pos, dashIndex);
@@ -265,7 +278,6 @@ function extractData(code, type){
         throw new Error('Не найдены размеры в коде');
     }
     
-    // Разбираем размеры (разделены пробелом и /)
     let pairs = sizesBlock.split('/');
     let sizes = [];
     let totalAmount = 0;
@@ -287,7 +299,6 @@ function extractData(code, type){
             if(Object.keys(pairData).length > 0){
                 sizes.push(pairText.join(', '));
                 
-                // Считаем по формуле
                 let formula = type.formula;
                 for(let key in pairData){
                     formula = formula.replace(new RegExp(key, 'g'), '(' + pairData[key] + ')');
@@ -303,7 +314,7 @@ function extractData(code, type){
     }
     
     if(sizes.length === 0){
-        throw new Error('Не удалось разобрать размеры. Формат: 2100 800 или 2100 800/500 300');
+        throw new Error('Не удалось разобрать размеры');
     }
     
     let payment = Math.round(totalAmount * type.rate);
@@ -340,7 +351,6 @@ function addWork(){
         return;
     }
     
-    // Показываем результат
     document.getElementById('r-type').textContent = data.type;
     
     let paramsHtml = '';
@@ -351,10 +361,9 @@ function addWork(){
     
     document.getElementById('r-sizes').textContent = data.sizes.join(' / ');
     document.getElementById('r-amount').textContent = data.amount.toFixed(4) + ' ' + data.unit;
-    document.getElementById('r-pay').textContent = data.payment.toLocaleString();
+    document.getElementById('r-pay').textContent = data.payment.toLocaleString('ru-RU');
     resultDiv.classList.add('show');
     
-    // Добавляем в историю
     history.push({
         date: new Date().toLocaleString('ru-RU'),
         code: data.code,
@@ -367,7 +376,9 @@ function addWork(){
     });
     saveHistory();
     
-    // Очищаем поле
+    // Обновляем сумму на главной
+    updateTotalDisplay();
+    
     document.getElementById('code').value = '';
     setTimeout(() => document.getElementById('code').focus(), 100);
 }
@@ -385,7 +396,7 @@ function renderHistory(){
     
     if(history.length === 0){
         list.innerHTML = '<div style="text-align:center;color:#666;padding:40px">Нет записей</div>';
-        document.getElementById('total-sum').textContent = '0';
+        updateTotalDisplay();
         return;
     }
     
@@ -408,13 +419,13 @@ function renderHistory(){
             <div class="history-info">${item.sizes.join(' / ')}</div>
             <div class="history-info">${item.amount.toFixed(4)} ${item.unit}</div>
             <div class="history-info" style="font-size:11px;color:#666">${item.date}</div>
-            <div class="history-price">${item.payment.toLocaleString()} ₽</div>
+            <div class="history-price">${item.payment.toLocaleString('ru-RU')} ₽</div>
             <button class="btn btn-danger" style="margin-top:10px;padding:8px" onclick="deleteItem(${realIdx})">Удалить</button>
         `;
         list.appendChild(div);
     });
     
-    document.getElementById('total-sum').textContent = total.toLocaleString();
+    updateTotalDisplay();
 }
 
 function deleteItem(idx){
@@ -460,14 +471,14 @@ function renderTypes(){
                 Параметры: ${paramsText}
             </div>
             <div style="font-size:13px;color:#aaa;margin:5px 0">
-                ${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}
+                ${t.mode === 'area' ? '📐 м²' : ' пог.м'} • ${t.rate} ${t.unit}
             </div>
             <div style="font-family:monospace;background:#1a1a2e;padding:8px;border-radius:5px;font-size:12px;margin:10px 0">
                 ${t.formula}
             </div>
             <div style="display:flex;gap:10px">
                 <button class="btn btn-secondary" onclick="editType(${idx})" style="flex:1">✏️</button>
-                <button class="btn btn-danger" onclick="deleteType(${idx})" style="flex:1">🗑️</button>
+                <button class="btn btn-danger" onclick="deleteType(${idx})" style="flex:1">️</button>
             </div>
         `;
         list.appendChild(div);
@@ -579,10 +590,8 @@ function editType(idx){
     
     renderParams();
     
-    // Запоминаем индекс для удаления при сохранении
     window.editingTypeIdx = idx;
     
-    // Переопределяем saveType для редактирования
     let originalSaveType = saveType;
     saveType = function(){
         let prefix = document.getElementById('t-prefix').value.toUpperCase().trim();
@@ -614,7 +623,6 @@ function editType(idx){
         renderTypes();
         alert('✅ Обновлено!');
         
-        // Возвращаем оригинальную функцию
         saveType = originalSaveType;
     };
 }
@@ -650,6 +658,7 @@ function importData(event){
             if(data.history) history = data.history;
             saveTypes();
             saveHistory();
+            updateTotalDisplay();
             alert('✅ Импорт выполнен!');
         }catch(err){
             alert('Ошибка: ' + err.message);
@@ -669,7 +678,9 @@ function resetAll(){
     }
 }
 
-// Старт
+// Инициализация при загрузке
+updateTotalDisplay();
+
 document.getElementById('code').addEventListener('keypress', function(e){
     if(e.key === 'Enter') addWork();
 });
