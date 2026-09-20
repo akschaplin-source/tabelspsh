@@ -6,203 +6,646 @@
 <title>Учет работ</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:system-ui,sans-serif;background:#1a1a2e;color:#fff;min-height:100vh;padding-bottom:80px}
-.header{background:linear-gradient(135deg,#fc0,#ff6b00);padding:20px;text-align:center;border-radius:0 0 20px 20px}
-.header h1{color:#000;margin-bottom:5px}
-.container{padding:15px;max-width:500px;margin:0 auto}
-.panel{display:none}
+:root{
+  --glass-bg:rgba(255,255,255,0.08);
+  --glass-border:rgba(255,255,255,0.15);
+  --glass-shadow:0 8px 32px rgba(0,0,0,0.3);
+  --blur:blur(20px);
+  --yel:#fc0;
+  --org:#ff6b00;
+  --bg1:#1a1a2e;
+  --bg2:#16213e;
+  --bg3:#0f3460;
+  --t1:#fff;
+  --t2:rgba(255,255,255,0.7);
+  --ok:#4caf50;
+  --err:#f44336;
+  --r:20px;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
+  background-attachment:fixed;
+  color:var(--t1);
+  min-height:100vh;
+  padding-bottom:90px;
+  font-size:16px;
+  line-height:1.5;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';
+  position:fixed;
+  top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:radial-gradient(circle at 20% 30%,rgba(252,204,0,0.1) 0%,transparent 50%),
+             radial-gradient(circle at 80% 70%,rgba(255,107,0,0.08) 0%,transparent 50%);
+  z-index:-1;
+  animation:float 20s ease-in-out infinite;
+}
+@keyframes float{
+  0%,100%{transform:translate(0,0) rotate(0deg)}
+  50%{transform:translate(-2%,2%) rotate(180deg)}
+}
+.header{
+  background:var(--glass-bg);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border);
+  border-radius:0 0 var(--r) var(--r);
+  padding:20px 15px 24px;
+  box-shadow:var(--glass-shadow);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.header h1{
+  font-size:24px;
+  font-weight:700;
+  background:linear-gradient(135deg,var(--yel),var(--org));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  text-align:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+.header-sub{
+  font-size:12px;
+  color:var(--t2);
+  text-align:center;
+  margin-top:4px;
+}
+.content{padding:16px;margin-top:-8px}
+.panel{display:none;animation:fadeIn .3s}
 .panel.active{display:block}
-.card{background:#2a2a4a;border-radius:15px;padding:20px;margin-bottom:15px}
-.card h2{margin-bottom:15px;font-size:18px}
-input{width:100%;padding:15px;border:2px solid #444;border-radius:10px;background:#1a1a2e;color:#fff;font-size:18px;text-align:center;text-transform:uppercase;margin-bottom:15px}
-input:focus{outline:none;border-color:#fc0}
-.btn{width:100%;padding:15px;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:10px}
-.btn-primary{background:linear-gradient(135deg,#fc0,#ff6b00);color:#000}
-.btn-secondary{background:#444;color:#fff}
-.btn-danger{background:#f44336;color:#fff}
-.btn-success{background:#4caf50;color:#fff}
-.result{background:#1b5e20;border:1px solid #4caf50;border-radius:10px;padding:15px;margin:15px 0;display:none}
-.result.show{display:block}
-.error{background:#b71c1c;border:1px solid #f44336;border-radius:10px;padding:15px;margin:15px 0;display:none}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r);
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:var(--glass-shadow);
+}
+.card-title{
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.code-input{
+  width:100%;
+  padding:18px 16px;
+  background:rgba(0,0,0,0.3);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  font-size:22px;
+  font-family:'Courier New',monospace;
+  color:var(--t1);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  text-align:center;
+  transition:all .3s;
+  margin-bottom:12px;
+}
+.code-input:focus{
+  outline:none;
+  border-color:var(--yel);
+  background:rgba(0,0,0,0.4);
+  box-shadow:0 0 20px rgba(252,204,0,0.2);
+}
+.code-input::placeholder{color:rgba(255,255,255,0.3);font-size:15px;letter-spacing:0;font-family:inherit}
+.btn{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .2s;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  position:relative;
+  overflow:hidden;
+}
+.btn:active{transform:scale(0.97)}
+.btn::before{
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+  transition:left .5s;
+}
+.btn:hover::before{left:100%}
+.btn-p{
+  background:linear-gradient(135deg,var(--yel),var(--org));
+  color:#000;
+  box-shadow:0 4px 20px rgba(252,204,0,0.4);
+}
+.btn-s{
+  background:rgba(255,255,255,0.1);
+  color:var(--t1);
+  border:1px solid rgba(255,255,255,0.2);
+}
+.btn-g{background:linear-gradient(135deg,#4caf50,#45a049);color:#fff;box-shadow:0 4px 15px rgba(76,175,80,0.4)}
+.btn-d{background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;box-shadow:0 4px 15px rgba(244,67,54,0.4)}
+.btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:10px}
+.result{
+  background:linear-gradient(135deg,rgba(76,175,80,0.15),rgba(69,160,73,0.1));
+  border:1px solid rgba(76,175,80,0.3);
+  border-radius:16px;
+  padding:18px;
+  margin:12px 0;
+  display:none;
+  backdrop-filter:blur(10px);
+}
+.result.show{display:block;animation:fadeIn .3s}
+.result h3{font-size:16px;margin-bottom:12px;color:#4caf50}
+.result p{font-size:14px;margin:8px 0;color:rgba(255,255,255,0.9)}
+.error{
+  background:linear-gradient(135deg,rgba(244,67,54,0.15),rgba(211,47,47,0.1));
+  border:1px solid rgba(244,67,54,0.3);
+  border-radius:12px;
+  padding:14px;
+  margin:12px 0;
+  display:none;
+  color:#ff6b6b;
+  font-size:14px;
+}
 .error.show{display:block}
-.total{background:linear-gradient(135deg,#fc0,#ff6b00);color:#000;padding:20px;border-radius:15px;text-align:right;margin-bottom:15px}
-.total h3{font-size:32px}
-.total-inline{background:rgba(252,204,0,0.1);border:1px solid #fc0;border-radius:10px;padding:15px;margin-bottom:15px;text-align:center}
-.total-inline .label{font-size:14px;color:#aaa;margin-bottom:5px}
-.total-inline .amount{font-size:28px;font-weight:bold;color:#fc0}
-.history-item{background:#2a2a4a;border-radius:10px;padding:15px;margin-bottom:10px}
-.history-code{color:#fc0;font-family:monospace;font-weight:bold;margin-bottom:5px}
-.history-info{font-size:14px;color:#aaa;margin:5px 0}
-.history-price{color:#4caf50;font-weight:bold;font-size:18px;text-align:right}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#2a2a4a;display:flex;justify-content:space-around;padding:10px;border-top:1px solid #444}
-.nav button{background:none;border:none;color:#aaa;font-size:12px;cursor:pointer;padding:5px 15px}
-.nav button.active{color:#fc0}
-.nav button div{font-size:24px;margin-bottom:2px}
-label{display:block;margin-bottom:5px;color:#aaa;font-size:14px}
-select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;background:#1a1a2e;color:#fff;margin-bottom:10px}
-.row{display:flex;gap:10px}
-.row > div{flex:1}
-.param-item{background:#1a1a2e;padding:8px;border-radius:5px;margin:5px 0;font-size:14px}
+.total{
+  background:linear-gradient(135deg,rgba(252,204,0,0.2),rgba(255,107,0,0.15));
+  border:1px solid rgba(252,204,0,0.3);
+  border-radius:var(--r);
+  padding:24px;
+  margin-bottom:16px;
+  text-align:right;
+  box-shadow:0 8px 32px rgba(252,204,0,0.2);
+}
+.total-lbl{font-size:13px;color:var(--t2);margin-bottom:6px}
+.total-amt{font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.total-inline{
+  background:rgba(252,204,0,0.1);
+  border:1px solid rgba(252,204,0,0.3);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:16px;
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+.total-inline .label{font-size:14px;color:var(--t2);margin-bottom:8px}
+.total-inline .amount{font-size:32px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.h-list{display:flex;flex-direction:column;gap:10px}
+.h-item{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  transition:all .2s;
+}
+.h-item:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
+.h-item-left{flex:1;min-width:0}
+.h-code{font-family:'Courier New',monospace;font-size:14px;font-weight:600;color:var(--yel);word-break:break-all;margin-bottom:4px}
+.h-type{font-size:13px;color:var(--t2)}
+.h-part{font-size:12px;color:var(--t2);margin-top:2px}
+.h-sizes{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px}
+.h-amount{font-size:13px;color:var(--yel);font-weight:600;margin-top:3px}
+.h-time{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px}
+.h-pay{font-size:18px;font-weight:700;color:#4caf50;text-align:right;white-space:nowrap}
+.h-delete{
+  background:rgba(244,67,54,0.2);
+  border:1px solid rgba(244,67,54,0.3);
+  color:#ff6b6b;
+  width:32px;height:32px;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  font-size:16px;
+  transition:all .2s;
+  flex-shrink:0;
+}
+.h-delete:hover{background:rgba(244,67,54,0.3);transform:scale(1.1)}
+.wt-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+  border-left:3px solid var(--yel);
+}
+.wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.wt-name{font-size:15px;font-weight:600}
+.wt-code{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;padding:4px 10px;border-radius:6px;font-family:'Courier New',monospace;font-weight:700;font-size:13px}
+.wt-info{font-size:12px;color:var(--t2);margin:6px 0}
+.wt-formula{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;font-family:'Courier New',monospace;font-size:12px;margin:10px 0;word-break:break-all}
+.wt-rate{font-size:13px;color:var(--yel);font-weight:600}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:flex-end;justify-content:center;backdrop-filter:blur(5px)}
+.modal.show{display:flex}
+.modal-body{
+  background:linear-gradient(180deg,rgba(30,30,50,0.98),rgba(20,20,40,0.98));
+  backdrop-filter:blur(30px);
+  width:100%;
+  max-height:92vh;
+  border-radius:24px 24px 0 0;
+  padding:24px 18px 32px;
+  overflow-y:auto;
+  animation:slideUp .3s;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.close-btn{background:none;border:none;color:var(--t2);font-size:28px;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:color .2s}
+.close-btn:hover{color:var(--t1)}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--t2)}
+.fi{
+  width:100%;
+  padding:14px;
+  background:rgba(0,0,0,0.3);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  color:var(--t1);
+  font-size:15px;
+  transition:all .3s;
+}
+.fi:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 15px rgba(252,204,0,0.15)}
+.fi::placeholder{color:rgba(255,255,255,0.3)}
+textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
+.step{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.step-num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--yel),var(--org));
+  color:#000;
+  width:26px;height:26px;
+  border-radius:50%;
+  font-weight:700;
+  font-size:13px;
+  margin-right:8px;
+}
+.step-title{font-weight:600;font-size:15px;margin-bottom:12px;display:flex;align-items:center}
+.param-row{display:grid;grid-template-columns:1fr 80px auto;gap:8px;margin-bottom:8px;align-items:end}
+.param-row input{font-size:13px;padding:10px 8px}
+.param-row button{padding:10px;font-size:12px;margin:0}
+.sz-toggle{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  background:rgba(0,0,0,0.2);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.sz-toggle:hover{background:rgba(0,0,0,0.3)}
+.sz-toggle input[type=checkbox]{width:22px;height:22px;accent-color:var(--yel)}
+.sz-toggle span{font-size:14px;font-weight:600}
+.sz-settings{
+  background:rgba(252,204,0,0.05);
+  border:1px solid rgba(252,204,0,0.2);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:14px;
+  display:none;
+}
+.sz-settings.show{display:block}
+.sz-row-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mode-selector{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:14px;
+}
+.mode-option{
+  background:rgba(0,0,0,0.2);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  padding:16px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+}
+.mode-option:hover{background:rgba(0,0,0,0.3)}
+.mode-option.active{
+  border-color:var(--yel);
+  background:rgba(252,204,0,0.1);
+}
+.mode-option input{display:none}
+.mode-icon{font-size:28px;margin-bottom:6px}
+.mode-label{font-size:14px;font-weight:600}
+.mode-desc{font-size:11px;color:var(--t2);margin-top:4px}
+.bottom-nav{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:rgba(20,20,40,0.95);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.1);
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0 calc(10px + env(safe-area-inset-bottom));
+  z-index:100;
+}
+.nav-item{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:6px 8px;
+  color:var(--t2);
+  font-size:11px;
+  cursor:pointer;
+  border:none;
+  background:none;
+  transition:all .2s;
+}
+.nav-item.active{color:var(--yel)}
+.nav-item.active .nav-icon{transform:scale(1.1)}
+.nav-icon{font-size:24px;margin-bottom:3px;transition:transform .2s}
+.info{
+  background:rgba(252,204,0,0.08);
+  border-left:3px solid var(--yel);
+  padding:14px;
+  border-radius:10px;
+  margin:14px 0;
+  font-size:13px;
+  line-height:1.6;
+}
+.info strong{color:var(--yel);display:block;margin-bottom:6px}
+.info code{background:rgba(0,0,0,0.3);padding:3px 8px;border-radius:5px;font-family:'Courier New',monospace;font-size:12px;display:inline-block;margin:2px 0}
+.test-box{
+  background:rgba(255,255,255,0.03);
+  border:1px dashed rgba(255,255,255,0.15);
+  border-radius:12px;
+  padding:14px;
+  margin:14px 0;
+}
+.test-ok{color:#4caf50;font-size:13px;margin-top:10px;line-height:1.6}
+.test-err{color:#f44336;font-size:13px;margin-top:10px}
+.empty{text-align:center;padding:40px;color:rgba(255,255,255,0.3);font-size:14px}
+.hint{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.4}
+@media(min-width:768px){
+  body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}
+  .bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}
+  .header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}
+}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:3px}
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h1> Учет работ</h1>
-    <div>Ввод • Расчет • История</div>
+    <h1>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+        </svg>
+        Учет работ
+    </h1>
+    <div class="header-sub">Ввод • Расчет • История</div>
 </div>
 
-<div class="container">
+<div class="content">
 
-<!-- ВВОД -->
 <div id="input" class="panel active">
-    <!-- Сумма заработка на главной -->
     <div class="total-inline">
         <div class="label">💰 Всего заработано:</div>
         <div class="amount"><span id="current-total">0</span> ₽</div>
     </div>
     
-    <div class="card">
-        <h2>📱 Ввод кода</h2>
-        <input type="text" id="code" placeholder="ВВЕДИТЕ КОД" autocomplete="off">
-        <button class="btn btn-primary" onclick="addWork()">✅ Добавить</button>
+    <div class="glass">
+        <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+            Ввод кода
+        </div>
+        <input type="text" id="code" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off">
+        <button class="btn btn-p" onclick="addWork()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Добавить
+        </button>
         
         <div id="result" class="result">
-            <div><b>Тип:</b> <span id="r-type"></span></div>
+            <h3>📋 Расшифровка</h3>
+            <p><b>Тип:</b> <span id="r-type"></span></p>
             <div id="r-params-block"></div>
-            <div><b>Размеры:</b> <span id="r-sizes"></span></div>
-            <div><b>Количество:</b> <span id="r-amount"></span></div>
-            <div style="font-size:24px;margin-top:10px;text-align:center"><b> <span id="r-pay"></span> ₽</b></div>
+            <p><b>Размеры:</b> <span id="r-sizes"></span></p>
+            <p><b>Количество:</b> <span id="r-amount"></span></p>
+            <div style="font-size:24px;margin-top:10px;text-align:center">
+                <b>💰 <span id="r-pay"></span> ₽</b>
+            </div>
         </div>
         
         <div id="error" class="error"></div>
     </div>
     
-    <div class="card">
-        <h2>📖 Примеры кодов:</h2>
-        <div style="font-family:monospace;background:#1a1a2e;padding:10px;border-radius:8px;margin:10px 0">
-            <div style="color:#fc0">ВП162100 800-ВБ-154.002</div>
-            <div style="color:#aaa;font-size:12px;margin-top:5px">
-                ВП = тип (внутренняя панель)<br>
-                16 = толщина 2 символа<br>
-                2100 800 = длина и ширина<br>
-                ВБ-154.002 = номер детали
+    <div class="glass">
+        <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            Примеры кодов
+        </div>
+        <div style="font-family:monospace;background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin:10px 0">
+            <div style="color:var(--yel)">ВП162100 800-ВБ-154.002</div>
+            <div style="color:var(--t2);font-size:12px;margin-top:8px;line-height:1.6">
+                <div>ВП = тип (внутренняя панель)</div>
+                <div>16 = толщина 2 символа</div>
+                <div>2100 800 = длина и ширина</div>
+                <div>ВБ-154.002 = номер детали</div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ИСТОРИЯ -->
 <div id="history" class="panel">
     <div class="total">
-        <div style="font-size:14px">Всего заработано:</div>
-        <h3><span id="total-sum">0</span> ₽</h3>
+        <div class="total-lbl">Всего заработано:</div>
+        <div class="total-amt"><span id="total-sum">0</span> ₽</div>
     </div>
-    <div id="history-list"></div>
-    <button class="btn btn-danger" onclick="clearHistory()">🗑️ Очистить всё</button>
+    <div class="h-list" id="history-list"></div>
+    <button class="btn btn-d" onclick="clearHistory()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Очистить всё
+    </button>
 </div>
 
-<!-- ТИПЫ -->
 <div id="types" class="panel">
-    <div class="card">
-        <h2>🔧 Типы работ</h2>
-        <button class="btn btn-success" onclick="showTypeForm()">➕ Добавить тип</button>
+    <div class="glass">
+        <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+            Типы работ
+        </div>
+        <button class="btn btn-g" onclick="showTypeForm()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Добавить тип
+        </button>
     </div>
     <div id="types-list"></div>
     
-    <div id="type-form" class="card" style="display:none">
-        <h2 id="form-title">Новый тип</h2>
-        <label>Префикс (первые буквы)</label>
-        <input type="text" id="t-prefix" placeholder="ВП" style="text-align:left">
-        
-        <label>Название</label>
-        <input type="text" id="t-name" placeholder="Внутренняя панель" style="text-align:left">
-        
-        <label>Параметры (толщина и т.д.)</label>
-        <div id="params-container"></div>
-        <button class="btn btn-secondary" onclick="addParam()" style="margin-bottom:10px">+ Параметр</button>
-        
-        <label>Тип расчета</label>
-        <select id="t-mode" onchange="updateFormula()">
-            <option value="area">Площадь (м²) - длина × ширина</option>
-            <option value="linear">Погонные метры - только длина</option>
-        </select>
-        
-        <label>Формула</label>
-        <textarea id="t-formula" rows="2" placeholder="(Длина * Ширина / 1000000)"></textarea>
-        
-        <label>Тариф (₽ за единицу)</label>
-        <input type="number" id="t-rate" value="500" style="text-align:left">
-        
-        <label>Единица</label>
-        <input type="text" id="t-unit" value="₽/м²" style="text-align:left">
-        
-        <div class="row">
-            <button class="btn btn-success" onclick="saveType()">💾 Сохранить</button>
-            <button class="btn btn-secondary" onclick="hideTypeForm()">Отмена</button>
+    <div id="type-form" class="glass" style="display:none">
+        <h2 id="form-title" style="margin-bottom:15px">Новый тип</h2>
+        <div class="fg">
+            <div class="fl">Префикс (первые буквы)</div>
+            <input type="text" id="t-prefix" class="fi" placeholder="ВП">
+        </div>
+        <div class="fg">
+            <div class="fl">Название</div>
+            <input type="text" id="t-name" class="fi" placeholder="Внутренняя панель">
+        </div>
+        <div class="fg">
+            <div class="fl">Параметры (толщина и т.д.)</div>
+            <div id="params-container"></div>
+            <button class="btn btn-s btn-sm" onclick="addParam()" style="margin-top:10px">+ Параметр</button>
+        </div>
+        <div class="fg">
+            <div class="fl">Тип расчета</div>
+            <select id="t-mode" class="fi" onchange="updateFormula()">
+                <option value="area">Площадь (м²) - длина × ширина</option>
+                <option value="linear">Погонные метры - только длина</option>
+            </select>
+        </div>
+        <div class="fg">
+            <div class="fl">Формула</div>
+            <textarea id="t-formula" class="fi" rows="2" placeholder="(Длина * Ширина / 1000000)"></textarea>
+        </div>
+        <div class="fg">
+            <div class="fl">Тариф (₽ за единицу)</div>
+            <input type="number" id="t-rate" class="fi" value="500">
+        </div>
+        <div class="fg">
+            <div class="fl">Единица</div>
+            <input type="text" id="t-unit" class="fi" value="₽/м²">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:15px">
+            <button class="btn btn-g" onclick="saveType()" style="flex:1">💾 Сохранить</button>
+            <button class="btn btn-s" onclick="hideTypeForm()" style="flex:1">Отмена</button>
         </div>
     </div>
 </div>
 
-<!-- НАСТРОЙКИ -->
 <div id="settings" class="panel">
-    <div class="card">
-        <h2>️ Настройки</h2>
-        <button class="btn btn-primary" onclick="exportData()"> Экспорт</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('import').click()">📥 Импорт</button>
+    <div class="glass">
+        <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            Настройки
+        </div>
+        <button class="btn btn-p" onclick="exportData()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Экспорт
+        </button>
+        <button class="btn btn-s" onclick="document.getElementById('import').click()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Импорт
+        </button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
-        <button class="btn btn-danger" onclick="resetAll()">🗑️ Сбросить всё</button>
+        <button class="btn btn-d" onclick="resetAll()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Сбросить всё
+        </button>
     </div>
 </div>
 
 </div>
 
-<div class="nav">
-    <button class="active" onclick="showPanel('input')"><div>📱</div>Ввод</button>
-    <button onclick="showPanel('history')"><div>📋</div>История</button>
-    <button onclick="showPanel('types')"><div>🔧</div>Типы</button>
-    <button onclick="showPanel('settings')"><div>️</div>Ещё</button>
+<div class="bottom-nav">
+    <button class="nav-item active" onclick="showPanel('input')">
+        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+        Ввод
+    </button>
+    <button class="nav-item" onclick="showPanel('history')">
+        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        История
+    </button>
+    <button class="nav-item" onclick="showPanel('types')">
+        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+        </svg>
+        Типы
+    </button>
+    <button class="nav-item" onclick="showPanel('settings')">
+        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Ещё
+    </button>
 </div>
 
 <script>
-// ДАННЫЕ
 let history = JSON.parse(localStorage.getItem('workHistory') || '[]');
 let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
 let tempParams = [];
 
-// Типы по умолчанию
 if(types.length === 0){
     types = [
-        {
-            prefix:'ВП', 
-            name:'Внутренняя панель', 
-            mode:'area', 
-            formula:'(Длина * Ширина / 1000000)', 
-            rate:500, 
-            unit:'₽/м²', 
-            dims:['Длина','Ширина'],
-            params:[{name:'Толщина',length:2,unit:'мм'}]
-        },
-        {
-            prefix:'НП', 
-            name:'Наружная панель', 
-            mode:'area', 
-            formula:'(Длина * Ширина / 1000000)', 
-            rate:500, 
-            unit:'₽/м²', 
-            dims:['Длина','Ширина'],
-            params:[{name:'Толщина',length:2,unit:'мм'}]
-        },
-        {
-            prefix:'Н', 
-            name:'Наличник', 
-            mode:'linear', 
-            formula:'(Длина / 1000)', 
-            rate:300, 
-            unit:'₽/м.п.', 
-            dims:['Длина'],
-            params:[{name:'Расположение',length:1,unit:''},{name:'Ширина',length:2,unit:'см'}]
-        }
+        {prefix:'ВП', name:'Внутренняя панель', mode:'area', formula:'(Длина * Ширина / 1000000)', rate:500, unit:'₽/м²', dims:['Длина','Ширина'], params:[{name:'Толщина',length:2,unit:'мм'}]},
+        {prefix:'НП', name:'Наружная панель', mode:'area', formula:'(Длина * Ширина / 1000000)', rate:500, unit:'₽/м²', dims:['Длина','Ширина'], params:[{name:'Толщина',length:2,unit:'мм'}]},
+        {prefix:'Н', name:'Наличник', mode:'linear', formula:'(Длина / 1000)', rate:300, unit:'₽/м.п.', dims:['Длина'], params:[{name:'Расположение',length:1,unit:''},{name:'Ширина',length:2,unit:'см'}]}
     ];
     saveTypes();
 }
@@ -210,7 +653,6 @@ if(types.length === 0){
 function saveTypes(){localStorage.setItem('workTypes', JSON.stringify(types))}
 function saveHistory(){localStorage.setItem('workHistory', JSON.stringify(history))}
 
-// Обновление суммы на главной странице
 function updateTotalDisplay(){
     let total = history.reduce((sum, item) => sum + item.payment, 0);
     let totalStr = total.toLocaleString('ru-RU');
@@ -218,28 +660,21 @@ function updateTotalDisplay(){
     document.getElementById('total-sum').textContent = totalStr;
 }
 
-// НАВИГАЦИЯ
 function showPanel(id){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    event.target.closest('button').classList.add('active');
+    event.target.closest('.nav-item').classList.add('active');
     if(id === 'history') renderHistory();
     if(id === 'types') renderTypes();
 }
 
-// ПАРСИНГ КОДА
 function parseCode(code){
     code = code.toUpperCase().trim();
     if(!code) return null;
-    
     for(let t of types){
         if(code.startsWith(t.prefix)){
-            try{
-                return extractData(code, t);
-            }catch(e){
-                console.log('Ошибка типа '+t.prefix+':', e);
-            }
+            try{return extractData(code, t)}catch(e){console.log('Ошибка типа '+t.prefix+':', e)}
         }
     }
     return null;
@@ -265,7 +700,6 @@ function extractData(code, type){
     
     let sizesBlock = '';
     let partNumber = '';
-    
     let dashIndex = code.indexOf('-', pos);
     if(dashIndex > pos){
         sizesBlock = code.substring(pos, dashIndex);
@@ -287,7 +721,6 @@ function extractData(code, type){
         if(dims.length >= type.dims.length){
             let pairData = {};
             let pairText = [];
-            
             for(let i = 0; i < type.dims.length; i++){
                 let val = parseFloat(dims[i]);
                 if(!isNaN(val)){
@@ -295,10 +728,8 @@ function extractData(code, type){
                     pairText.push(type.dims[i] + ': ' + val);
                 }
             }
-            
             if(Object.keys(pairData).length > 0){
                 sizes.push(pairText.join(', '));
-                
                 let formula = type.formula;
                 for(let key in pairData){
                     formula = formula.replace(new RegExp(key, 'g'), '(' + pairData[key] + ')');
@@ -331,7 +762,6 @@ function extractData(code, type){
     };
 }
 
-// ДОБАВЛЕНИЕ РАБОТЫ
 function addWork(){
     let code = document.getElementById('code').value;
     let resultDiv = document.getElementById('result');
@@ -355,7 +785,7 @@ function addWork(){
     
     let paramsHtml = '';
     if(data.params.length > 0){
-        paramsHtml = '<div><b>Параметры:</b> ' + data.params.join(', ') + '</div>';
+        paramsHtml = '<p><b>Параметры:</b> ' + data.params.join(', ') + '</p>';
     }
     document.getElementById('r-params-block').innerHTML = paramsHtml;
     
@@ -375,8 +805,6 @@ function addWork(){
         payment: data.payment
     });
     saveHistory();
-    
-    // Обновляем сумму на главной
     updateTotalDisplay();
     
     document.getElementById('code').value = '';
@@ -389,13 +817,12 @@ function showError(msg){
     errorDiv.classList.add('show');
 }
 
-// ИСТОРИЯ
 function renderHistory(){
     let list = document.getElementById('history-list');
     let total = 0;
     
     if(history.length === 0){
-        list.innerHTML = '<div style="text-align:center;color:#666;padding:40px">Нет записей</div>';
+        list.innerHTML = '<div class="empty">Нет записей</div>';
         updateTotalDisplay();
         return;
     }
@@ -408,19 +835,21 @@ function renderHistory(){
         let realIdx = history.length - 1 - idx;
         
         let div = document.createElement('div');
-        div.className = 'history-item';
+        div.className = 'h-item';
         
-        let paramsText = item.params && item.params.length > 0 ? '<div class="history-info">' + item.params.join(', ') + '</div>' : '';
+        let paramsText = item.params && item.params.length > 0 ? '<div class="h-info">' + item.params.join(', ') + '</div>' : '';
         
         div.innerHTML = `
-            <div class="history-code">${item.code}</div>
-            <div class="history-info">${item.type}</div>
-            ${paramsText}
-            <div class="history-info">${item.sizes.join(' / ')}</div>
-            <div class="history-info">${item.amount.toFixed(4)} ${item.unit}</div>
-            <div class="history-info" style="font-size:11px;color:#666">${item.date}</div>
-            <div class="history-price">${item.payment.toLocaleString('ru-RU')} ₽</div>
-            <button class="btn btn-danger" style="margin-top:10px;padding:8px" onclick="deleteItem(${realIdx})">Удалить</button>
+            <div class="h-item-left">
+                <div class="h-code">${item.code}</div>
+                <div class="h-type">${item.type}</div>
+                ${paramsText}
+                <div class="h-sizes">${item.sizes.join(' / ')}</div>
+                <div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>
+                <div class="h-time">${item.date}</div>
+            </div>
+            <div class="h-pay">${item.payment.toLocaleString('ru-RU')} ₽</div>
+            <button class="h-delete" onclick="deleteItem(${realIdx})" title="Удалить">🗑️</button>
         `;
         list.appendChild(div);
     });
@@ -444,41 +873,34 @@ function clearHistory(){
     }
 }
 
-// ТИПЫ РАБОТ
 function renderTypes(){
     let list = document.getElementById('types-list');
     
     if(types.length === 0){
-        list.innerHTML = '<div style="text-align:center;color:#666;padding:20px">Нет типов</div>';
+        list.innerHTML = '<div class="empty">Нет типов</div>';
         return;
     }
     
     list.innerHTML = '';
     types.forEach((t, idx) => {
         let div = document.createElement('div');
-        div.className = 'card';
+        div.className = 'wt-card';
         
         let paramsText = t.params && t.params.length > 0 
             ? t.params.map(p => p.name + ' (' + p.length + ')').join(', ')
             : 'нет';
         
         div.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-                <b>${t.name}</b>
-                <span style="background:#fc0;color:#000;padding:3px 8px;border-radius:5px;font-family:monospace">${t.prefix}</span>
+            <div class="wt-head">
+                <div class="wt-name">${t.name}</div>
+                <div class="wt-code">${t.prefix}</div>
             </div>
-            <div style="font-size:13px;color:#aaa;margin:5px 0">
-                Параметры: ${paramsText}
-            </div>
-            <div style="font-size:13px;color:#aaa;margin:5px 0">
-                ${t.mode === 'area' ? '📐 м²' : ' пог.м'} • ${t.rate} ${t.unit}
-            </div>
-            <div style="font-family:monospace;background:#1a1a2e;padding:8px;border-radius:5px;font-size:12px;margin:10px 0">
-                ${t.formula}
-            </div>
-            <div style="display:flex;gap:10px">
-                <button class="btn btn-secondary" onclick="editType(${idx})" style="flex:1">✏️</button>
-                <button class="btn btn-danger" onclick="deleteType(${idx})" style="flex:1">️</button>
+            <div class="wt-info">Параметры: ${paramsText}</div>
+            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
+            <div class="wt-formula">${t.formula}</div>
+            <div style="display:flex;gap:10px;margin-top:10px">
+                <button class="btn btn-s btn-sm" onclick="editType(${idx})" style="flex:1">✏️</button>
+                <button class="btn btn-d btn-sm" onclick="deleteType(${idx})" style="flex:1">️</button>
             </div>
         `;
         list.appendChild(div);
@@ -510,21 +932,18 @@ function addParam(){
 function renderParams(){
     let container = document.getElementById('params-container');
     if(tempParams.length === 0){
-        container.innerHTML = '<div style="color:#666;font-size:13px;margin-bottom:10px">Параметры не добавлены (например, толщина)</div>';
+        container.innerHTML = '<div class="hint">Параметры не добавлены (например, толщина)</div>';
         return;
     }
     
     container.innerHTML = '';
     tempParams.forEach((p, idx) => {
         let div = document.createElement('div');
-        div.className = 'param-item';
-        div.style.display = 'flex';
-        div.style.gap = '10px';
+        div.className = 'param-row';
         div.innerHTML = `
-            <input type="text" placeholder="Название" value="${p.name}" onchange="tempParams[${idx}].name=this.value" style="flex:2;margin:0">
-            <input type="number" placeholder="Длина" value="${p.length}" min="1" onchange="tempParams[${idx}].length=parseInt(this.value)" style="flex:1;margin:0">
-            <input type="text" placeholder="Ед." value="${p.unit}" onchange="tempParams[${idx}].unit=this.value" style="flex:1;margin:0">
-            <button onclick="tempParams.splice(${idx},1);renderParams()" style="background:#f44336;color:#fff;border:none;padding:0 10px;border-radius:5px">✖</button>
+            <input type="text" placeholder="Название" value="${p.name}" onchange="tempParams[${idx}].name=this.value" class="fi">
+            <input type="number" placeholder="Длина" value="${p.length}" min="1" onchange="tempParams[${idx}].length=parseInt(this.value)" class="fi">
+            <button onclick="tempParams.splice(${idx},1);renderParams()" class="btn btn-d btn-sm">✖</button>
         `;
         container.appendChild(div);
     });
@@ -559,16 +978,7 @@ function saveType(){
     
     let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
     
-    types.push({
-        prefix, 
-        name, 
-        mode, 
-        formula, 
-        rate, 
-        unit, 
-        dims,
-        params: tempParams.filter(p => p.name)
-    });
+    types.push({prefix, name, mode, formula, rate, unit, dims, params: tempParams.filter(p => p.name)});
     saveTypes();
     hideTypeForm();
     renderTypes();
@@ -589,7 +999,6 @@ function editType(idx){
     document.getElementById('t-unit').value = t.unit;
     
     renderParams();
-    
     window.editingTypeIdx = idx;
     
     let originalSaveType = saveType;
@@ -608,21 +1017,11 @@ function editType(idx){
         
         let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
         
-        types[window.editingTypeIdx] = {
-            prefix, 
-            name, 
-            mode, 
-            formula, 
-            rate, 
-            unit, 
-            dims,
-            params: tempParams.filter(p => p.name)
-        };
+        types[window.editingTypeIdx] = {prefix, name, mode, formula, rate, unit, dims, params: tempParams.filter(p => p.name)};
         saveTypes();
         hideTypeForm();
         renderTypes();
         alert('✅ Обновлено!');
-        
         saveType = originalSaveType;
     };
 }
@@ -635,7 +1034,6 @@ function deleteType(idx){
     }
 }
 
-// НАСТРОЙКИ
 function exportData(){
     let data = {types, history, date: new Date().toISOString()};
     let blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
@@ -678,7 +1076,6 @@ function resetAll(){
     }
 }
 
-// Инициализация при загрузке
 updateTotalDisplay();
 
 document.getElementById('code').addEventListener('keypress', function(e){
