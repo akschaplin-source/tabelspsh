@@ -1,460 +1,1119 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Производственный Учет 2.0</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f1f5f9;
-            --surface: #ffffff;
-            --text: #1e293b;
-            --border: #cbd5e1;
-            --success: #16a34a;
-            --danger: #dc2626;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 15px; max-width: 900px; margin: 0 auto; }
-        
-        h1 { text-align: center; margin-bottom: 20px; font-size: 1.4rem; }
-        .card { background: var(--surface); border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        /* Статистика */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--primary); color: white; padding: 15px; border-radius: 8px; text-align: center; }
-        .stat-val { font-size: 1.5rem; font-weight: bold; }
-        .stat-lbl { font-size: 0.8rem; opacity: 0.9; }
-
-        /* Форма */
-        .form-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-        .form-group { flex: 1; min-width: 140px; display: flex; flex-direction: column; }
-        label { font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #64748b; }
-        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; width: 100%; }
-        input:focus { outline: 2px solid var(--primary); border-color: transparent; }
-        
-        /* Динамические поля */
-        .dynamic-inputs { display: none; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border); margin-bottom: 12px; }
-        .dynamic-inputs.active { display: block; }
-        
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-sm { padding: 5px 10px; font-size: 0.8rem; width: auto; }
-        .btn-danger { background: var(--danger); color: white; }
-
-        /* Таблица */
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        th { text-align: left; padding: 10px; border-bottom: 2px solid var(--border); color: #64748b; font-size: 0.8rem; }
-        td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
-        .money { font-weight: bold; color: var(--success); }
-        
-        /* Адаптив */
-        @media (max-width: 600px) {
-            .hide-mob { display: none; }
-            .form-group { min-width: 100%; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Учет работ оператора</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 15px;
+        color: #333;
+    }
+    
+    .container { max-width: 1300px; margin: 0 auto; }
+    
+    h1 {
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2em;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    h2 { margin-bottom: 15px; color: #333; }
+    h3 { margin: 20px 0 10px; color: #667eea; }
+    
+    .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .tab {
+        padding: 12px 20px;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .tab:hover { background: rgba(255,255,255,0.3); }
+    
+    .tab.active {
+        background: white;
+        color: #667eea;
+        font-weight: bold;
+    }
+    
+    .panel {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        display: none;
+    }
+    
+    .panel.active { display: block; }
+    
+    .input-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .code-input {
+        width: 100%;
+        padding: 18px;
+        border: 3px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 24px;
+        font-family: 'Courier New', monospace;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 15px;
+    }
+    
+    .code-input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    button {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+    
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-large {
+        width: 100%;
+        padding: 18px;
+        font-size: 18px;
+    }
+    
+    .btn-danger { background: linear-gradient(135deg, #f44336 0%, #e91e63 100%); }
+    .btn-success { background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); }
+    .btn-small { padding: 6px 12px; font-size: 13px; }
+    
+    .decoded-info {
+        background: #d4edda;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 15px 0;
+        display: none;
+    }
+    
+    .decoded-info.show { display: block; }
+    .decoded-info h3 { color: #155724; margin: 0 0 10px; font-size: 18px; }
+    .decoded-info p { margin: 6px 0; font-size: 15px; line-height: 1.5; }
+    
+    .payment-calc {
+        background: #cce5ff;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 15px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #004085;
+        text-align: center;
+    }
+    
+    .error-info {
+        background: #f8d7da;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 15px 0;
+        color: #721c24;
+        display: none;
+    }
+    
+    .error-info.show { display: block; }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 14px;
+    }
+    
+    th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+    }
+    
+    tr:hover { background: #f5f5f5; }
+    
+    .total {
+        font-size: 24px;
+        font-weight: bold;
+        color: #667eea;
+        text-align: right;
+        margin-top: 15px;
+        padding: 15px;
+        background: #f0f0f0;
+        border-radius: 10px;
+    }
+    
+    .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 12px 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    
+    .success { background: #c8e6c9; border-left-color: #4caf50; }
+    .warning { background: #fff3cd; border-left-color: #ffc107; }
+    
+    .work-type-card {
+        background: #f8f9fa;
+        padding: 18px;
+        border-radius: 10px;
+        margin: 12px 0;
+        border-left: 4px solid #667eea;
+        position: relative;
+    }
+    
+    .work-type-card h4 { color: #667eea; margin-bottom: 8px; }
+    
+    .work-type-card code {
+        background: #fff3cd;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+    }
+    
+    .work-type-card .card-actions {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+    
+    .form-group { margin-bottom: 15px; }
+    
+    label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+    
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 15px;
+        font-family: inherit;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        max-width: 650px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .close-modal:hover { color: #000; transform: none; box-shadow: none; }
+    
+    .param-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 8px;
+        margin-bottom: 8px;
+        align-items: end;
+    }
+    
+    .param-row input { padding: 8px; font-size: 14px; }
+    .param-row button { padding: 8px 12px; font-size: 13px; margin: 0; }
+    
+    .param-header {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 8px;
+        margin-bottom: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+    }
+    
+    .quick-test {
+        background: #f0f4ff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 2px dashed #667eea;
+    }
+    
+    .quick-test input {
+        font-family: 'Courier New', monospace;
+        margin-bottom: 10px;
+    }
+    
+    .test-result {
+        padding: 10px;
+        border-radius: 6px;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+    
+    .test-result.ok { background: #d4edda; color: #155724; }
+    .test-result.err { background: #f8d7da; color: #721c24; }
+    
+    @media (max-width: 768px) {
+        h1 { font-size: 1.5em; }
+        .tab { padding: 10px 15px; font-size: 13px; }
+        .panel { padding: 15px; }
+        .code-input { font-size: 18px; padding: 14px; }
+        table { font-size: 12px; }
+        th, td { padding: 6px; }
+        .param-row, .param-header { grid-template-columns: 1fr; }
+        .param-header { display: none; }
+    }
+</style>
 </head>
 <body>
-
-    <h1>🏭 Учет работ (Многопрофильный)</h1>
-
-    <!-- Сводка -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-val" id="totalSum">0 ₽</div>
-            <div class="stat-lbl">Заработок (фильтр)</div>
-        </div>
-        <div class="stat-card" style="background: var(--success);">
-            <div class="stat-val" id="totalCount">0</div>
-            <div class="stat-lbl">Записей</div>
-        </div>
+<div class="container">
+    <h1>🏭 Учет работ оператора</h1>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('input', event)">✍️ Ввод кода</button>
+        <button class="tab" onclick="switchTab('history', event)">📋 История</button>
+        <button class="tab" onclick="switchTab('workTypes', event)">🔧 Типы работ</button>
+        <button class="tab" onclick="switchTab('settings', event)">⚙️ Настройки</button>
     </div>
-
-    <!-- Фильтры -->
-    <div class="card">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Оператор</label>
-                <input type="text" id="filterWorker" placeholder="Все..." oninput="renderTable()">
-            </div>
-            <div class="form-group">
-                <label>Дата с</label>
-                <input type="date" id="filterDateStart" onchange="renderTable()">
-            </div>
-            <div class="form-group">
-                <label>По</label>
-                <input type="date" id="filterDateEnd" onchange="renderTable()">
-            </div>
-        </div>
-    </div>
-
-    <!-- Форма ввода -->
-    <div class="card">
-        <h3 style="margin-bottom: 15px;">➕ Добавить работу</h3>
-        <form id="workForm" onsubmit="addRecord(event)">
+    
+    <!-- Панель ввода кода -->
+    <div id="input" class="panel active">
+        <h2>Ввод кода работы</h2>
+        
+        <div class="input-section">
+            <input 
+                type="text" 
+                id="code-input" 
+                class="code-input" 
+                placeholder="Введите или отсканируйте код..."
+                autocomplete="off"
+            >
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Дата</label>
-                    <input type="date" id="date" required>
-                </div>
-                <div class="form-group">
-                    <label>Оператор</label>
-                    <input type="text" id="worker" list="workersList" placeholder="Иванов" required>
-                    <datalist id="workersList"></datalist>
-                </div>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>Тип работы (выбор меняет поля ниже)</label>
-                <select id="jobType" onchange="updateFormFields()" required style="font-weight: bold; color: var(--primary);">
-                    <option value="cut_mdf">Распил МДФ/ЛДСП (м²)</option>
-                    <option value="veneer">Шпонирование (м²)</option>
-                    <option value="edge">Кромление (пог. м)</option>
-                    <option value="assembly">Сборка/Прочее (шт)</option>
-                    <option value="hourly">Почасовая оплата (часы)</option>
-                </select>
-            </div>
-
-            <!-- Контейнер для динамических полей -->
-            <div id="dynamicArea">
-                <!-- Сюда JS будет вставлять нужные инпуты -->
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Ставка (₽ за ед.)</label>
-                    <input type="number" id="rate" step="0.01" required oninput="calcPreview()">
-                </div>
-                <div class="form-group">
-                    <label>Итого: <span id="previewSum" style="color:var(--success); font-size:1.2rem">0 ₽</span></label>
+            <div id="decoded-info" class="decoded-info">
+                <h3>📋 Расшифровка кода:</h3>
+                <p><strong>Тип работы:</strong> <span id="decoded-work-type"></span></p>
+                <div id="decoded-params"></div>
+                <p><strong>Номер детали:</strong> <span id="decoded-part-number"></span></p>
+                <p><strong>Расчет:</strong> <span id="decoded-calculation"></span></p>
+                <div class="payment-calc">
+                    💰 Оплата: <span id="calculated-payment">0</span> ₽
                 </div>
             </div>
-
-            <button type="submit" class="btn btn-primary">💾 Сохранить запись</button>
-        </form>
+            
+            <div id="error-info" class="error-info">
+                <strong>❌ Ошибка:</strong> <span id="error-message"></span>
+            </div>
+            
+            <button class="btn-large" onclick="addWork()">✅ Добавить работу</button>
+        </div>
+        
+        <div class="info-box warning">
+            <strong>💡 Подсказка:</strong> Введите код — система автоматически определит тип работы, извлечет параметры и рассчитает оплату.
+        </div>
     </div>
-
-    <!-- Таблица -->
-    <div class="card">
-        <h3 style="margin-bottom: 10px;">📊 Журнал</h3>
+    
+    <!-- Панель истории -->
+    <div id="history" class="panel">
+        <h2>История выполненных работ</h2>
+        <div class="total">
+            Итого заработано: <span id="total-earnings">0</span> ₽
+        </div>
         <div style="overflow-x: auto;">
-            <table id="dataTable">
+            <table>
                 <thead>
                     <tr>
-                        <th>Дата / Кто</th>
-                        <th>Работа / Детали</th>
-                        <th>Объем</th>
-                        <th>Сумма</th>
-                        <th>Действ.</th>
+                        <th>Дата/Время</th>
+                        <th>Код</th>
+                        <th>Тип работы</th>
+                        <th>Параметры</th>
+                        <th>Деталь</th>
+                        <th>Оплата</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody"></tbody>
+                <tbody id="history-table"></tbody>
             </table>
         </div>
+        <button onclick="clearHistory()" style="margin-top: 15px;" class="btn-danger">🗑️ Очистить историю</button>
+        <button onclick="exportHistory()">📥 Экспорт CSV</button>
     </div>
-
-    <!-- Управление данными -->
-    <div class="card" style="text-align: center;">
-        <button class="btn btn-sm" style="background:#e2e8f0; margin:5px;" onclick="exportCSV()">📥 Скачать Excel (CSV)</button>
-        <button class="btn btn-sm" style="background:#e2e8f0; margin:5px;" onclick="exportJSON()">💾 Бэкап (JSON)</button>
-        <label class="btn btn-sm" style="background:#e2e8f0; margin:5px; display:inline-block; cursor:pointer;">
-            📤 Восстановить
-            <input type="file" onchange="importJSON(this)" style="display:none" accept=".json">
-        </label>
-        <br><br>
-        <button class="btn btn-sm btn-danger" onclick="clearData()">🗑️ Очистить всё</button>
-    </div>
-
-    <script>
-        // --- КОНФИГУРАЦИЯ ТИПОВ РАБОТ ---
-        const JOB_CONFIG = {
-            'cut_mdf': { 
-                label: 'Распил (м²)', 
-                inputs: ['length', 'width', 'qty'], // длина, ширина, кол-во
-                defaultRate: 65,
-                unit: 'м²'
-            },
-            'veneer': { 
-                label: 'Шпонирование (м²)', 
-                inputs: ['area_manual'], // ручной ввод площади
-                defaultRate: 1000,
-                unit: 'м²'
-            },
-            'edge': { 
-                label: 'Кромление (пог.м)', 
-                inputs: ['meters'], // ручной ввод метров
-                defaultRate: 50, // Пример ставки
-                unit: 'пог.м'
-            },
-            'assembly': { 
-                label: 'Сборка (шт)', 
-                inputs: ['qty_only'], 
-                defaultRate: 500,
-                unit: 'шт'
-            },
-            'hourly': { 
-                label: 'Почасовая', 
-                inputs: ['time_range'], // время начало/конец
-                defaultRate: 300,
-                unit: 'час'
-            }
-        };
-
-        const STORAGE_KEY = 'factory_db_v2';
-        let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-        // Инициализация
-        document.getElementById('date').valueAsDate = new Date();
-        updateWorkersList();
-        updateFormFields(); // Создать поля для первого типа
-        renderTable();
-
-        // --- ЛОГИКА ФОРМЫ ---
-
-        function updateFormFields() {
-            const type = document.getElementById('jobType').value;
-            const config = JOB_CONFIG[type];
-            const container = document.getElementById('dynamicArea');
-            
-            // Сброс значения ставки на дефолтное для этого типа
-            document.getElementById('rate').value = config.defaultRate;
-            
-            let html = '';
-
-            // Генерация полей в зависимости от типа
-            if (config.inputs.includes('length')) {
-                // Для распила: Длина, Ширина, Кол-во -> Считаем площадь автоматически
-                html += `
-                    <div class="form-row dynamic-inputs active">
-                        <div class="form-group"><label>Длина (мм)</label><input type="number" id="inp_l" placeholder="2800" oninput="calcAutoArea()"></div>
-                        <div class="form-group"><label>Ширина (мм)</label><input type="number" id="inp_w" placeholder="2070" oninput="calcAutoArea()"></div>
-                        <div class="form-group"><label>Кол-во (шт)</label><input type="number" id="inp_q" value="1" oninput="calcAutoArea()"></div>
-                    </div>
-                    <div class="form-row dynamic-inputs active" style="background:#e0f2fe">
-                        <div class="form-group"><label>Итого площадь (м²)</label><input type="number" id="calc_area" readonly style="background:#fff; font-weight:bold;"></div>
-                    </div>
-                `;
-            } else if (config.inputs.includes('area_manual')) {
-                html += `<div class="form-row dynamic-inputs active"><div class="form-group"><label>Площадь (м²)</label><input type="number" step="0.01" id="inp_area" placeholder="0.00" oninput="calcPreview()"></div></div>`;
-            } else if (config.inputs.includes('meters')) {
-                html += `<div class="form-row dynamic-inputs active"><div class="form-group"><label>Погонные метры</label><input type="number" step="0.1" id="inp_meters" placeholder="0.0" oninput="calcPreview()"></div></div>`;
-            } else if (config.inputs.includes('qty_only')) {
-                html += `<div class="form-row dynamic-inputs active"><div class="form-group"><label>Количество (шт)</label><input type="number" id="inp_qty" placeholder="0" oninput="calcPreview()"></div></div>`;
-            } else if (config.inputs.includes('time_range')) {
-                html += `
-                    <div class="form-row dynamic-inputs active">
-                        <div class="form-group"><label>Начало</label><input type="time" id="time_start" oninput="calcHours()"></div>
-                        <div class="form-group"><label>Конец</label><input type="time" id="time_end" oninput="calcHours()"></div>
-                        <div class="form-group"><label>Часов</label><input type="number" id="calc_hours" readonly style="background:#fff"></div>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html;
-            calcPreview();
-        }
-
-        // Авто-расчет площади для распила (мм -> м²)
-        function calcAutoArea() {
-            const l = parseFloat(document.getElementById('inp_l').value) || 0;
-            const w = parseFloat(document.getElementById('inp_w').value) || 0;
-            const q = parseFloat(document.getElementById('inp_q').value) || 0;
-            // мм * мм / 1 000 000 = м²
-            const area = (l * w * q) / 1000000;
-            document.getElementById('calc_area').value = area.toFixed(3);
-            calcPreview();
-        }
-
-        // Авто-расчет часов
-        function calcHours() {
-            const s = document.getElementById('time_start').value;
-            const e = document.getElementById('time_end').value;
-            if(s && e) {
-                let start = new Date("2000-01-01 " + s);
-                let end = new Date("2000-01-01 " + e);
-                if (end < start) end.setDate(end.getDate() + 1); // переход через полночь
-                const diff = (end - start) / 3600000;
-                document.getElementById('calc_hours').value = diff.toFixed(2);
-                calcPreview();
-            }
-        }
-
-        // Предпросмотр суммы
-        function calcPreview() {
-            const rate = parseFloat(document.getElementById('rate').value) || 0;
-            const type = document.getElementById('jobType').value;
-            let qty = 0;
-
-            if (type === 'cut_mdf') qty = parseFloat(document.getElementById('calc_area').value) || 0;
-            else if (type === 'veneer') qty = parseFloat(document.getElementById('inp_area').value) || 0;
-            else if (type === 'edge') qty = parseFloat(document.getElementById('inp_meters').value) || 0;
-            else if (type === 'assembly') qty = parseFloat(document.getElementById('inp_qty').value) || 0;
-            else if (type === 'hourly') qty = parseFloat(document.getElementById('calc_hours').value) || 0;
-
-            const total = qty * rate;
-            document.getElementById('previewSum').innerText = Math.round(total) + ' ₽';
-            return { qty, total };
-        }
-
-        // --- СОХРАНЕНИЕ ---
-
-        function addRecord(e) {
-            e.preventDefault();
-            const { qty, total } = calcPreview();
-            if (qty <= 0) { alert('Укажите объем работ!'); return; }
-
-            const type = document.getElementById('jobType').value;
-            const config = JOB_CONFIG[type];
-            
-            // Формируем описание для истории
-            let desc = '';
-            if(type === 'cut_mdf') {
-                const l = document.getElementById('inp_l').value;
-                const w = document.getElementById('inp_w').value;
-                const q = document.getElementById('inp_q').value;
-                desc = `${l}x${w} мм (${q} шт)`;
-            }
-
-            const record = {
-                id: Date.now(),
-                date: document.getElementById('date').value,
-                worker: document.getElementById('worker').value.trim(),
-                typeKey: type,
-                typeName: config.label,
-                desc: desc,
-                qty: qty,
-                unit: config.unit,
-                rate: parseFloat(document.getElementById('rate').value),
-                total: total
-            };
-
-            records.push(record);
-            saveData();
-            
-            // Сброс формы (частичный)
-            document.getElementById('worker').focus(); // фокус на имя для следующего
-            // Очищаем инпуты объема, но оставляем дату и работника
-            const inputs = document.querySelectorAll('#dynamicArea input');
-            inputs.forEach(i => i.value = '');
-            if(type === 'cut_mdf') document.getElementById('inp_q').value = 1;
-            calcPreview();
-            renderTable();
-        }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-            updateWorkersList();
-        }
-
-        function updateWorkersList() {
-            const workers = [...new Set(records.map(r => r.worker))];
-            document.getElementById('workersList').innerHTML = workers.map(w => `<option value="${w}">`).join('');
-        }
-
-        // --- ТАБЛИЦА И ФИЛЬТРЫ ---
-
-        function renderTable() {
-            const fWorker = document.getElementById('filterWorker').value.toLowerCase();
-            const fStart = document.getElementById('filterDateStart').value;
-            const fEnd = document.getElementById('filterDateEnd').value;
-
-            const filtered = records.filter(r => {
-                const matchW = r.worker.toLowerCase().includes(fWorker);
-                const matchD = (!fStart || r.date >= fStart) && (!fEnd || r.date <= fEnd);
-                return matchW && matchD;
-            }).sort((a,b) => b.id - a.id); // Новые сверху
-
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            let sum = 0;
-            
-            filtered.forEach(r => {
-                sum += r.total;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <div style="font-weight:bold">${r.date.split('-').reverse().join('.')}</div>
-                        <div style="color:#64748b">${r.worker}</div>
-                    </td>
-                    <td>
-                        <div style="font-weight:bold; color:var(--primary)">${r.typeName}</div>
-                        <div style="font-size:0.85rem">${r.desc || '-'}</div>
-                    </td>
-                    <td>
-                        <div>${r.qty} <small>${r.unit}</small></div>
-                        <div style="font-size:0.8rem; color:#64748b">по ${r.rate}₽</div>
-                    </td>
-                    <td class="money">${Math.round(r.total)} ₽</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="del(${r.id})">×</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            document.getElementById('totalSum').innerText = Math.round(sum) + ' ₽';
-            document.getElementById('totalCount').innerText = filtered.length;
-        }
-
-        function del(id) {
-            if(confirm('Удалить запись?')) {
-                records = records.filter(r => r.id !== id);
-                saveData();
-                renderTable();
-            }
-        }
-
-        // --- ЭКСПОРТ/ИМПОРТ ---
+    
+    <!-- Панель типов работ -->
+    <div id="workTypes" class="panel">
+        <h2>Управление типами работ</h2>
         
-        function exportCSV() {
-            let csv = '\uFEFFДата;Оператор;Тип работы;Описание;Объем;Ед.изм;Ставка;Сумма\n';
-            records.forEach(r => {
-                csv += `${r.date};${r.worker};${r.typeName};${r.desc};${r.qty};${r.unit};${r.rate};${r.total}\n`;
-            });
-            downloadFile(csv, 'report.csv', 'text/csv');
-        }
+        <button onclick="openWorkTypeModal()" class="btn-success">➕ Добавить тип работы</button>
+        
+        <div id="work-types-list"></div>
+        
+        <div class="info-box">
+            <strong>💡 Как это работает:</strong><br>
+            • <strong>Код-префикс</strong> — начало кода, по которому определяется тип работы<br>
+            • <strong>Параметры</strong> — извлекаются из кода по позиции и длине<br>
+            • <strong>Формула</strong> — математическое выражение с именами параметров<br>
+            • <strong>Тариф</strong> — умножается на результат формулы
+        </div>
+    </div>
+    
+    <!-- Панель настроек -->
+    <div id="settings" class="panel">
+        <h2>Настройки и данные</h2>
+        
+        <h3>💾 Резервное копирование</h3>
+        <button onclick="exportAll()">📤 Экспорт всех данных (JSON)</button>
+        <button onclick="document.getElementById('import-file').click()">📥 Импорт данных</button>
+        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="handleImport(event)">
+        
+        <h3>🗑️ Очистка</h3>
+        <button onclick="resetAll()" class="btn-danger">Удалить все данные приложения</button>
+        
+        <div class="info-box">
+            <strong>📌 О приложении:</strong><br>
+            • Все данные хранятся локально в вашем браузере (localStorage)<br>
+            • Не требует интернета после загрузки<br>
+            • Не использует сторонние сервисы и БД<br>
+            • Работает с любым USB/Bluetooth сканером штрих-кодов (в режиме клавиатуры)
+        </div>
+    </div>
+</div>
 
-        function exportJSON() {
-            downloadFile(JSON.stringify(records, null, 2), 'backup.json', 'application/json');
-        }
+<!-- Модальное окно типа работы -->
+<div id="workTypeModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeWorkTypeModal()">&times;</button>
+        <h2 id="modal-title">Добавить тип работы</h2>
+        
+        <div class="form-group">
+            <label>Код-префикс (начало кода):</label>
+            <input type="text" id="wt-prefix" placeholder="Например: ВП" maxlength="5">
+        </div>
+        
+        <div class="form-group">
+            <label>Название типа работы:</label>
+            <input type="text" id="wt-name" placeholder="Например: Внутренняя панель распил">
+        </div>
+        
+        <div class="form-group">
+            <label>Параметры (извлекаются из кода):</label>
+            <div class="param-header">
+                <div>Название (для формулы)</div>
+                <div>Позиция</div>
+                <div>Длина</div>
+                <div>Ед.изм.</div>
+                <div></div>
+            </div>
+            <div id="params-container"></div>
+            <button onclick="addParamRow()" class="btn-small">➕ Добавить параметр</button>
+            <div class="info-box" style="margin-top: 10px; font-size: 12px;">
+                <strong>Позиция</strong> — индекс символа в коде (с 0).<br>
+                <strong>Длина</strong> — сколько символов занимает параметр.<br>
+                Пример: для кода <code>ВП162500870ВБ-125.002</code> толщина 16 начинается с позиции 2 и имеет длину 2.
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Позиция номера детали (с какого символа):</label>
+            <input type="number" id="wt-part-start" value="12" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label>Формула расчета (результат умножается на тариф):</label>
+            <textarea id="wt-formula" rows="2" placeholder="Например: (Длина * Ширина / 1000000)"></textarea>
+            <small style="color: #666;">
+                Используйте названия параметров. Поддерживаются: +, -, *, /, скобки, числа.
+            </small>
+        </div>
+        
+        <div class="form-group">
+            <label>Единица результата формулы:</label>
+            <input type="text" id="wt-formula-unit" placeholder="Например: м²" value="">
+        </div>
+        
+        <div class="form-group">
+            <label>Тариф (₽ за единицу результата формулы):</label>
+            <input type="number" id="wt-rate" value="500" min="0" step="0.01">
+        </div>
+        
+        <div class="form-group">
+            <label>Единица тарифа:</label>
+            <input type="text" id="wt-unit" placeholder="Например: ₽/м²" value="₽">
+        </div>
+        
+        <div class="quick-test">
+            <strong>🧪 Тест формулы:</strong>
+            <input type="text" id="test-code" placeholder="Введите тестовый код..." style="font-family: 'Courier New', monospace;">
+            <button onclick="testFormula()" class="btn-small">Проверить</button>
+            <div id="test-result"></div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="saveWorkType()" class="btn-success">💾 Сохранить</button>
+            <button onclick="closeWorkTypeModal()">Отмена</button>
+        </div>
+    </div>
+</div>
 
-        function importJSON(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if(Array.isArray(data)) {
-                        records = [...records, ...data];
-                        // Убираем дубликаты по ID
-                        records = records.filter((v,i,a)=>a.findIndex(t=>(t.id===v.id))===i);
-                        saveData();
-                        renderTable();
-                        alert('Данные восстановлены!');
-                    }
-                } catch(err) { alert('Ошибка файла'); }
-            };
-            reader.readAsText(file);
-        }
+<script>
+// ============ ХРАНИЛИЩЕ ДАННЫХ ============
+let workHistory = JSON.parse(localStorage.getItem('workHistory') || '[]');
+let workTypes = JSON.parse(localStorage.getItem('workTypes') || '[]');
+let editingWorkTypeIndex = -1;
+let currentParams = [];
 
-        function downloadFile(content, fileName, mimeType) {
-            const a = document.createElement('a');
-            const blob = new Blob([content], {type: mimeType});
-            a.href = URL.createObjectURL(blob);
-            a.download = fileName;
-            a.click();
+// Инициализация типов работ по умолчанию (если пусто)
+if (workTypes.length === 0) {
+    workTypes = [
+        {
+            prefix: "ВП",
+            name: "Внутренняя панель (распил)",
+            params: [
+                {name: "Толщина", start: 2, length: 2, unit: "мм"},
+                {name: "Длина", start: 4, length: 4, unit: "мм"},
+                {name: "Ширина", start: 8, length: 4, unit: "мм"}
+            ],
+            partNumberStart: 12,
+            formula: "(Длина * Ширина / 1000000)",
+            formulaUnit: "м²",
+            rate: 500,
+            unit: "₽/м²"
+        },
+        {
+            prefix: "НП",
+            name: "Наружная панель (распил)",
+            params: [
+                {name: "Толщина", start: 2, length: 2, unit: "мм"},
+                {name: "Длина", start: 4, length: 4, unit: "мм"},
+                {name: "Ширина", start: 8, length: 4, unit: "мм"}
+            ],
+            partNumberStart: 12,
+            formula: "(Длина * Ширина / 1000000)",
+            formulaUnit: "м²",
+            rate: 500,
+            unit: "₽/м²"
+        },
+        {
+            prefix: "Н",
+            name: "Наличник",
+            params: [
+                {name: "Расположение", start: 1, length: 1, unit: ""},
+                {name: "Ширина", start: 2, length: 2, unit: "см"},
+                {name: "Длина", start: 4, length: 4, unit: "мм"}
+            ],
+            partNumberStart: 12,
+            formula: "(Длина / 1000)",
+            formulaUnit: "м.п.",
+            rate: 300,
+            unit: "₽/м.п."
         }
+    ];
+    saveWorkTypes();
+}
 
-        function clearData() {
-            if(confirm('ТОЧНО УДАЛИТЬ ВСЁ?')) {
-                records = [];
-                saveData();
-                renderTable();
+function saveWorkTypes() {
+    localStorage.setItem('workTypes', JSON.stringify(workTypes));
+}
+
+function saveHistory() {
+    localStorage.setItem('workHistory', JSON.stringify(workHistory));
+}
+
+// ============ БЕЗОПАСНЫЙ ПАРСЕР ФОРМУЛ ============
+// Разрешаем только цифры, имена параметров, операторы, скобки, точки
+function validateFormula(formula, paramNames) {
+    // Удаляем пробелы
+    let f = formula.replace(/\s+/g, '');
+    if (!f) return { valid: false, error: 'Формула пустая' };
+    
+    // Проверяем что все имена параметров присутствуют (опционально — может быть константа)
+    // Проверяем недопустимые символы
+    // Разрешены: буквы (кириллица/латиница), цифры, + - * / ( ) . ,
+    const allowedPattern = /^[a-zA-Zа-яА-ЯёЁ0-9+\-*/().,]+$/;
+    if (!allowedPattern.test(f)) {
+        return { valid: false, error: 'Недопустимые символы в формуле' };
+    }
+    
+    // Проверяем что нет двух операторов подряд
+    if (/[+\-*/]{2,}/.test(f.replace(/\(-/g, '(0-'))) {
+        return { valid: false, error: 'Два оператора подряд' };
+    }
+    
+    return { valid: true };
+}
+
+// Вычисление формулы с подстановкой параметров
+function evaluateFormula(formula, params) {
+    let f = formula.replace(/\s+/g, '');
+    
+    // Заменяем имена параметров на их значения (сначала длинные имена, чтобы избежать частичных замен)
+    const sortedNames = Object.keys(params).sort((a, b) => b.length - a.length);
+    for (const name of sortedNames) {
+        const regex = new RegExp(name, 'g');
+        f = f.replace(regex, '(' + params[name] + ')');
+    }
+    
+    // Проверяем что остались только разрешенные символы
+    if (!/^[0-9+\-*/().eE]+$/.test(f)) {
+        throw new Error('Неизвестные символы в формуле после подстановки');
+    }
+    
+    // Используем Function вместо eval для изоляции
+    try {
+        const result = new Function('return ' + f)();
+        if (typeof result !== 'number' || !isFinite(result)) {
+            throw new Error('Результат не является числом');
+        }
+        return result;
+    } catch (e) {
+        throw new Error('Ошибка вычисления: ' + e.message);
+    }
+}
+
+// ============ ПАРСИНГ КОДА ============
+function parseCode(code) {
+    code = code.toUpperCase().trim();
+    if (!code) return null;
+    
+    // Ищем тип работы по префиксу (сортируем по длине — длинные сначала, чтобы "ВП" не перехватил "В")
+    const sortedTypes = [...workTypes].sort((a, b) => b.prefix.length - a.prefix.length);
+    
+    for (const workType of sortedTypes) {
+        if (code.startsWith(workType.prefix.toUpperCase())) {
+            try {
+                return parseWorkType(code, workType);
+            } catch (e) {
+                // Пробуем следующий тип
+                continue;
             }
         }
-    </script>
+    }
+    
+    return null;
+}
+
+function parseWorkType(code, workType) {
+    const params = {};
+    const paramsDisplay = [];
+    
+    // Извлечение параметров
+    for (const param of workType.params) {
+        const value = code.substring(param.start, param.start + param.length);
+        if (!value) throw new Error('Код слишком короткий');
+        
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+            params[param.name] = numValue;
+        } else {
+            // Строковый параметр — для формулы не подходит, но показываем
+            params[param.name] = 0;
+            params['_str_' + param.name] = value;
+        }
+        
+        const displayValue = isNaN(numValue) ? value : numValue;
+        paramsDisplay.push(`${param.name}: ${displayValue}${param.unit ? ' ' + param.unit : ''}`);
+    }
+    
+    // Извлечение номера детали
+    const partNumber = code.substring(workType.partNumberStart);
+    
+    // Проверка формулы
+    const validation = validateFormula(workType.formula, Object.keys(params));
+    if (!validation.valid) {
+        throw new Error(validation.error);
+    }
+    
+    // Вычисление результата формулы
+    const formulaResult = evaluateFormula(workType.formula, params);
+    const payment = Math.round(formulaResult * workType.rate * 100) / 100;
+    
+    const formulaUnit = workType.formulaUnit ? ' ' + workType.formulaUnit : '';
+    const calculation = `${workType.formula} = ${formulaResult.toFixed(4)}${formulaUnit} × ${workType.rate} ${workType.unit}`;
+    
+    return {
+        workType: workType.name,
+        typeCode: workType.prefix,
+        params: paramsDisplay.join(', '),
+        partNumber: partNumber || '—',
+        calculation: calculation,
+        payment: payment,
+        rawCode: code
+    };
+}
+
+// ============ ИНТЕРФЕЙС ВВОДА ============
+document.getElementById('code-input').addEventListener('input', function() {
+    const code = this.value.toUpperCase();
+    this.value = code;
+    
+    const decodedInfo = document.getElementById('decoded-info');
+    const errorInfo = document.getElementById('error-info');
+    
+    if (code.length < 3) {
+        decodedInfo.classList.remove('show');
+        errorInfo.classList.remove('show');
+        return;
+    }
+    
+    const result = parseCode(code);
+    
+    if (result) {
+        document.getElementById('decoded-work-type').textContent = result.workType;
+        document.getElementById('decoded-params').innerHTML = `<p><strong>Параметры:</strong> ${result.params}</p>`;
+        document.getElementById('decoded-part-number').textContent = result.partNumber;
+        document.getElementById('decoded-calculation').textContent = result.calculation;
+        document.getElementById('calculated-payment').textContent = result.payment.toLocaleString('ru-RU');
+        
+        decodedInfo.classList.add('show');
+        errorInfo.classList.remove('show');
+    } else {
+        decodedInfo.classList.remove('show');
+        errorInfo.classList.add('show');
+        document.getElementById('error-message').textContent = 'Не удалось распознать код. Проверьте формат или создайте новый тип работы.';
+    }
+});
+
+// Обработка Enter для быстрого добавления
+document.getElementById('code-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        addWork();
+    }
+});
+
+function addWork() {
+    const code = document.getElementById('code-input').value.toUpperCase().trim();
+    
+    if (!code) {
+        alert('Введите код');
+        return;
+    }
+    
+    const result = parseCode(code);
+    
+    if (!result) {
+        alert('Не удалось распознать код. Проверьте формат или создайте новый тип работы.');
+        return;
+    }
+    
+    const record = {
+        timestamp: new Date().toLocaleString('ru-RU'),
+        code: result.rawCode,
+        workType: result.workType,
+        params: result.params,
+        partNumber: result.partNumber,
+        payment: result.payment
+    };
+    
+    workHistory.push(record);
+    saveHistory();
+    
+    alert(`✅ Работа добавлена!\n\nТип: ${result.workType}\nДеталь: ${result.partNumber}\nОплата: ${result.payment.toLocaleString('ru-RU')} ₽`);
+    
+    // Очистка и фокус для следующей записи
+    document.getElementById('code-input').value = '';
+    document.getElementById('decoded-info').classList.remove('show');
+    document.getElementById('error-info').classList.remove('show');
+    document.getElementById('code-input').focus();
+}
+
+// ============ ВКЛАДКИ ============
+function switchTab(tabName, event) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    
+    if (event && event.target) event.target.classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+    
+    if (tabName === 'history') updateHistory();
+    if (tabName === 'workTypes') renderWorkTypes();
+}
+
+// ============ ИСТОРИЯ ============
+function updateHistory() {
+    const tbody = document.getElementById('history-table');
+    tbody.innerHTML = '';
+    
+    let total = 0;
+    
+    // Показываем последние сначала
+    const reversed = [...workHistory].reverse();
+    
+    reversed.forEach(record => {
+        total += record.payment;
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${record.timestamp}</td>
+            <td><strong style="font-family: 'Courier New', monospace;">${record.code}</strong></td>
+            <td>${record.workType}</td>
+            <td>${record.params}</td>
+            <td>${record.partNumber}</td>
+            <td><strong>${record.payment.toLocaleString('ru-RU')} ₽</strong></td>
+        `;
+    });
+    
+    document.getElementById('total-earnings').textContent = total.toLocaleString('ru-RU');
+}
+
+function clearHistory() {
+    if (confirm('Вы уверены, что хотите очистить всю историю?')) {
+        workHistory = [];
+        saveHistory();
+        updateHistory();
+    }
+}
+
+function exportHistory() {
+    let csv = 'Дата/Время;Код;Тип работы;Параметры;Номер детали;Оплата\n';
+    workHistory.forEach(record => {
+        csv += `${record.timestamp};${record.code};${record.workType};${record.params};${record.partNumber};${record.payment}\n`;
+    });
+    
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `work_history_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+}
+
+// ============ ТИПЫ РАБОТ ============
+function renderWorkTypes() {
+    const container = document.getElementById('work-types-list');
+    container.innerHTML = '';
+    
+    if (workTypes.length === 0) {
+        container.innerHTML = '<div class="info-box">Нет типов работ. Создайте первый!</div>';
+        return;
+    }
+    
+    workTypes.forEach((workType, index) => {
+        const card = document.createElement('div');
+        card.className = 'work-type-card';
+        
+        const paramsList = workType.params.map(p => 
+            `<code>${p.name}</code> (поз. ${p.start}, дл. ${p.length}${p.unit ? ', ' + p.unit : ''})`
+        ).join('<br>');
+        
+        card.innerHTML = `
+            <div class="card-actions">
+                <button class="btn-small" onclick="editWorkType(${index})">✏️</button>
+                <button class="btn-small btn-danger" onclick="deleteWorkType(${index})">🗑️</button>
+            </div>
+            <h4>${workType.name} <code>${workType.prefix}</code></h4>
+            <p><strong>Параметры:</strong><br>${paramsList}</p>
+            <p><strong>Формула:</strong> <code>${workType.formula}</code>${workType.formulaUnit ? ' → ' + workType.formulaUnit : ''}</p>
+            <p><strong>Тариф:</strong> ${workType.rate} ${workType.unit}</p>
+            <p><strong>Номер детали с позиции:</strong> ${workType.partNumberStart}</p>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+function openWorkTypeModal(index = -1) {
+    editingWorkTypeIndex = index;
+    currentParams = [];
+    
+    if (index >= 0) {
+        const workType = workTypes[index];
+        document.getElementById('modal-title').textContent = 'Редактировать тип работы';
+        document.getElementById('wt-prefix').value = workType.prefix;
+        document.getElementById('wt-name').value = workType.name;
+        document.getElementById('wt-part-start').value = workType.partNumberStart;
+        document.getElementById('wt-formula').value = workType.formula;
+        document.getElementById('wt-formula-unit').value = workType.formulaUnit || '';
+        document.getElementById('wt-rate').value = workType.rate;
+        document.getElementById('wt-unit').value = workType.unit;
+        currentParams = JSON.parse(JSON.stringify(workType.params));
+    } else {
+        document.getElementById('modal-title').textContent = 'Добавить тип работы';
+        document.getElementById('wt-prefix').value = '';
+        document.getElementById('wt-name').value = '';
+        document.getElementById('wt-part-start').value = '12';
+        document.getElementById('wt-formula').value = '';
+        document.getElementById('wt-formula-unit').value = '';
+        document.getElementById('wt-rate').value = '500';
+        document.getElementById('wt-unit').value = '₽';
+    }
+    
+    document.getElementById('test-code').value = '';
+    document.getElementById('test-result').innerHTML = '';
+    
+    renderParams();
+    document.getElementById('workTypeModal').classList.add('show');
+}
+
+function closeWorkTypeModal() {
+    document.getElementById('workTypeModal').classList.remove('show');
+}
+
+function renderParams() {
+    const container = document.getElementById('params-container');
+    container.innerHTML = '';
+    
+    currentParams.forEach((param, index) => {
+        const row = document.createElement('div');
+        row.className = 'param-row';
+        row.innerHTML = `
+            <input type="text" placeholder="Имя (лат/кир)" value="${param.name}" onchange="updateParam(${index}, 'name', this.value)">
+            <input type="number" placeholder="Поз." value="${param.start}" min="0" onchange="updateParam(${index}, 'start', this.value)">
+            <input type="number" placeholder="Длина" value="${param.length}" min="1" onchange="updateParam(${index}, 'length', this.value)">
+            <input type="text" placeholder="ед." value="${param.unit}" onchange="updateParam(${index}, 'unit', this.value)">
+            <button class="btn-danger btn-small" onclick="removeParam(${index})">✖</button>
+        `;
+        container.appendChild(row);
+    });
+}
+
+function addParamRow() {
+    currentParams.push({name: '', start: 0, length: 1, unit: ''});
+    renderParams();
+}
+
+function updateParam(index, field, value) {
+    if (field === 'start' || field === 'length') {
+        currentParams[index][field] = parseInt(value) || 0;
+    } else {
+        currentParams[index][field] = value;
+    }
+}
+
+function removeParam(index) {
+    currentParams.splice(index, 1);
+    renderParams();
+}
+
+function testFormula() {
+    const testCode = document.getElementById('test-code').value.toUpperCase().trim();
+    const resultDiv = document.getElementById('test-result');
+    
+    if (!testCode) {
+        resultDiv.className = 'test-result err';
+        resultDiv.textContent = 'Введите тестовый код';
+        return;
+    }
+    
+    // Собираем временный тип работы для теста
+    const tempWorkType = {
+        prefix: document.getElementById('wt-prefix').value.toUpperCase(),
+        name: document.getElementById('wt-name').value,
+        params: currentParams,
+        partNumberStart: parseInt(document.getElementById('wt-part-start').value),
+        formula: document.getElementById('wt-formula').value,
+        formulaUnit: document.getElementById('wt-formula-unit').value,
+        rate: parseFloat(document.getElementById('wt-rate').value),
+        unit: document.getElementById('wt-unit').value
+    };
+    
+    try {
+        const result = parseWorkType(testCode, tempWorkType);
+        resultDiv.className = 'test-result ok';
+        resultDiv.innerHTML = `
+            <strong>✅ Успешно!</strong><br>
+            Параметры: ${result.params}<br>
+            Деталь: ${result.partNumber}<br>
+            Расчет: ${result.calculation}<br>
+            <strong>Оплата: ${result.payment.toLocaleString('ru-RU')} ₽</strong>
+        `;
+    } catch (e) {
+        resultDiv.className = 'test-result err';
+        resultDiv.innerHTML = `<strong>❌ Ошибка:</strong> ${e.message}`;
+    }
+}
+
+function saveWorkType() {
+    const prefix = document.getElementById('wt-prefix').value.toUpperCase().trim();
+    const name = document.getElementById('wt-name').value.trim();
+    const partStart = parseInt(document.getElementById('wt-part-start').value);
+    const formula = document.getElementById('wt-formula').value.trim();
+    const formulaUnit = document.getElementById('wt-formula-unit').value.trim();
+    const rate = parseFloat(document.getElementById('wt-rate').value);
+    const unit = document.getElementById('wt-unit').value.trim();
+    
+    if (!prefix) { alert('Укажите код-префикс'); return; }
+    if (!name) { alert('Укажите название'); return; }
+    if (!formula) { alert('Укажите формулу'); return; }
+    if (currentParams.length === 0) { alert('Добавьте хотя бы один параметр'); return; }
+    
+    // Валидация формулы
+    const paramNames = currentParams.map(p => p.name).filter(n => n);
+    const validation = validateFormula(formula, paramNames);
+    if (!validation.valid) {
+        alert('Ошибка в формуле: ' + validation.error);
+        return;
+    }
+    
+    const workType = {
+        prefix,
+        name,
+        params: currentParams.filter(p => p.name),
+        partNumberStart: partStart,
+        formula,
+        formulaUnit,
+        rate,
+        unit
+    };
+    
+    if (editingWorkTypeIndex >= 0) {
+        workTypes[editingWorkTypeIndex] = workType;
+    } else {
+        workTypes.push(workType);
+    }
+    
+    saveWorkTypes();
+    closeWorkTypeModal();
+    renderWorkTypes();
+    alert('✅ Тип работы сохранен!');
+}
+
+function editWorkType(index) {
+    openWorkTypeModal(index);
+}
+
+function deleteWorkType(index) {
+    if (confirm('Удалить этот тип работы?')) {
+        workTypes.splice(index, 1);
+        saveWorkTypes();
+        renderWorkTypes();
+    }
+}
+
+// ============ НАСТРОЙКИ ============
+function exportAll() {
+    const data = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        workTypes: workTypes,
+        workHistory: workHistory
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `work_app_backup_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+}
+
+function handleImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!confirm('Импорт заменит текущие данные. Продолжить?')) {
+        event.target.value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.workTypes) {
+                workTypes = data.workTypes;
+                saveWorkTypes();
+            }
+            if (data.workHistory) {
+                workHistory = data.workHistory;
+                saveHistory();
+            }
+            renderWorkTypes();
+            updateHistory();
+            alert('✅ Данные импортированы!');
+        } catch (err) {
+            alert('Ошибка чтения файла: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function resetAll() {
+    if (confirm('⚠️ Удалить ВСЕ данные (типы работ и историю)? Это действие нельзя отменить!')) {
+        if (confirm('Точно уверены?')) {
+            localStorage.removeItem('workTypes');
+            localStorage.removeItem('workHistory');
+            location.reload();
+        }
+    }
+}
+
+// ============ ИНИЦИАЛИЗАЦИЯ ============
+updateHistory();
+</script>
 </body>
 </html>
