@@ -22,12 +22,14 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .code-input{width:100%;padding:18px 16px;background:rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.1);border-radius:14px;font-size:22px;font-family:'Courier New',monospace;color:var(--t1);text-transform:uppercase;letter-spacing:1px;text-align:center;transition:all .3s;margin-bottom:12px}
 .code-input:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 20px rgba(252,204,0,0.2)}
 .code-input::placeholder{color:rgba(255,255,255,0.3);font-size:15px;letter-spacing:0;font-family:inherit}
+.code-input.editing{border-color:var(--org);box-shadow:0 0 20px rgba(255,107,0,0.3)}
 .btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(0.97)}
 .btn-p{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;box-shadow:0 4px 20px rgba(252,204,0,0.4)}
 .btn-s{background:rgba(255,255,255,0.1);color:var(--t1);border:1px solid rgba(255,255,255,0.2)}
 .btn-g{background:linear-gradient(135deg,#4caf50,#45a049);color:#fff;box-shadow:0 4px 15px rgba(76,175,80,0.4)}
 .btn-d{background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;box-shadow:0 4px 15px rgba(244,67,54,0.4)}
+.btn-w{background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;box-shadow:0 4px 15px rgba(255,152,0,0.4)}
 .btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:10px}
 .result{background:linear-gradient(135deg,rgba(76,175,80,0.15),rgba(69,160,73,0.1));border:1px solid rgba(76,175,80,0.3);border-radius:16px;padding:18px;margin:12px 0;display:none}
 .result.show{display:block;animation:fadeIn .3s}
@@ -41,6 +43,12 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .size-pay{color:#4caf50;font-weight:600}
 .error{background:linear-gradient(135deg,rgba(244,67,54,0.15),rgba(211,47,47,0.1));border:1px solid rgba(244,67,54,0.3);border-radius:12px;padding:14px;margin:12px 0;display:none;color:#ff6b6b;font-size:14px}
 .error.show{display:block}
+.edit-banner{background:linear-gradient(135deg,rgba(255,152,0,0.2),rgba(245,124,0,0.15));border:1px solid rgba(255,152,0,0.4);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:none;align-items:center;gap:10px;font-size:14px}
+.edit-banner.show{display:flex}
+.edit-banner .edit-icon{font-size:20px}
+.edit-banner .edit-text{flex:1;color:#ffb74d}
+.edit-banner .cancel-edit{background:rgba(255,152,0,0.3);border:1px solid rgba(255,152,0,0.5);color:#ffb74d;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.edit-banner .cancel-edit:hover{background:rgba(255,152,0,0.4)}
 .total{background:linear-gradient(135deg,rgba(252,204,0,0.2),rgba(255,107,0,0.15));border:1px solid rgba(252,204,0,0.3);border-radius:var(--r);padding:24px;margin-bottom:16px;text-align:right;box-shadow:0 8px 32px rgba(252,204,0,0.2)}
 .total-lbl{font-size:13px;color:var(--t2);margin-bottom:6px}
 .total-amt{font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -57,8 +65,13 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .h-amount{font-size:13px;color:var(--yel);font-weight:600;margin-top:3px}
 .h-time{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px}
 .h-pay{font-size:18px;font-weight:700;color:#4caf50;text-align:right;white-space:nowrap}
-.h-delete{background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.3);color:#ff6b6b;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;flex-shrink:0}
-.h-delete:hover{background:rgba(244,67,54,0.3);transform:scale(1.1)}
+.h-actions{display:flex;gap:6px;flex-shrink:0}
+.h-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;border:1px solid}
+.h-btn:hover{transform:scale(1.1)}
+.h-btn-edit{background:rgba(33,150,243,0.2);border-color:rgba(33,150,243,0.4);color:#64b5f6}
+.h-btn-edit:hover{background:rgba(33,150,243,0.3)}
+.h-btn-delete{background:rgba(244,67,54,0.2);border-color:rgba(244,67,54,0.4);color:#ff6b6b}
+.h-btn-delete:hover{background:rgba(244,67,54,0.3)}
 .wt-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-bottom:12px;border-left:3px solid var(--yel)}
 .wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .wt-name{font-size:15px;font-weight:600}
@@ -71,9 +84,6 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .nav-item.active{color:var(--yel)}
 .nav-item.active .nav-icon{transform:scale(1.1)}
 .nav-icon{font-size:24px;margin-bottom:3px;transition:transform .2s}
-.info{background:rgba(252,204,0,0.08);border-left:3px solid var(--yel);padding:14px;border-radius:10px;margin:14px 0;font-size:13px;line-height:1.6}
-.info strong{color:var(--yel);display:block;margin-bottom:6px}
-.info code{background:rgba(0,0,0,0.3);padding:3px 8px;border-radius:5px;font-family:'Courier New',monospace;font-size:12px;display:inline-block;margin:2px 0}
 .empty{text-align:center;padding:40px;color:rgba(255,255,255,0.3);font-size:14px}
 .hint{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.4}
 .fg{margin-bottom:14px}
@@ -117,14 +127,25 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
                 <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                 <line x1="12" y1="18" x2="12.01" y2="18"></line>
             </svg>
-            Ввод кода
+            <span id="input-title">Ввод кода</span>
         </div>
+        
+        <!-- Баннер редактирования -->
+        <div id="edit-banner" class="edit-banner">
+            <div class="edit-icon">✏️</div>
+            <div class="edit-text">
+                <b>Редактирование записи #<span id="edit-index-display">0</span></b><br>
+                <span style="font-size:12px;opacity:0.8">Измените код и нажмите "Сохранить изменения"</span>
+            </div>
+            <button class="cancel-edit" onclick="cancelEdit()">Отмена</button>
+        </div>
+        
         <input type="text" id="code" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off">
-        <button class="btn btn-p" onclick="addWork()">
+        <button class="btn btn-p" id="add-btn" onclick="addWork()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            Добавить
+            <span id="add-btn-text">Добавить</span>
         </button>
         
         <div id="result" class="result">
@@ -245,9 +266,9 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             Настройки
         </div>
         <button class="btn btn-p" onclick="exportData()">📤 Экспорт</button>
-        <button class="btn btn-s" onclick="document.getElementById('import').click()">📥 Импорт</button>
+        <button class="btn btn-s" onclick="document.getElementById('import').click()"> Импорт</button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
-        <button class="btn btn-d" onclick="resetAll()">️ Сбросить всё</button>
+        <button class="btn btn-d" onclick="resetAll()">🗑️ Сбросить всё</button>
     </div>
 </div>
 
@@ -289,6 +310,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
 let history = JSON.parse(localStorage.getItem('workHistory') || '[]');
 let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
 let tempParams = [];
+let editingIndex = -1; // Индекс редактируемой записи (-1 = не редактируем)
 
 if(types.length === 0){
     types = [
@@ -418,6 +440,53 @@ function extractData(code, type){
     };
 }
 
+// Режим редактирования
+function startEdit(idx){
+    editingIndex = idx;
+    let item = history[idx];
+    
+    // Подставляем код в поле ввода
+    document.getElementById('code').value = item.code;
+    document.getElementById('code').classList.add('editing');
+    
+    // Показываем баннер редактирования
+    document.getElementById('edit-banner').classList.add('show');
+    document.getElementById('edit-index-display').textContent = idx + 1;
+    
+    // Меняем кнопку и заголовок
+    document.getElementById('input-title').textContent = 'Редактирование';
+    document.getElementById('add-btn-text').textContent = 'Сохранить изменения';
+    document.getElementById('add-btn').classList.remove('btn-p');
+    document.getElementById('add-btn').classList.add('btn-w');
+    
+    // Автоматически показываем расшифровку
+    let data = parseCode(item.code);
+    if(data){
+        showResult(data);
+    }
+    
+    // Переходим на вкладку ввода
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('input').classList.add('active');
+    document.querySelector('.nav-item').classList.add('active');
+    
+    document.getElementById('code').focus();
+}
+
+function cancelEdit(){
+    editingIndex = -1;
+    document.getElementById('code').value = '';
+    document.getElementById('code').classList.remove('editing');
+    document.getElementById('edit-banner').classList.remove('show');
+    document.getElementById('input-title').textContent = 'Ввод кода';
+    document.getElementById('add-btn-text').textContent = 'Добавить';
+    document.getElementById('add-btn').classList.add('btn-p');
+    document.getElementById('add-btn').classList.remove('btn-w');
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('error').classList.remove('show');
+}
+
 function addWork(){
     let code = document.getElementById('code').value;
     let resultDiv = document.getElementById('result');
@@ -437,6 +506,49 @@ function addWork(){
         return;
     }
     
+    // Если режим редактирования — обновляем запись
+    if(editingIndex >= 0){
+        history[editingIndex] = {
+            date: history[editingIndex].date, // сохраняем оригинальную дату
+            code: data.code,
+            type: data.type,
+            params: data.params,
+            sizes: data.sizes,
+            sizeDetails: data.sizeDetails,
+            amount: data.amount,
+            unit: data.unit,
+            payment: data.payment,
+            edited: new Date().toLocaleString('ru-RU') // метка редактирования
+        };
+        saveHistory();
+        updateTotalDisplay();
+        cancelEdit();
+        alert('✅ Запись обновлена!');
+        return;
+    }
+    
+    // Обычное добавление
+    history.push({
+        date: new Date().toLocaleString('ru-RU'),
+        code: data.code,
+        type: data.type,
+        params: data.params,
+        sizes: data.sizes,
+        sizeDetails: data.sizeDetails,
+        amount: data.amount,
+        unit: data.unit,
+        payment: data.payment
+    });
+    saveHistory();
+    updateTotalDisplay();
+    
+    showResult(data);
+    
+    document.getElementById('code').value = '';
+    setTimeout(() => document.getElementById('code').focus(), 100);
+}
+
+function showResult(data){
     document.getElementById('r-type').textContent = data.type;
     
     let paramsHtml = '';
@@ -457,24 +569,7 @@ function addWork(){
     
     document.getElementById('r-amount').textContent = data.amount.toFixed(4) + ' ' + data.unit;
     document.getElementById('r-pay').textContent = data.payment.toLocaleString('ru-RU');
-    resultDiv.classList.add('show');
-    
-    history.push({
-        date: new Date().toLocaleString('ru-RU'),
-        code: data.code,
-        type: data.type,
-        params: data.params,
-        sizes: data.sizes,
-        sizeDetails: data.sizeDetails,
-        amount: data.amount,
-        unit: data.unit,
-        payment: data.payment
-    });
-    saveHistory();
-    updateTotalDisplay();
-    
-    document.getElementById('code').value = '';
-    setTimeout(() => document.getElementById('code').focus(), 100);
+    document.getElementById('result').classList.add('show');
 }
 
 function showError(msg){
@@ -512,6 +607,8 @@ function renderHistory(){
             sizesHtml += '</div>';
         }
         
+        let editedMark = item.edited ? '<div style="font-size:10px;color:#ff9800;margin-top:3px">✏️ отредактировано: ' + item.edited + '</div>' : '';
+        
         div.innerHTML = `
             <div class="h-item-left">
                 <div class="h-code">${item.code}</div>
@@ -519,9 +616,15 @@ function renderHistory(){
                 ${sizesHtml}
                 <div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>
                 <div class="h-time">${item.date}</div>
+                ${editedMark}
             </div>
-            <div class="h-pay">${item.payment.toLocaleString('ru-RU')} ₽</div>
-            <button class="h-delete" onclick="deleteItem(${realIdx})" title="Удалить">🗑️</button>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                <div class="h-pay">${item.payment.toLocaleString('ru-RU')} ₽</div>
+                <div class="h-actions">
+                    <button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="Редактировать">✏️</button>
+                    <button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить">🗑️</button>
+                </div>
+            </div>
         `;
         list.appendChild(div);
     });
@@ -568,7 +671,7 @@ function renderTypes(){
                 <div class="wt-code">${t.prefix}</div>
             </div>
             <div class="wt-info">Параметры: ${paramsText}</div>
-            <div class="wt-info">${t.mode === 'area' ? ' м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
+            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
             <div class="wt-formula">${t.formula}</div>
             <div style="display:flex;gap:10px;margin-top:10px">
                 <button class="btn btn-s btn-sm" onclick="editType(${idx})" style="flex:1">✏️</button>
