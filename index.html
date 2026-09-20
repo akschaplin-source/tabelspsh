@@ -2,1118 +2,668 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Учет работ оператора</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Учет работ</title>
 <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 15px;
-        color: #333;
-    }
-    
-    .container { max-width: 1300px; margin: 0 auto; }
-    
-    h1 {
-        color: white;
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 2em;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    h2 { margin-bottom: 15px; color: #333; }
-    h3 { margin: 20px 0 10px; color: #667eea; }
-    
-    .tabs {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-    }
-    
-    .tab {
-        padding: 12px 20px;
-        background: rgba(255,255,255,0.2);
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-size: 15px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    
-    .tab:hover { background: rgba(255,255,255,0.3); }
-    
-    .tab.active {
-        background: white;
-        color: #667eea;
-        font-weight: bold;
-    }
-    
-    .panel {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        display: none;
-    }
-    
-    .panel.active { display: block; }
-    
-    .input-section {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-    }
-    
-    .code-input {
-        width: 100%;
-        padding: 18px;
-        border: 3px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 24px;
-        font-family: 'Courier New', monospace;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 15px;
-    }
-    
-    .code-input:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-    
-    button {
-        padding: 10px 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s;
-        margin-right: 8px;
-        margin-bottom: 8px;
-    }
-    
-    button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-large {
-        width: 100%;
-        padding: 18px;
-        font-size: 18px;
-    }
-    
-    .btn-danger { background: linear-gradient(135deg, #f44336 0%, #e91e63 100%); }
-    .btn-success { background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); }
-    .btn-small { padding: 6px 12px; font-size: 13px; }
-    
-    .decoded-info {
-        background: #d4edda;
-        padding: 20px;
-        border-radius: 10px;
-        margin: 15px 0;
-        display: none;
-    }
-    
-    .decoded-info.show { display: block; }
-    .decoded-info h3 { color: #155724; margin: 0 0 10px; font-size: 18px; }
-    .decoded-info p { margin: 6px 0; font-size: 15px; line-height: 1.5; }
-    
-    .payment-calc {
-        background: #cce5ff;
-        padding: 15px;
-        border-radius: 10px;
-        margin-top: 15px;
-        font-size: 22px;
-        font-weight: bold;
-        color: #004085;
-        text-align: center;
-    }
-    
-    .error-info {
-        background: #f8d7da;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 15px 0;
-        color: #721c24;
-        display: none;
-    }
-    
-    .error-info.show { display: block; }
-    
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
-    
-    th, td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #e0e0e0;
-        font-size: 14px;
-    }
-    
-    th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-weight: 600;
-    }
-    
-    tr:hover { background: #f5f5f5; }
-    
-    .total {
-        font-size: 24px;
-        font-weight: bold;
-        color: #667eea;
-        text-align: right;
-        margin-top: 15px;
-        padding: 15px;
-        background: #f0f0f0;
-        border-radius: 10px;
-    }
-    
-    .info-box {
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        padding: 12px 15px;
-        margin: 15px 0;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-    
-    .success { background: #c8e6c9; border-left-color: #4caf50; }
-    .warning { background: #fff3cd; border-left-color: #ffc107; }
-    
-    .work-type-card {
-        background: #f8f9fa;
-        padding: 18px;
-        border-radius: 10px;
-        margin: 12px 0;
-        border-left: 4px solid #667eea;
-        position: relative;
-    }
-    
-    .work-type-card h4 { color: #667eea; margin-bottom: 8px; }
-    
-    .work-type-card code {
-        background: #fff3cd;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-    }
-    
-    .work-type-card .card-actions {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-    }
-    
-    .form-group { margin-bottom: 15px; }
-    
-    label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-        color: #333;
-        font-size: 14px;
-    }
-    
-    input, select, textarea {
-        width: 100%;
-        padding: 10px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 15px;
-        font-family: inherit;
-    }
-    
-    input:focus, select:focus, textarea:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-    
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-    }
-    
-    .modal.show {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 15px;
-    }
-    
-    .modal-content {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        max-width: 650px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        position: relative;
-    }
-    
-    .close-modal {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        font-size: 28px;
-        font-weight: bold;
-        color: #aaa;
-        cursor: pointer;
-        background: none;
-        border: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .close-modal:hover { color: #000; transform: none; box-shadow: none; }
-    
-    .param-row {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr auto;
-        gap: 8px;
-        margin-bottom: 8px;
-        align-items: end;
-    }
-    
-    .param-row input { padding: 8px; font-size: 14px; }
-    .param-row button { padding: 8px 12px; font-size: 13px; margin: 0; }
-    
-    .param-header {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr auto;
-        gap: 8px;
-        margin-bottom: 5px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #666;
-    }
-    
-    .quick-test {
-        background: #f0f4ff;
-        padding: 15px;
-        border-radius: 8px;
-        margin-top: 15px;
-        border: 2px dashed #667eea;
-    }
-    
-    .quick-test input {
-        font-family: 'Courier New', monospace;
-        margin-bottom: 10px;
-    }
-    
-    .test-result {
-        padding: 10px;
-        border-radius: 6px;
-        margin-top: 10px;
-        font-size: 14px;
-    }
-    
-    .test-result.ok { background: #d4edda; color: #155724; }
-    .test-result.err { background: #f8d7da; color: #721c24; }
-    
-    @media (max-width: 768px) {
-        h1 { font-size: 1.5em; }
-        .tab { padding: 10px 15px; font-size: 13px; }
-        .panel { padding: 15px; }
-        .code-input { font-size: 18px; padding: 14px; }
-        table { font-size: 12px; }
-        th, td { padding: 6px; }
-        .param-row, .param-header { grid-template-columns: 1fr; }
-        .param-header { display: none; }
-    }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--yel:#fc0;--org:#ff6b00;--bg:#1a1a1a;--card:#2a2a2a;--inp:#333;--t1:#fff;--t2:#999;--ok:#4caf50;--err:#f44336;--r:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;padding-bottom:80px;font-size:16px;line-height:1.5}
+.header{background:linear-gradient(135deg,var(--yel),var(--org));padding:18px 15px 28px;border-radius:0 0 24px 24px;box-shadow:0 4px 20px rgba(255,187,0,.3);position:sticky;top:0;z-index:100}
+.header h1{font-size:22px;font-weight:700;color:#000;text-align:center}
+.header-sub{font-size:12px;color:rgba(0,0,0,.6);text-align:center;margin-top:2px}
+.content{padding:12px;margin-top:-8px}
+.panel{display:none;animation:fadeIn .25s}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.card-title{font-size:17px;font-weight:600;margin-bottom:12px}
+.code-input{width:100%;padding:18px 12px;background:var(--inp);border:2px solid #444;border-radius:12px;font-size:22px;font-family:'Courier New',monospace;color:var(--t1);text-transform:uppercase;letter-spacing:1px;text-align:center;transition:border-color .2s}
+.code-input:focus{outline:none;border-color:var(--yel);background:#3a3a3a}
+.code-input::placeholder{color:#555;font-size:15px;letter-spacing:0;font-family:inherit}
+.btn{width:100%;padding:16px;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .15s;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;box-shadow:0 4px 12px rgba(255,187,0,.3)}
+.btn-s{background:#444;color:var(--t1)}
+.btn-g{background:var(--ok);color:#fff}
+.btn-d{background:var(--err);color:#fff}
+.btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:8px}
+.decoded{background:linear-gradient(135deg,#1b5e20,#2e7d32);border-radius:12px;padding:18px;margin:12px 0;display:none;border-left:4px solid var(--ok)}
+.decoded.show{display:block;animation:fadeIn .25s}
+.decoded h3{font-size:15px;margin-bottom:10px}
+.decoded p{font-size:14px;margin:6px 0;color:rgba(255,255,255,.9)}
+.sizes-box{background:rgba(255,255,255,.1);border-radius:8px;padding:10px;margin:8px 0}
+.sz-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.15);font-size:13px}
+.sz-row:last-child{border:none}
+.sz-lbl{opacity:.8}
+.sz-val{font-weight:600;color:var(--yel)}
+.pay-box{background:rgba(255,255,255,.2);padding:14px;border-radius:8px;margin-top:12px;text-align:center}
+.pay-lbl{font-size:13px;opacity:.9}
+.pay-amt{font-size:30px;font-weight:700}
+.err-box{background:linear-gradient(135deg,#b71c1c,#d32f2f);border-radius:12px;padding:14px;margin:12px 0;display:none;color:#fff;font-size:14px}
+.err-box.show{display:block}
+.total-card{background:linear-gradient(135deg,var(--yel),var(--org));border-radius:var(--r);padding:22px;margin-bottom:16px;text-align:right;box-shadow:0 4px 12px rgba(255,187,0,.3)}
+.total-lbl{font-size:13px;color:rgba(0,0,0,.6)}
+.total-amt{font-size:34px;font-weight:700;color:#000}
+.h-list{background:var(--card);border-radius:var(--r);overflow:hidden}
+.h-item{padding:14px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center}
+.h-item:last-child{border:none}
+.h-code{font-family:'Courier New',monospace;font-size:15px;font-weight:600;color:var(--yel);word-break:break-all;margin-bottom:4px}
+.h-type{font-size:13px;color:var(--t2)}
+.h-part{font-size:12px;color:var(--t2)}
+.h-sizes{font-size:11px;color:#777;margin-top:2px}
+.h-time{font-size:11px;color:#555;margin-top:3px}
+.h-pay{font-size:18px;font-weight:700;color:var(--ok);text-align:right;white-space:nowrap}
+.wt-card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--yel)}
+.wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.wt-name{font-size:15px;font-weight:600}
+.wt-code{background:var(--yel);color:#000;padding:3px 8px;border-radius:5px;font-family:'Courier New',monospace;font-weight:700;font-size:13px}
+.wt-info{font-size:12px;color:var(--t2);margin:4px 0}
+.wt-formula{background:var(--inp);padding:8px;border-radius:6px;font-family:'Courier New',monospace;font-size:12px;margin:8px 0;word-break:break-all}
+.wt-rate{font-size:13px;color:var(--yel);font-weight:600}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:1000;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.modal-body{background:var(--card);width:100%;max-height:92vh;border-radius:20px 20px 0 0;padding:20px 16px 30px;overflow-y:auto;animation:slideUp .3s}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-title{font-size:19px;font-weight:700}
+.close-btn{background:none;border:none;color:var(--t2);font-size:28px;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--t2)}
+.fi{width:100%;padding:13px;background:var(--inp);border:2px solid #444;border-radius:10px;color:var(--t1);font-size:15px;transition:border-color .2s}
+.fi:focus{outline:none;border-color:var(--yel)}
+.fi::placeholder{color:#555}
+textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
+.pr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:end}
+.pr input{font-size:13px;padding:10px 6px}
+.pr button{padding:8px;font-size:12px;margin:0}
+.pr-lbl{font-size:11px;color:var(--t2);margin-bottom:2px}
+.sz-toggle{display:flex;align-items:center;gap:10px;padding:12px;background:var(--inp);border-radius:10px;margin-bottom:12px;cursor:pointer}
+.sz-toggle input[type=checkbox]{width:20px;height:20px;accent-color:var(--yel)}
+.sz-toggle span{font-size:14px;font-weight:600}
+.sz-settings{background:rgba(252,204,0,.08);border:1px solid rgba(252,204,0,.2);border-radius:10px;padding:14px;margin-bottom:12px;display:none}
+.sz-settings.show{display:block}
+.sz-row-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid #333;display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:4px 8px;color:var(--t2);font-size:10px;cursor:pointer;border:none;background:none;transition:color .2s}
+.nav-item.active{color:var(--yel)}
+.nav-icon{font-size:22px;margin-bottom:2px}
+.info{background:rgba(252,204,0,.08);border-left:3px solid var(--yel);padding:12px;border-radius:8px;margin:12px 0;font-size:13px;line-height:1.5}
+.info strong{color:var(--yel);display:block;margin-bottom:4px}
+.info code{background:var(--inp);padding:2px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:12px}
+.test-box{background:rgba(255,255,255,.05);border:1px dashed #555;border-radius:10px;padding:12px;margin:12px 0}
+.test-ok{color:var(--ok);font-size:13px;margin-top:8px}
+.test-err{color:var(--err);font-size:13px;margin-top:8px}
+.empty{text-align:center;padding:30px;color:#555;font-size:14px}
+@media(min-width:768px){body{max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.5)}.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}.header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#444;border-radius:3px}
 </style>
 </head>
 <body>
-<div class="container">
-    <h1>🏭 Учет работ оператора</h1>
-    
-    <div class="tabs">
-        <button class="tab active" onclick="switchTab('input', event)">✍️ Ввод кода</button>
-        <button class="tab" onclick="switchTab('history', event)">📋 История</button>
-        <button class="tab" onclick="switchTab('workTypes', event)">🔧 Типы работ</button>
-        <button class="tab" onclick="switchTab('settings', event)">⚙️ Настройки</button>
-    </div>
-    
-    <!-- Панель ввода кода -->
-    <div id="input" class="panel active">
-        <h2>Ввод кода работы</h2>
-        
-        <div class="input-section">
-            <input 
-                type="text" 
-                id="code-input" 
-                class="code-input" 
-                placeholder="Введите или отсканируйте код..."
-                autocomplete="off"
-            >
-            
-            <div id="decoded-info" class="decoded-info">
-                <h3>📋 Расшифровка кода:</h3>
-                <p><strong>Тип работы:</strong> <span id="decoded-work-type"></span></p>
-                <div id="decoded-params"></div>
-                <p><strong>Номер детали:</strong> <span id="decoded-part-number"></span></p>
-                <p><strong>Расчет:</strong> <span id="decoded-calculation"></span></p>
-                <div class="payment-calc">
-                    💰 Оплата: <span id="calculated-payment">0</span> ₽
-                </div>
+
+<div class="header">
+    <h1>🏭 Учет работ</h1>
+    <div class="header-sub">Ввод кода • Расчет • История</div>
+</div>
+
+<div class="content">
+
+<div id="input" class="panel active">
+    <div class="card">
+        <div class="card-title">📱 Ввод кода</div>
+        <input type="text" id="code-input" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off" autocapitalize="characters">
+        <button class="btn btn-p" onclick="addWork()">✅ Добавить работу</button>
+        <div id="decoded" class="decoded">
+            <h3>📋 Расшифровка</h3>
+            <p><b>Тип:</b> <span id="d-type"></span></p>
+            <div id="d-params"></div>
+            <p><b>Деталь:</b> <span id="d-part"></span></p>
+            <p><b>Расчет:</b> <span id="d-calc"></span></p>
+            <div class="pay-box">
+                <div class="pay-lbl">💰 Оплата</div>
+                <div class="pay-amt"><span id="d-pay">0</span> ₽</div>
             </div>
-            
-            <div id="error-info" class="error-info">
-                <strong>❌ Ошибка:</strong> <span id="error-message"></span>
-            </div>
-            
-            <button class="btn-large" onclick="addWork()">✅ Добавить работу</button>
         </div>
-        
-        <div class="info-box warning">
-            <strong>💡 Подсказка:</strong> Введите код — система автоматически определит тип работы, извлечет параметры и рассчитает оплату.
-        </div>
+        <div id="errbox" class="err-box">❌ <span id="err-msg"></span></div>
     </div>
-    
-    <!-- Панель истории -->
-    <div id="history" class="panel">
-        <h2>История выполненных работ</h2>
-        <div class="total">
-            Итого заработано: <span id="total-earnings">0</span> ₽
-        </div>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Дата/Время</th>
-                        <th>Код</th>
-                        <th>Тип работы</th>
-                        <th>Параметры</th>
-                        <th>Деталь</th>
-                        <th>Оплата</th>
-                    </tr>
-                </thead>
-                <tbody id="history-table"></tbody>
-            </table>
-        </div>
-        <button onclick="clearHistory()" style="margin-top: 15px;" class="btn-danger">🗑️ Очистить историю</button>
-        <button onclick="exportHistory()">📥 Экспорт CSV</button>
-    </div>
-    
-    <!-- Панель типов работ -->
-    <div id="workTypes" class="panel">
-        <h2>Управление типами работ</h2>
-        
-        <button onclick="openWorkTypeModal()" class="btn-success">➕ Добавить тип работы</button>
-        
-        <div id="work-types-list"></div>
-        
-        <div class="info-box">
-            <strong>💡 Как это работает:</strong><br>
-            • <strong>Код-префикс</strong> — начало кода, по которому определяется тип работы<br>
-            • <strong>Параметры</strong> — извлекаются из кода по позиции и длине<br>
-            • <strong>Формула</strong> — математическое выражение с именами параметров<br>
-            • <strong>Тариф</strong> — умножается на результат формулы
-        </div>
-    </div>
-    
-    <!-- Панель настроек -->
-    <div id="settings" class="panel">
-        <h2>Настройки и данные</h2>
-        
-        <h3>💾 Резервное копирование</h3>
-        <button onclick="exportAll()">📤 Экспорт всех данных (JSON)</button>
-        <button onclick="document.getElementById('import-file').click()">📥 Импорт данных</button>
-        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="handleImport(event)">
-        
-        <h3>🗑️ Очистка</h3>
-        <button onclick="resetAll()" class="btn-danger">Удалить все данные приложения</button>
-        
-        <div class="info-box">
-            <strong>📌 О приложении:</strong><br>
-            • Все данные хранятся локально в вашем браузере (localStorage)<br>
-            • Не требует интернета после загрузки<br>
-            • Не использует сторонние сервисы и БД<br>
-            • Работает с любым USB/Bluetooth сканером штрих-кодов (в режиме клавиатуры)
-        </div>
+    <div class="info">
+        <strong>💡 Формат кода:</strong>
+        <code>НП162100x800/522x500-ВБ-154.002</code><br>
+        <code>x</code> — разделитель длины и ширины<br>
+        <code>/</code> — разделитель пар размеров<br>
+        <code>-</code> — перед номером детали
     </div>
 </div>
 
-<!-- Модальное окно типа работы -->
-<div id="workTypeModal" class="modal">
-    <div class="modal-content">
-        <button class="close-modal" onclick="closeWorkTypeModal()">&times;</button>
-        <h2 id="modal-title">Добавить тип работы</h2>
-        
-        <div class="form-group">
-            <label>Код-префикс (начало кода):</label>
-            <input type="text" id="wt-prefix" placeholder="Например: ВП" maxlength="5">
+<div id="history" class="panel">
+    <div class="total-card">
+        <div class="total-lbl">Всего заработано</div>
+        <div class="total-amt"><span id="total">0</span> ₽</div>
+    </div>
+    <div class="h-list" id="h-list"></div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-d" onclick="clearHist()" style="flex:1">🗑️ Очистить</button>
+        <button class="btn btn-s" onclick="exportCSV()" style="flex:1">📥 CSV</button>
+    </div>
+</div>
+
+<div id="workTypes" class="panel">
+    <div class="card">
+        <div class="card-title">🔧 Типы работ</div>
+        <button class="btn btn-g" onclick="openModal()">➕ Добавить тип работы</button>
+    </div>
+    <div id="wt-list"></div>
+    <div class="info">
+        <strong>📚 Как создать тип:</strong>
+        Укажите префикс, параметры, при необходимости включите группу размеров с разделителями, задайте формулу и тариф.
+    </div>
+</div>
+
+<div id="settings" class="panel">
+    <div class="card">
+        <div class="card-title">⚙️ Данные</div>
+        <button class="btn btn-p" onclick="exportAll()">📤 Экспорт (JSON)</button>
+        <button class="btn btn-s" onclick="document.getElementById('imp').click()">📥 Импорт</button>
+        <input type="file" id="imp" style="display:none" accept=".json" onchange="doImport(event)">
+        <button class="btn btn-d" onclick="resetAll()" style="margin-top:8px">🗑️ Сбросить всё</button>
+    </div>
+    <div class="info">
+        <strong>📌 О приложении:</strong>
+        Данные хранятся в браузере (localStorage). Работает оффлайн. Поддерживает USB/Bluetooth сканеры штрих-кодов.
+    </div>
+</div>
+
+</div>
+
+<div id="modal" class="modal">
+<div class="modal-body">
+    <div class="modal-head">
+        <div class="modal-title" id="m-title">Новый тип</div>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+    </div>
+
+    <div class="fg">
+        <div class="fl">Код-префикс</div>
+        <input type="text" id="m-prefix" class="fi" placeholder="НП" maxlength="5">
+    </div>
+    <div class="fg">
+        <div class="fl">Название</div>
+        <input type="text" id="m-name" class="fi" placeholder="Наружная панель">
+    </div>
+
+    <div class="fg">
+        <div class="fl">Обычные параметры (толщина и т.д.)</div>
+        <div id="m-params"></div>
+        <button class="btn btn-s btn-sm" onclick="addParam()" style="margin-top:8px">➕ Параметр</button>
+    </div>
+
+    <div class="sz-toggle" onclick="toggleSizeGroup()">
+        <input type="checkbox" id="m-sz-on">
+        <span>📐 Группа размеров (длина×ширина)</span>
+    </div>
+    <div id="m-sz-settings" class="sz-settings">
+        <div class="fg">
+            <div class="fl">Позиция начала блока размеров</div>
+            <input type="number" id="m-sz-start" class="fi" value="4" min="0">
         </div>
-        
-        <div class="form-group">
-            <label>Название типа работы:</label>
-            <input type="text" id="wt-name" placeholder="Например: Внутренняя панель распил">
-        </div>
-        
-        <div class="form-group">
-            <label>Параметры (извлекаются из кода):</label>
-            <div class="param-header">
-                <div>Название (для формулы)</div>
-                <div>Позиция</div>
-                <div>Длина</div>
-                <div>Ед.изм.</div>
-                <div></div>
+        <div class="sz-row-inputs">
+            <div class="fg">
+                <div class="fl">Разделитель пар</div>
+                <input type="text" id="m-sz-pair" class="fi" value="/" maxlength="2">
             </div>
-            <div id="params-container"></div>
-            <button onclick="addParamRow()" class="btn-small">➕ Добавить параметр</button>
-            <div class="info-box" style="margin-top: 10px; font-size: 12px;">
-                <strong>Позиция</strong> — индекс символа в коде (с 0).<br>
-                <strong>Длина</strong> — сколько символов занимает параметр.<br>
-                Пример: для кода <code>ВП162500870ВБ-125.002</code> толщина 16 начинается с позиции 2 и имеет длину 2.
+            <div class="fg">
+                <div class="fl">Разделитель внутри пары</div>
+                <input type="text" id="m-sz-dim" class="fi" value="x" maxlength="2">
             </div>
         </div>
-        
-        <div class="form-group">
-            <label>Позиция номера детали (с какого символа):</label>
-            <input type="number" id="wt-part-start" value="12" min="0">
+        <div class="fg">
+            <div class="fl">Имена измерений (через запятую)</div>
+            <input type="text" id="m-sz-names" class="fi" value="Длина,Ширина" placeholder="Длина,Ширина">
         </div>
-        
-        <div class="form-group">
-            <label>Формула расчета (результат умножается на тариф):</label>
-            <textarea id="wt-formula" rows="2" placeholder="Например: (Длина * Ширина / 1000000)"></textarea>
-            <small style="color: #666;">
-                Используйте названия параметров. Поддерживаются: +, -, *, /, скобки, числа.
-            </small>
+        <div class="fg">
+            <div class="fl">Единицы (через запятую)</div>
+            <input type="text" id="m-sz-units" class="fi" value="мм,мм" placeholder="мм,мм">
         </div>
-        
-        <div class="form-group">
-            <label>Единица результата формулы:</label>
-            <input type="text" id="wt-formula-unit" placeholder="Например: м²" value="">
-        </div>
-        
-        <div class="form-group">
-            <label>Тариф (₽ за единицу результата формулы):</label>
-            <input type="number" id="wt-rate" value="500" min="0" step="0.01">
-        </div>
-        
-        <div class="form-group">
-            <label>Единица тарифа:</label>
-            <input type="text" id="wt-unit" placeholder="Например: ₽/м²" value="₽">
-        </div>
-        
-        <div class="quick-test">
-            <strong>🧪 Тест формулы:</strong>
-            <input type="text" id="test-code" placeholder="Введите тестовый код..." style="font-family: 'Courier New', monospace;">
-            <button onclick="testFormula()" class="btn-small">Проверить</button>
-            <div id="test-result"></div>
-        </div>
-        
-        <div style="margin-top: 20px;">
-            <button onclick="saveWorkType()" class="btn-success">💾 Сохранить</button>
-            <button onclick="closeWorkTypeModal()">Отмена</button>
+        <div class="info" style="margin:8px 0">
+            <strong>Пример блока:</strong>
+            <code>2100x800/522x500</code> — две пары размеров
         </div>
     </div>
+
+    <div class="fg">
+        <div class="fl">Разделитель перед номером детали</div>
+        <input type="text" id="m-part-sep" class="fi" value="-" maxlength="3">
+    </div>
+
+    <div class="fg">
+        <div class="fl">Формула расчета</div>
+        <textarea id="m-formula" class="fi" placeholder="(Длина * Ширина / 1000000)"></textarea>
+        <div style="font-size:11px;color:#666;margin-top:4px">Используйте имена параметров. Для группы размеров формула считается по каждой паре и суммируется.</div>
+    </div>
+    <div class="sz-row-inputs">
+        <div class="fg">
+            <div class="fl">Единица результата</div>
+            <input type="text" id="m-funit" class="fi" placeholder="м²">
+        </div>
+        <div class="fg">
+            <div class="fl">Тариф (₽)</div>
+            <input type="number" id="m-rate" class="fi" value="500" min="0" step="0.01">
+        </div>
+    </div>
+    <div class="fg">
+        <div class="fl">Единица тарифа</div>
+        <input type="text" id="m-unit" class="fi" value="₽/м²">
+    </div>
+
+    <div class="test-box">
+        <div class="fl">🧪 Тест кода</div>
+        <input type="text" id="m-test" class="fi" placeholder="НП162100x800/522x500-ВБ-154.002" style="margin-bottom:8px">
+        <button class="btn btn-s btn-sm" onclick="testCode()">Проверить</button>
+        <div id="m-test-res"></div>
+    </div>
+
+    <button class="btn btn-g" onclick="saveWT()" style="margin-top:8px">💾 Сохранить</button>
+    <button class="btn btn-s" onclick="closeModal()">Отмена</button>
+</div>
+</div>
+
+<div class="bottom-nav">
+    <button class="nav-item active" onclick="go('input',this)"><div class="nav-icon">📱</div>Ввод</button>
+    <button class="nav-item" onclick="go('history',this)"><div class="nav-icon">📋</div>История</button>
+    <button class="nav-item" onclick="go('workTypes',this)"><div class="nav-icon">🔧</div>Типы</button>
+    <button class="nav-item" onclick="go('settings',this)"><div class="nav-icon">⚙️</div>Ещё</button>
 </div>
 
 <script>
-// ============ ХРАНИЛИЩЕ ДАННЫХ ============
-let workHistory = JSON.parse(localStorage.getItem('workHistory') || '[]');
-let workTypes = JSON.parse(localStorage.getItem('workTypes') || '[]');
-let editingWorkTypeIndex = -1;
-let currentParams = [];
+let hist = JSON.parse(localStorage.getItem('wh')||'[]');
+let types = JSON.parse(localStorage.getItem('wt')||'[]');
+let editIdx = -1, curParams = [];
 
-// Инициализация типов работ по умолчанию (если пусто)
-if (workTypes.length === 0) {
-    workTypes = [
+if(!types.length){
+    types = [
         {
-            prefix: "ВП",
-            name: "Внутренняя панель (распил)",
-            params: [
-                {name: "Толщина", start: 2, length: 2, unit: "мм"},
-                {name: "Длина", start: 4, length: 4, unit: "мм"},
-                {name: "Ширина", start: 8, length: 4, unit: "мм"}
-            ],
-            partNumberStart: 12,
-            formula: "(Длина * Ширина / 1000000)",
-            formulaUnit: "м²",
-            rate: 500,
-            unit: "₽/м²"
+            prefix:"ВП", name:"Внутренняя панель",
+            params:[{name:"Толщина",start:2,length:2,unit:"мм"}],
+            sizeGroup:{on:true,start:4,pairSep:"/",dimSep:"x",dims:["Длина","Ширина"],units:["мм","мм"]},
+            partSep:"-",
+            formula:"(Длина * Ширина / 1000000)", funit:"м²", rate:500, unit:"₽/м²"
         },
         {
-            prefix: "НП",
-            name: "Наружная панель (распил)",
-            params: [
-                {name: "Толщина", start: 2, length: 2, unit: "мм"},
-                {name: "Длина", start: 4, length: 4, unit: "мм"},
-                {name: "Ширина", start: 8, length: 4, unit: "мм"}
-            ],
-            partNumberStart: 12,
-            formula: "(Длина * Ширина / 1000000)",
-            formulaUnit: "м²",
-            rate: 500,
-            unit: "₽/м²"
+            prefix:"НП", name:"Наружная панель",
+            params:[{name:"Толщина",start:2,length:2,unit:"мм"}],
+            sizeGroup:{on:true,start:4,pairSep:"/",dimSep:"x",dims:["Длина","Ширина"],units:["мм","мм"]},
+            partSep:"-",
+            formula:"(Длина * Ширина / 1000000)", funit:"м²", rate:500, unit:"₽/м²"
         },
         {
-            prefix: "Н",
-            name: "Наличник",
-            params: [
-                {name: "Расположение", start: 1, length: 1, unit: ""},
-                {name: "Ширина", start: 2, length: 2, unit: "см"},
-                {name: "Длина", start: 4, length: 4, unit: "мм"}
+            prefix:"Н", name:"Наличник",
+            params:[
+                {name:"Расположение",start:1,length:1,unit:""},
+                {name:"Ширина",start:2,length:2,unit:"см"},
+                {name:"Длина",start:4,length:4,unit:"мм"}
             ],
-            partNumberStart: 12,
-            formula: "(Длина / 1000)",
-            formulaUnit: "м.п.",
-            rate: 300,
-            unit: "₽/м.п."
+            sizeGroup:{on:false},
+            partSep:"-",
+            formula:"(Длина / 1000)", funit:"м.п.", rate:300, unit:"₽/м.п."
         }
     ];
-    saveWorkTypes();
+    saveTypes();
 }
 
-function saveWorkTypes() {
-    localStorage.setItem('workTypes', JSON.stringify(workTypes));
-}
+function saveTypes(){localStorage.setItem('wt',JSON.stringify(types))}
+function saveHist(){localStorage.setItem('wh',JSON.stringify(hist))}
 
-function saveHistory() {
-    localStorage.setItem('workHistory', JSON.stringify(workHistory));
-}
-
-// ============ БЕЗОПАСНЫЙ ПАРСЕР ФОРМУЛ ============
-// Разрешаем только цифры, имена параметров, операторы, скобки, точки
-function validateFormula(formula, paramNames) {
-    // Удаляем пробелы
-    let f = formula.replace(/\s+/g, '');
-    if (!f) return { valid: false, error: 'Формула пустая' };
-    
-    // Проверяем что все имена параметров присутствуют (опционально — может быть константа)
-    // Проверяем недопустимые символы
-    // Разрешены: буквы (кириллица/латиница), цифры, + - * / ( ) . ,
-    const allowedPattern = /^[a-zA-Zа-яА-ЯёЁ0-9+\-*/().,]+$/;
-    if (!allowedPattern.test(f)) {
-        return { valid: false, error: 'Недопустимые символы в формуле' };
-    }
-    
-    // Проверяем что нет двух операторов подряд
-    if (/[+\-*/]{2,}/.test(f.replace(/\(-/g, '(0-'))) {
-        return { valid: false, error: 'Два оператора подряд' };
-    }
-    
-    return { valid: true };
-}
-
-// Вычисление формулы с подстановкой параметров
-function evaluateFormula(formula, params) {
-    let f = formula.replace(/\s+/g, '');
-    
-    // Заменяем имена параметров на их значения (сначала длинные имена, чтобы избежать частичных замен)
-    const sortedNames = Object.keys(params).sort((a, b) => b.length - a.length);
-    for (const name of sortedNames) {
-        const regex = new RegExp(name, 'g');
-        f = f.replace(regex, '(' + params[name] + ')');
-    }
-    
-    // Проверяем что остались только разрешенные символы
-    if (!/^[0-9+\-*/().eE]+$/.test(f)) {
-        throw new Error('Неизвестные символы в формуле после подстановки');
-    }
-    
-    // Используем Function вместо eval для изоляции
-    try {
-        const result = new Function('return ' + f)();
-        if (typeof result !== 'number' || !isFinite(result)) {
-            throw new Error('Результат не является числом');
-        }
-        return result;
-    } catch (e) {
-        throw new Error('Ошибка вычисления: ' + e.message);
-    }
-}
-
-// ============ ПАРСИНГ КОДА ============
-function parseCode(code) {
+function parseCode(code){
     code = code.toUpperCase().trim();
-    if (!code) return null;
-    
-    // Ищем тип работы по префиксу (сортируем по длине — длинные сначала, чтобы "ВП" не перехватил "В")
-    const sortedTypes = [...workTypes].sort((a, b) => b.prefix.length - a.prefix.length);
-    
-    for (const workType of sortedTypes) {
-        if (code.startsWith(workType.prefix.toUpperCase())) {
-            try {
-                return parseWorkType(code, workType);
-            } catch (e) {
-                // Пробуем следующий тип
-                continue;
-            }
+    if(!code) return null;
+    const sorted = [...types].sort((a,b)=>b.prefix.length-a.prefix.length);
+    for(const wt of sorted){
+        if(code.startsWith(wt.prefix.toUpperCase())){
+            try{ return parseWT(code,wt) }catch(e){ continue }
         }
     }
-    
     return null;
 }
 
-function parseWorkType(code, workType) {
+function parseWT(code, wt){
     const params = {};
-    const paramsDisplay = [];
-    
-    // Извлечение параметров
-    for (const param of workType.params) {
-        const value = code.substring(param.start, param.start + param.length);
-        if (!value) throw new Error('Код слишком короткий');
-        
-        const numValue = parseFloat(value);
-        if (!isNaN(numValue)) {
-            params[param.name] = numValue;
-        } else {
-            // Строковый параметр — для формулы не подходит, но показываем
-            params[param.name] = 0;
-            params['_str_' + param.name] = value;
+    const display = [];
+
+    for(const p of wt.params){
+        const v = code.substring(p.start, p.start+p.length);
+        if(!v) throw new Error('Код слишком короткий');
+        const n = parseFloat(v);
+        params[p.name] = isNaN(n)?0:n;
+        display.push(p.name+': '+(isNaN(n)?v:n)+(p.unit?' '+p.unit:''));
+    }
+
+    let sizesDisplay = [];
+    let totalFormulaResult = 0;
+
+    if(wt.sizeGroup && wt.sizeGroup.on){
+        const sg = wt.sizeGroup;
+        const sep = wt.partSep || '-';
+        let blockEnd = code.indexOf(sep, sg.start);
+        if(blockEnd === -1) blockEnd = code.length;
+        const block = code.substring(sg.start, blockEnd);
+        if(!block) throw new Error('Блок размеров пуст');
+
+        const pairs = block.split(sg.pairSep);
+        if(pairs.length > 5) throw new Error('Максимум 5 пар размеров');
+
+        const dimNames = sg.dims || ['Длина','Ширина'];
+        const dimUnits = sg.units || ['мм','мм'];
+
+        for(let i=0; i<pairs.length; i++){
+            const dims = pairs[i].split(sg.dimSep);
+            if(dims.length !== dimNames.length){
+                throw new Error('Пара '+(i+1)+': ожидалось '+dimNames.length+' измерений, получено '+dims.length);
+            }
+            const pairParams = {...params};
+            const pairDisplay = [];
+            for(let j=0; j<dimNames.length; j++){
+                const val = parseFloat(dims[j]);
+                if(isNaN(val)) throw new Error('Не число в паре '+(i+1));
+                pairParams[dimNames[j]] = val;
+                pairDisplay.push(dimNames[j]+': '+val+(dimUnits[j]?' '+dimUnits[j]:''));
+            }
+            sizesDisplay.push('№'+(i+1)+': '+pairDisplay.join(', '));
+            const r = evalFormula(wt.formula, pairParams);
+            totalFormulaResult += r;
         }
-        
-        const displayValue = isNaN(numValue) ? value : numValue;
-        paramsDisplay.push(`${param.name}: ${displayValue}${param.unit ? ' ' + param.unit : ''}`);
+    } else {
+        totalFormulaResult = evalFormula(wt.formula, params);
     }
-    
-    // Извлечение номера детали
-    const partNumber = code.substring(workType.partNumberStart);
-    
-    // Проверка формулы
-    const validation = validateFormula(workType.formula, Object.keys(params));
-    if (!validation.valid) {
-        throw new Error(validation.error);
+
+    let partNumber = '—';
+    if(wt.sizeGroup && wt.sizeGroup.on){
+        const sep = wt.partSep || '-';
+        const idx = code.indexOf(sep, wt.sizeGroup.start);
+        if(idx !== -1) partNumber = code.substring(idx+sep.length);
+    } else if(wt.partSep){
+        const lastParam = wt.params.length ? wt.params[wt.params.length-1] : null;
+        const searchFrom = lastParam ? lastParam.start+lastParam.length : 2;
+        const idx = code.indexOf(wt.partSep, searchFrom);
+        if(idx !== -1) partNumber = code.substring(idx+wt.partSep.length);
     }
-    
-    // Вычисление результата формулы
-    const formulaResult = evaluateFormula(workType.formula, params);
-    const payment = Math.round(formulaResult * workType.rate * 100) / 100;
-    
-    const formulaUnit = workType.formulaUnit ? ' ' + workType.formulaUnit : '';
-    const calculation = `${workType.formula} = ${formulaResult.toFixed(4)}${formulaUnit} × ${workType.rate} ${workType.unit}`;
-    
+
+    const payment = Math.round(totalFormulaResult * wt.rate * 100)/100;
+    const fu = wt.funit ? ' '+wt.funit : '';
+    const calc = wt.formula+' = '+totalFormulaResult.toFixed(4)+fu+' × '+wt.rate;
+
     return {
-        workType: workType.name,
-        typeCode: workType.prefix,
-        params: paramsDisplay.join(', '),
-        partNumber: partNumber || '—',
-        calculation: calculation,
-        payment: payment,
+        workType: wt.name,
+        params: display.join(', '),
+        sizes: sizesDisplay,
+        partNumber: partNumber||'—',
+        calc, payment,
         rawCode: code
     };
 }
 
-// ============ ИНТЕРФЕЙС ВВОДА ============
-document.getElementById('code-input').addEventListener('input', function() {
-    const code = this.value.toUpperCase();
-    this.value = code;
-    
-    const decodedInfo = document.getElementById('decoded-info');
-    const errorInfo = document.getElementById('error-info');
-    
-    if (code.length < 3) {
-        decodedInfo.classList.remove('show');
-        errorInfo.classList.remove('show');
-        return;
+function evalFormula(formula, params){
+    let f = formula.replace(/\s+/g,'');
+    const names = Object.keys(params).sort((a,b)=>b.length-a.length);
+    for(const n of names){
+        f = f.replace(new RegExp(n,'g'),'('+params[n]+')');
     }
-    
-    const result = parseCode(code);
-    
-    if (result) {
-        document.getElementById('decoded-work-type').textContent = result.workType;
-        document.getElementById('decoded-params').innerHTML = `<p><strong>Параметры:</strong> ${result.params}</p>`;
-        document.getElementById('decoded-part-number').textContent = result.partNumber;
-        document.getElementById('decoded-calculation').textContent = result.calculation;
-        document.getElementById('calculated-payment').textContent = result.payment.toLocaleString('ru-RU');
-        
-        decodedInfo.classList.add('show');
-        errorInfo.classList.remove('show');
+    if(!/^[0-9+\-*/().eE]+$/.test(f)) throw new Error('Неизвестные символы в формуле');
+    const r = new Function('return '+f)();
+    if(typeof r!=='number'||!isFinite(r)) throw new Error('Неверный результат формулы');
+    return r;
+}
+
+const ci = document.getElementById('code-input');
+ci.addEventListener('input', function(){
+    this.value = this.value.toUpperCase();
+    const code = this.value;
+    const dec = document.getElementById('decoded');
+    const err = document.getElementById('errbox');
+    if(code.length<3){dec.classList.remove('show');err.classList.remove('show');return}
+    const r = parseCode(code);
+    if(r){
+        document.getElementById('d-type').textContent = r.workType;
+        let ph = '<p><b>Параметры:</b> '+r.params+'</p>';
+        if(r.sizes.length){
+            ph += '<div class="sizes-box">';
+            r.sizes.forEach(s=>{
+                const parts = s.split(':');
+                ph+='<div class="sz-row"><span class="sz-lbl">'+parts[0]+'</span><span class="sz-val">'+parts.slice(1).join(':').trim()+'</span></div>';
+            });
+            ph += '</div>';
+        }
+        document.getElementById('d-params').innerHTML = ph;
+        document.getElementById('d-part').textContent = r.partNumber;
+        document.getElementById('d-calc').textContent = r.calc;
+        document.getElementById('d-pay').textContent = r.payment.toLocaleString('ru-RU');
+        dec.classList.add('show');err.classList.remove('show');
     } else {
-        decodedInfo.classList.remove('show');
-        errorInfo.classList.add('show');
-        document.getElementById('error-message').textContent = 'Не удалось распознать код. Проверьте формат или создайте новый тип работы.';
+        dec.classList.remove('show');err.classList.add('show');
+        document.getElementById('err-msg').textContent='Код не распознан. Проверьте формат или создайте тип работы.';
     }
 });
+ci.addEventListener('keypress',e=>{if(e.key==='Enter')addWork()});
 
-// Обработка Enter для быстрого добавления
-document.getElementById('code-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        addWork();
-    }
-});
-
-function addWork() {
-    const code = document.getElementById('code-input').value.toUpperCase().trim();
-    
-    if (!code) {
-        alert('Введите код');
-        return;
-    }
-    
-    const result = parseCode(code);
-    
-    if (!result) {
-        alert('Не удалось распознать код. Проверьте формат или создайте новый тип работы.');
-        return;
-    }
-    
-    const record = {
-        timestamp: new Date().toLocaleString('ru-RU'),
-        code: result.rawCode,
-        workType: result.workType,
-        params: result.params,
-        partNumber: result.partNumber,
-        payment: result.payment
-    };
-    
-    workHistory.push(record);
-    saveHistory();
-    
-    alert(`✅ Работа добавлена!\n\nТип: ${result.workType}\nДеталь: ${result.partNumber}\nОплата: ${result.payment.toLocaleString('ru-RU')} ₽`);
-    
-    // Очистка и фокус для следующей записи
-    document.getElementById('code-input').value = '';
-    document.getElementById('decoded-info').classList.remove('show');
-    document.getElementById('error-info').classList.remove('show');
-    document.getElementById('code-input').focus();
-}
-
-// ============ ВКЛАДКИ ============
-function switchTab(tabName, event) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    
-    if (event && event.target) event.target.classList.add('active');
-    document.getElementById(tabName).classList.add('active');
-    
-    if (tabName === 'history') updateHistory();
-    if (tabName === 'workTypes') renderWorkTypes();
-}
-
-// ============ ИСТОРИЯ ============
-function updateHistory() {
-    const tbody = document.getElementById('history-table');
-    tbody.innerHTML = '';
-    
-    let total = 0;
-    
-    // Показываем последние сначала
-    const reversed = [...workHistory].reverse();
-    
-    reversed.forEach(record => {
-        total += record.payment;
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td>${record.timestamp}</td>
-            <td><strong style="font-family: 'Courier New', monospace;">${record.code}</strong></td>
-            <td>${record.workType}</td>
-            <td>${record.params}</td>
-            <td>${record.partNumber}</td>
-            <td><strong>${record.payment.toLocaleString('ru-RU')} ₽</strong></td>
-        `;
+function addWork(){
+    const code = ci.value.toUpperCase().trim();
+    if(!code){alert('Введите код');return}
+    const r = parseCode(code);
+    if(!r){alert('Код не распознан');return}
+    hist.push({
+        ts: new Date().toLocaleString('ru-RU'),
+        code:r.rawCode, type:r.workType,
+        params:r.params, sizes:r.sizes,
+        part:r.partNumber, pay:r.payment
     });
-    
-    document.getElementById('total-earnings').textContent = total.toLocaleString('ru-RU');
+    saveHist();
+    if(navigator.vibrate) navigator.vibrate(50);
+    alert('✅ '+r.workType+'\n'+r.payment.toLocaleString('ru-RU')+' ₽');
+    ci.value='';
+    document.getElementById('decoded').classList.remove('show');
+    document.getElementById('errbox').classList.remove('show');
+    ci.focus();
 }
 
-function clearHistory() {
-    if (confirm('Вы уверены, что хотите очистить всю историю?')) {
-        workHistory = [];
-        saveHistory();
-        updateHistory();
-    }
+function go(id,el){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+    if(id==='history') renderHist();
+    if(id==='workTypes') renderWT();
 }
 
-function exportHistory() {
-    let csv = 'Дата/Время;Код;Тип работы;Параметры;Номер детали;Оплата\n';
-    workHistory.forEach(record => {
-        csv += `${record.timestamp};${record.code};${record.workType};${record.params};${record.partNumber};${record.payment}\n`;
+function renderHist(){
+    const el = document.getElementById('h-list');
+    el.innerHTML='';
+    let total=0;
+    const rev=[...hist].reverse();
+    if(!rev.length){el.innerHTML='<div class="empty">Нет записей</div>';document.getElementById('total').textContent='0';return}
+    rev.forEach(r=>{
+        total+=r.pay;
+        const d=document.createElement('div');d.className='h-item';
+        let sz='';
+        if(r.sizes&&r.sizes.length) sz='<div class="h-sizes">'+r.sizes.join(' | ')+'</div>';
+        d.innerHTML='<div style="flex:1;min-width:0"><div class="h-code">'+r.code+'</div><div class="h-type">'+r.type+'</div><div class="h-part">'+r.part+'</div>'+sz+'<div class="h-time">'+r.ts+'</div></div><div class="h-pay">'+r.pay.toLocaleString('ru-RU')+' ₽</div>';
+        el.appendChild(d);
     });
-    
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `work_history_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+    document.getElementById('total').textContent=total.toLocaleString('ru-RU');
 }
 
-// ============ ТИПЫ РАБОТ ============
-function renderWorkTypes() {
-    const container = document.getElementById('work-types-list');
-    container.innerHTML = '';
-    
-    if (workTypes.length === 0) {
-        container.innerHTML = '<div class="info-box">Нет типов работ. Создайте первый!</div>';
-        return;
-    }
-    
-    workTypes.forEach((workType, index) => {
-        const card = document.createElement('div');
-        card.className = 'work-type-card';
-        
-        const paramsList = workType.params.map(p => 
-            `<code>${p.name}</code> (поз. ${p.start}, дл. ${p.length}${p.unit ? ', ' + p.unit : ''})`
-        ).join('<br>');
-        
-        card.innerHTML = `
-            <div class="card-actions">
-                <button class="btn-small" onclick="editWorkType(${index})">✏️</button>
-                <button class="btn-small btn-danger" onclick="deleteWorkType(${index})">🗑️</button>
-            </div>
-            <h4>${workType.name} <code>${workType.prefix}</code></h4>
-            <p><strong>Параметры:</strong><br>${paramsList}</p>
-            <p><strong>Формула:</strong> <code>${workType.formula}</code>${workType.formulaUnit ? ' → ' + workType.formulaUnit : ''}</p>
-            <p><strong>Тариф:</strong> ${workType.rate} ${workType.unit}</p>
-            <p><strong>Номер детали с позиции:</strong> ${workType.partNumberStart}</p>
-        `;
-        
-        container.appendChild(card);
+function clearHist(){if(confirm('Очистить историю?')){hist=[];saveHist();renderHist()}}
+
+function exportCSV(){
+    let c='Дата;Код;Тип;Параметры;Размеры;Деталь;Оплата\n';
+    hist.forEach(r=>{
+        const sz=(r.sizes||[]).join(' | ');
+        c+=r.ts+';'+r.code+';'+r.type+';'+r.params+';'+sz+';'+r.part+';'+r.pay+'\n';
     });
+    const b=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);
+    a.download='work_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
 
-function openWorkTypeModal(index = -1) {
-    editingWorkTypeIndex = index;
-    currentParams = [];
-    
-    if (index >= 0) {
-        const workType = workTypes[index];
-        document.getElementById('modal-title').textContent = 'Редактировать тип работы';
-        document.getElementById('wt-prefix').value = workType.prefix;
-        document.getElementById('wt-name').value = workType.name;
-        document.getElementById('wt-part-start').value = workType.partNumberStart;
-        document.getElementById('wt-formula').value = workType.formula;
-        document.getElementById('wt-formula-unit').value = workType.formulaUnit || '';
-        document.getElementById('wt-rate').value = workType.rate;
-        document.getElementById('wt-unit').value = workType.unit;
-        currentParams = JSON.parse(JSON.stringify(workType.params));
-    } else {
-        document.getElementById('modal-title').textContent = 'Добавить тип работы';
-        document.getElementById('wt-prefix').value = '';
-        document.getElementById('wt-name').value = '';
-        document.getElementById('wt-part-start').value = '12';
-        document.getElementById('wt-formula').value = '';
-        document.getElementById('wt-formula-unit').value = '';
-        document.getElementById('wt-rate').value = '500';
-        document.getElementById('wt-unit').value = '₽';
-    }
-    
-    document.getElementById('test-code').value = '';
-    document.getElementById('test-result').innerHTML = '';
-    
-    renderParams();
-    document.getElementById('workTypeModal').classList.add('show');
-}
-
-function closeWorkTypeModal() {
-    document.getElementById('workTypeModal').classList.remove('show');
-}
-
-function renderParams() {
-    const container = document.getElementById('params-container');
-    container.innerHTML = '';
-    
-    currentParams.forEach((param, index) => {
-        const row = document.createElement('div');
-        row.className = 'param-row';
-        row.innerHTML = `
-            <input type="text" placeholder="Имя (лат/кир)" value="${param.name}" onchange="updateParam(${index}, 'name', this.value)">
-            <input type="number" placeholder="Поз." value="${param.start}" min="0" onchange="updateParam(${index}, 'start', this.value)">
-            <input type="number" placeholder="Длина" value="${param.length}" min="1" onchange="updateParam(${index}, 'length', this.value)">
-            <input type="text" placeholder="ед." value="${param.unit}" onchange="updateParam(${index}, 'unit', this.value)">
-            <button class="btn-danger btn-small" onclick="removeParam(${index})">✖</button>
-        `;
-        container.appendChild(row);
-    });
-}
-
-function addParamRow() {
-    currentParams.push({name: '', start: 0, length: 1, unit: ''});
-    renderParams();
-}
-
-function updateParam(index, field, value) {
-    if (field === 'start' || field === 'length') {
-        currentParams[index][field] = parseInt(value) || 0;
-    } else {
-        currentParams[index][field] = value;
-    }
-}
-
-function removeParam(index) {
-    currentParams.splice(index, 1);
-    renderParams();
-}
-
-function testFormula() {
-    const testCode = document.getElementById('test-code').value.toUpperCase().trim();
-    const resultDiv = document.getElementById('test-result');
-    
-    if (!testCode) {
-        resultDiv.className = 'test-result err';
-        resultDiv.textContent = 'Введите тестовый код';
-        return;
-    }
-    
-    // Собираем временный тип работы для теста
-    const tempWorkType = {
-        prefix: document.getElementById('wt-prefix').value.toUpperCase(),
-        name: document.getElementById('wt-name').value,
-        params: currentParams,
-        partNumberStart: parseInt(document.getElementById('wt-part-start').value),
-        formula: document.getElementById('wt-formula').value,
-        formulaUnit: document.getElementById('wt-formula-unit').value,
-        rate: parseFloat(document.getElementById('wt-rate').value),
-        unit: document.getElementById('wt-unit').value
-    };
-    
-    try {
-        const result = parseWorkType(testCode, tempWorkType);
-        resultDiv.className = 'test-result ok';
-        resultDiv.innerHTML = `
-            <strong>✅ Успешно!</strong><br>
-            Параметры: ${result.params}<br>
-            Деталь: ${result.partNumber}<br>
-            Расчет: ${result.calculation}<br>
-            <strong>Оплата: ${result.payment.toLocaleString('ru-RU')} ₽</strong>
-        `;
-    } catch (e) {
-        resultDiv.className = 'test-result err';
-        resultDiv.innerHTML = `<strong>❌ Ошибка:</strong> ${e.message}`;
-    }
-}
-
-function saveWorkType() {
-    const prefix = document.getElementById('wt-prefix').value.toUpperCase().trim();
-    const name = document.getElementById('wt-name').value.trim();
-    const partStart = parseInt(document.getElementById('wt-part-start').value);
-    const formula = document.getElementById('wt-formula').value.trim();
-    const formulaUnit = document.getElementById('wt-formula-unit').value.trim();
-    const rate = parseFloat(document.getElementById('wt-rate').value);
-    const unit = document.getElementById('wt-unit').value.trim();
-    
-    if (!prefix) { alert('Укажите код-префикс'); return; }
-    if (!name) { alert('Укажите название'); return; }
-    if (!formula) { alert('Укажите формулу'); return; }
-    if (currentParams.length === 0) { alert('Добавьте хотя бы один параметр'); return; }
-    
-    // Валидация формулы
-    const paramNames = currentParams.map(p => p.name).filter(n => n);
-    const validation = validateFormula(formula, paramNames);
-    if (!validation.valid) {
-        alert('Ошибка в формуле: ' + validation.error);
-        return;
-    }
-    
-    const workType = {
-        prefix,
-        name,
-        params: currentParams.filter(p => p.name),
-        partNumberStart: partStart,
-        formula,
-        formulaUnit,
-        rate,
-        unit
-    };
-    
-    if (editingWorkTypeIndex >= 0) {
-        workTypes[editingWorkTypeIndex] = workType;
-    } else {
-        workTypes.push(workType);
-    }
-    
-    saveWorkTypes();
-    closeWorkTypeModal();
-    renderWorkTypes();
-    alert('✅ Тип работы сохранен!');
-}
-
-function editWorkType(index) {
-    openWorkTypeModal(index);
-}
-
-function deleteWorkType(index) {
-    if (confirm('Удалить этот тип работы?')) {
-        workTypes.splice(index, 1);
-        saveWorkTypes();
-        renderWorkTypes();
-    }
-}
-
-// ============ НАСТРОЙКИ ============
-function exportAll() {
-    const data = {
-        version: '1.0',
-        exportDate: new Date().toISOString(),
-        workTypes: workTypes,
-        workHistory: workHistory
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `work_app_backup_${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-}
-
-function handleImport(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    if (!confirm('Импорт заменит текущие данные. Продолжить?')) {
-        event.target.value = '';
-        return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (data.workTypes) {
-                workTypes = data.workTypes;
-                saveWorkTypes();
-            }
-            if (data.workHistory) {
-                workHistory = data.workHistory;
-                saveHistory();
-            }
-            renderWorkTypes();
-            updateHistory();
-            alert('✅ Данные импортированы!');
-        } catch (err) {
-            alert('Ошибка чтения файла: ' + err.message);
+function renderWT(){
+    const el=document.getElementById('wt-list');el.innerHTML='';
+    if(!types.length){el.innerHTML='<div class="info">Нет типов работ</div>';return}
+    types.forEach((wt,i)=>{
+        const d=document.createElement('div');d.className='wt-card';
+        const ptxt=wt.params.map(p=>p.name+' ('+p.start+':'+p.length+')').join(', ');
+        let sztxt='';
+        if(wt.sizeGroup&&wt.sizeGroup.on){
+            const sg=wt.sizeGroup;
+            sztxt='<div class="wt-info">📐 Размеры: поз.'+sg.start+', пары «'+sg.pairSep+'», изм. «'+sg.dimSep+'», '+sg.dims.join('×')+'</div>';
         }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
+        d.innerHTML='<div class="wt-head"><div class="wt-name">'+wt.name+'</div><div class="wt-code">'+wt.prefix+'</div></div><div class="wt-info">'+ptxt+'</div>'+sztxt+'<div class="wt-formula">'+wt.formula+(wt.funit?' → '+wt.funit:'')+'</div><div class="wt-rate">'+wt.rate+' '+wt.unit+'</div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn btn-s btn-sm" onclick="editWT('+i+')" style="flex:1">✏️</button><button class="btn btn-d btn-sm" onclick="delWT('+i+')" style="flex:1">🗑️</button></div>';
+        el.appendChild(d);
+    });
 }
 
-function resetAll() {
-    if (confirm('⚠️ Удалить ВСЕ данные (типы работ и историю)? Это действие нельзя отменить!')) {
-        if (confirm('Точно уверены?')) {
-            localStorage.removeItem('workTypes');
-            localStorage.removeItem('workHistory');
-            location.reload();
-        }
+function openModal(idx){
+    editIdx=idx===undefined?-1:idx;
+    curParams=[];
+    if(editIdx>=0){
+        const w=types[editIdx];
+        document.getElementById('m-title').textContent='Редактировать';
+        document.getElementById('m-prefix').value=w.prefix;
+        document.getElementById('m-name').value=w.name;
+        document.getElementById('m-part-sep').value=w.partSep||'-';
+        document.getElementById('m-formula').value=w.formula;
+        document.getElementById('m-funit').value=w.funit||'';
+        document.getElementById('m-rate').value=w.rate;
+        document.getElementById('m-unit').value=w.unit;
+        curParams=JSON.parse(JSON.stringify(w.params));
+        const sg=w.sizeGroup||{on:false};
+        document.getElementById('m-sz-on').checked=!!sg.on;
+        document.getElementById('m-sz-start').value=sg.start||4;
+        document.getElementById('m-sz-pair').value=sg.pairSep||'/';
+        document.getElementById('m-sz-dim').value=sg.dimSep||'x';
+        document.getElementById('m-sz-names').value=(sg.dims||['Длина','Ширина']).join(',');
+        document.getElementById('m-sz-units').value=(sg.units||['мм','мм']).join(',');
+    } else {
+        document.getElementById('m-title').textContent='Новый тип';
+        document.getElementById('m-prefix').value='';
+        document.getElementById('m-name').value='';
+        document.getElementById('m-part-sep').value='-';
+        document.getElementById('m-formula').value='';
+        document.getElementById('m-funit').value='';
+        document.getElementById('m-rate').value='500';
+        document.getElementById('m-unit').value='₽';
+        document.getElementById('m-sz-on').checked=false;
+        document.getElementById('m-sz-start').value='4';
+        document.getElementById('m-sz-pair').value='/';
+        document.getElementById('m-sz-dim').value='x';
+        document.getElementById('m-sz-names').value='Длина,Ширина';
+        document.getElementById('m-sz-units').value='мм,мм';
+    }
+    document.getElementById('m-test').value='';
+    document.getElementById('m-test-res').innerHTML='';
+    renderParams();
+    toggleSizeGroup();
+    document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+
+function toggleSizeGroup(){
+    const on=document.getElementById('m-sz-on').checked;
+    document.getElementById('m-sz-settings').classList.toggle('show',on);
+}
+
+function renderParams(){
+    const el=document.getElementById('m-params');el.innerHTML='';
+    curParams.forEach((p,i)=>{
+        const r=document.createElement('div');r.className='pr';
+        r.innerHTML='<div><div class="pr-lbl">Имя</div><input class="fi" value="'+p.name+'" onchange="curParams['+i+'].name=this.value"></div><div><div class="pr-lbl">Поз.</div><input type="number" class="fi" value="'+p.start+'" min="0" onchange="curParams['+i+'].start=+this.value"></div><div><div class="pr-lbl">Дл.</div><input type="number" class="fi" value="'+p.length+'" min="1" onchange="curParams['+i+'].length=+this.value"></div><div><div class="pr-lbl">Ед.</div><input class="fi" value="'+p.unit+'" onchange="curParams['+i+'].unit=this.value"></div><button class="btn btn-d btn-sm" onclick="curParams.splice('+i+',1);renderParams()">✖</button>';
+        el.appendChild(r);
+    });
+}
+
+function addParam(){curParams.push({name:'',start:0,length:1,unit:''});renderParams()}
+
+function testCode(){
+    const code=document.getElementById('m-test').value.toUpperCase().trim();
+    const res=document.getElementById('m-test-res');
+    if(!code){res.innerHTML='<div class="test-err">Введите код</div>';return}
+    const wt=buildTempWT();
+    try{
+        const r=parseWT(code,wt);
+        let sz='';
+        if(r.sizes.length) sz='<br>'+r.sizes.join('<br>');
+        res.innerHTML='<div class="test-ok">✅ '+r.params+sz+'<br><b>'+r.payment.toLocaleString('ru-RU')+' ₽</b></div>';
+    }catch(e){
+        res.innerHTML='<div class="test-err">❌ '+e.message+'</div>';
     }
 }
 
-// ============ ИНИЦИАЛИЗАЦИЯ ============
-updateHistory();
+function buildTempWT(){
+    const szOn=document.getElementById('m-sz-on').checked;
+    return {
+        prefix:document.getElementById('m-prefix').value.toUpperCase(),
+        name:document.getElementById('m-name').value,
+        params:curParams.filter(p=>p.name),
+        sizeGroup: szOn ? {
+            on:true,
+            start:+document.getElementById('m-sz-start').value,
+            pairSep:document.getElementById('m-sz-pair').value,
+            dimSep:document.getElementById('m-sz-dim').value,
+            dims:document.getElementById('m-sz-names').value.split(',').map(s=>s.trim()),
+            units:document.getElementById('m-sz-units').value.split(',').map(s=>s.trim())
+        } : {on:false},
+        partSep:document.getElementById('m-part-sep').value,
+        formula:document.getElementById('m-formula').value,
+        funit:document.getElementById('m-funit').value,
+        rate:+document.getElementById('m-rate').value,
+        unit:document.getElementById('m-unit').value
+    };
+}
+
+function saveWT(){
+    const wt=buildTempWT();
+    if(!wt.prefix){alert('Укажите префикс');return}
+    if(!wt.name){alert('Укажите название');return}
+    if(!wt.formula){alert('Укажите формулу');return}
+    if(!wt.params.length && !(wt.sizeGroup&&wt.sizeGroup.on)){alert('Добавьте параметры или группу размеров');return}
+    if(editIdx>=0) types[editIdx]=wt; else types.push(wt);
+    saveTypes();closeModal();renderWT();
+    alert('✅ Сохранено!');
+}
+
+function editWT(i){openModal(i)}
+function delWT(i){if(confirm('Удалить?')){types.splice(i,1);saveTypes();renderWT()}}
+
+function exportAll(){
+    const d={v:'2.0',date:new Date().toISOString(),types,hist};
+    const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);
+    a.download='backup_'+new Date().toISOString().split('T')[0]+'.json';a.click();
+}
+
+function doImport(e){
+    const f=e.target.files[0];if(!f)return;
+    if(!confirm('Импорт заменит данные. Продолжить?')){e.target.value='';return}
+    const r=new FileReader();
+    r.onload=function(ev){
+        try{
+            const d=JSON.parse(ev.target.result);
+            if(d.types){types=d.types;saveTypes()}
+            if(d.hist){hist=d.hist;saveHist()}
+            renderWT();renderHist();alert('✅ Импорт выполнен!');
+        }catch(err){alert('Ошибка: '+err.message)}
+    };
+    r.readAsText(f);e.target.value='';
+}
+
+function resetAll(){
+    if(confirm('⚠️ Удалить ВСЕ данные?')){
+        if(confirm('Точно?')){localStorage.removeItem('wt');localStorage.removeItem('wh');location.reload()}
+    }
+}
+
+renderHist();
 </script>
 </body>
 </html>
