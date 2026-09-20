@@ -6,415 +6,85 @@
 <title>Учет работ</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --glass-bg:rgba(255,255,255,0.08);
-  --glass-border:rgba(255,255,255,0.15);
-  --glass-shadow:0 8px 32px rgba(0,0,0,0.3);
-  --blur:blur(20px);
-  --yel:#fc0;
-  --org:#ff6b00;
-  --bg1:#1a1a2e;
-  --bg2:#16213e;
-  --bg3:#0f3460;
-  --t1:#fff;
-  --t2:rgba(255,255,255,0.7);
-  --ok:#4caf50;
-  --err:#f44336;
-  --r:20px;
-}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);
-  background-attachment:fixed;
-  color:var(--t1);
-  min-height:100vh;
-  padding-bottom:90px;
-  font-size:16px;
-  line-height:1.5;
-  overflow-x:hidden;
-}
-body::before{
-  content:'';
-  position:fixed;
-  top:-50%;left:-50%;
-  width:200%;height:200%;
-  background:radial-gradient(circle at 20% 30%,rgba(252,204,0,0.1) 0%,transparent 50%),
-             radial-gradient(circle at 80% 70%,rgba(255,107,0,0.08) 0%,transparent 50%);
-  z-index:-1;
-  animation:float 20s ease-in-out infinite;
-}
-@keyframes float{
-  0%,100%{transform:translate(0,0) rotate(0deg)}
-  50%{transform:translate(-2%,2%) rotate(180deg)}
-}
-.header{
-  background:var(--glass-bg);
-  backdrop-filter:var(--blur);
-  -webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--glass-border);
-  border-radius:0 0 var(--r) var(--r);
-  padding:20px 15px 24px;
-  box-shadow:var(--glass-shadow);
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-.header h1{
-  font-size:24px;
-  font-weight:700;
-  background:linear-gradient(135deg,var(--yel),var(--org));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  text-align:center;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-}
-.header-sub{
-  font-size:12px;
-  color:var(--t2);
-  text-align:center;
-  margin-top:4px;
-}
+:root{--glass-bg:rgba(255,255,255,0.08);--glass-border:rgba(255,255,255,0.15);--glass-shadow:0 8px 32px rgba(0,0,0,0.3);--blur:blur(20px);--yel:#fc0;--org:#ff6b00;--bg1:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--t1:#fff;--t2:rgba(255,255,255,0.7);--ok:#4caf50;--err:#f44336;--r:20px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);background-attachment:fixed;color:var(--t1);min-height:100vh;padding-bottom:90px;font-size:16px;line-height:1.5;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 20% 30%,rgba(252,204,0,0.1) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,107,0,0.08) 0%,transparent 50%);z-index:-1;animation:float 20s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-2%,2%) rotate(180deg)}}
+.header{background:var(--glass-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);border-radius:0 0 var(--r) var(--r);padding:20px 15px 24px;box-shadow:var(--glass-shadow);position:sticky;top:0;z-index:100}
+.header h1{font-size:24px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px}
+.header-sub{font-size:12px;color:var(--t2);text-align:center;margin-top:4px}
 .content{padding:16px;margin-top:-8px}
 .panel{display:none;animation:fadeIn .3s}
 .panel.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.glass{
-  background:var(--glass-bg);
-  backdrop-filter:var(--blur);
-  -webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--glass-border);
-  border-radius:var(--r);
-  padding:20px;
-  margin-bottom:16px;
-  box-shadow:var(--glass-shadow);
-}
-.card-title{
-  font-size:18px;
-  font-weight:600;
-  margin-bottom:16px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.code-input{
-  width:100%;
-  padding:18px 16px;
-  background:rgba(0,0,0,0.3);
-  border:2px solid rgba(255,255,255,0.1);
-  border-radius:14px;
-  font-size:22px;
-  font-family:'Courier New',monospace;
-  color:var(--t1);
-  text-transform:uppercase;
-  letter-spacing:1px;
-  text-align:center;
-  transition:all .3s;
-  margin-bottom:12px;
-}
-.code-input:focus{
-  outline:none;
-  border-color:var(--yel);
-  background:rgba(0,0,0,0.4);
-  box-shadow:0 0 20px rgba(252,204,0,0.2);
-}
+.glass{background:var(--glass-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--glass-shadow)}
+.card-title{font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.code-input{width:100%;padding:18px 16px;background:rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.1);border-radius:14px;font-size:22px;font-family:'Courier New',monospace;color:var(--t1);text-transform:uppercase;letter-spacing:1px;text-align:center;transition:all .3s;margin-bottom:12px}
+.code-input:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 20px rgba(252,204,0,0.2)}
 .code-input::placeholder{color:rgba(255,255,255,0.3);font-size:15px;letter-spacing:0;font-family:inherit}
-.btn{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:14px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  transition:all .2s;
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  position:relative;
-  overflow:hidden;
-}
+.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(0.97)}
-.btn::before{
-  content:'';
-  position:absolute;
-  top:0;left:-100%;
-  width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
-  transition:left .5s;
-}
-.btn:hover::before{left:100%}
-.btn-p{
-  background:linear-gradient(135deg,var(--yel),var(--org));
-  color:#000;
-  box-shadow:0 4px 20px rgba(252,204,0,0.4);
-}
-.btn-s{
-  background:rgba(255,255,255,0.1);
-  color:var(--t1);
-  border:1px solid rgba(255,255,255,0.2);
-}
+.btn-p{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;box-shadow:0 4px 20px rgba(252,204,0,0.4)}
+.btn-s{background:rgba(255,255,255,0.1);color:var(--t1);border:1px solid rgba(255,255,255,0.2)}
 .btn-g{background:linear-gradient(135deg,#4caf50,#45a049);color:#fff;box-shadow:0 4px 15px rgba(76,175,80,0.4)}
 .btn-d{background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;box-shadow:0 4px 15px rgba(244,67,54,0.4)}
 .btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:10px}
-.result{
-  background:linear-gradient(135deg,rgba(76,175,80,0.15),rgba(69,160,73,0.1));
-  border:1px solid rgba(76,175,80,0.3);
-  border-radius:16px;
-  padding:18px;
-  margin:12px 0;
-  display:none;
-  backdrop-filter:blur(10px);
-}
+.result{background:linear-gradient(135deg,rgba(76,175,80,0.15),rgba(69,160,73,0.1));border:1px solid rgba(76,175,80,0.3);border-radius:16px;padding:18px;margin:12px 0;display:none}
 .result.show{display:block;animation:fadeIn .3s}
 .result h3{font-size:16px;margin-bottom:12px;color:#4caf50}
 .result p{font-size:14px;margin:8px 0;color:rgba(255,255,255,0.9)}
-.error{
-  background:linear-gradient(135deg,rgba(244,67,54,0.15),rgba(211,47,47,0.1));
-  border:1px solid rgba(244,67,54,0.3);
-  border-radius:12px;
-  padding:14px;
-  margin:12px 0;
-  display:none;
-  color:#ff6b6b;
-  font-size:14px;
-}
+.sizes-list{background:rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin:10px 0}
+.size-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px}
+.size-item:last-child{border:none}
+.size-label{opacity:0.8}
+.size-value{font-weight:600;color:var(--yel)}
+.size-pay{color:#4caf50;font-weight:600}
+.error{background:linear-gradient(135deg,rgba(244,67,54,0.15),rgba(211,47,47,0.1));border:1px solid rgba(244,67,54,0.3);border-radius:12px;padding:14px;margin:12px 0;display:none;color:#ff6b6b;font-size:14px}
 .error.show{display:block}
-.total{
-  background:linear-gradient(135deg,rgba(252,204,0,0.2),rgba(255,107,0,0.15));
-  border:1px solid rgba(252,204,0,0.3);
-  border-radius:var(--r);
-  padding:24px;
-  margin-bottom:16px;
-  text-align:right;
-  box-shadow:0 8px 32px rgba(252,204,0,0.2);
-}
+.total{background:linear-gradient(135deg,rgba(252,204,0,0.2),rgba(255,107,0,0.15));border:1px solid rgba(252,204,0,0.3);border-radius:var(--r);padding:24px;margin-bottom:16px;text-align:right;box-shadow:0 8px 32px rgba(252,204,0,0.2)}
 .total-lbl{font-size:13px;color:var(--t2);margin-bottom:6px}
 .total-amt{font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.total-inline{
-  background:rgba(252,204,0,0.1);
-  border:1px solid rgba(252,204,0,0.3);
-  border-radius:16px;
-  padding:20px;
-  margin-bottom:16px;
-  text-align:center;
-  backdrop-filter:blur(10px);
-}
+.total-inline{background:rgba(252,204,0,0.1);border:1px solid rgba(252,204,0,0.3);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center}
 .total-inline .label{font-size:14px;color:var(--t2);margin-bottom:8px}
 .total-inline .amount{font-size:32px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .h-list{display:flex;flex-direction:column;gap:10px}
-.h-item{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:14px;
-  padding:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  transition:all .2s;
-}
+.h-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:all .2s}
 .h-item:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
 .h-item-left{flex:1;min-width:0}
 .h-code{font-family:'Courier New',monospace;font-size:14px;font-weight:600;color:var(--yel);word-break:break-all;margin-bottom:4px}
 .h-type{font-size:13px;color:var(--t2)}
-.h-part{font-size:12px;color:var(--t2);margin-top:2px}
 .h-sizes{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px}
 .h-amount{font-size:13px;color:var(--yel);font-weight:600;margin-top:3px}
 .h-time{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px}
 .h-pay{font-size:18px;font-weight:700;color:#4caf50;text-align:right;white-space:nowrap}
-.h-delete{
-  background:rgba(244,67,54,0.2);
-  border:1px solid rgba(244,67,54,0.3);
-  color:#ff6b6b;
-  width:32px;height:32px;
-  border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  font-size:16px;
-  transition:all .2s;
-  flex-shrink:0;
-}
+.h-delete{background:rgba(244,67,54,0.2);border:1px solid rgba(244,67,54,0.3);color:#ff6b6b;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;flex-shrink:0}
 .h-delete:hover{background:rgba(244,67,54,0.3);transform:scale(1.1)}
-.wt-card{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:12px;
-  border-left:3px solid var(--yel);
-}
+.wt-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-bottom:12px;border-left:3px solid var(--yel)}
 .wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .wt-name{font-size:15px;font-weight:600}
 .wt-code{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;padding:4px 10px;border-radius:6px;font-family:'Courier New',monospace;font-weight:700;font-size:13px}
 .wt-info{font-size:12px;color:var(--t2);margin:6px 0}
 .wt-formula{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;font-family:'Courier New',monospace;font-size:12px;margin:10px 0;word-break:break-all}
 .wt-rate{font-size:13px;color:var(--yel);font-weight:600}
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:flex-end;justify-content:center;backdrop-filter:blur(5px)}
-.modal.show{display:flex}
-.modal-body{
-  background:linear-gradient(180deg,rgba(30,30,50,0.98),rgba(20,20,40,0.98));
-  backdrop-filter:blur(30px);
-  width:100%;
-  max-height:92vh;
-  border-radius:24px 24px 0 0;
-  padding:24px 18px 32px;
-  overflow-y:auto;
-  animation:slideUp .3s;
-  border-top:1px solid rgba(255,255,255,0.1);
-}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.modal-title{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.close-btn{background:none;border:none;color:var(--t2);font-size:28px;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:color .2s}
-.close-btn:hover{color:var(--t1)}
-.fg{margin-bottom:14px}
-.fl{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--t2)}
-.fi{
-  width:100%;
-  padding:14px;
-  background:rgba(0,0,0,0.3);
-  border:2px solid rgba(255,255,255,0.1);
-  border-radius:12px;
-  color:var(--t1);
-  font-size:15px;
-  transition:all .3s;
-}
-.fi:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 15px rgba(252,204,0,0.15)}
-.fi::placeholder{color:rgba(255,255,255,0.3)}
-textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
-.step{
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:14px;
-}
-.step-num{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,var(--yel),var(--org));
-  color:#000;
-  width:26px;height:26px;
-  border-radius:50%;
-  font-weight:700;
-  font-size:13px;
-  margin-right:8px;
-}
-.step-title{font-weight:600;font-size:15px;margin-bottom:12px;display:flex;align-items:center}
-.param-row{display:grid;grid-template-columns:1fr 80px auto;gap:8px;margin-bottom:8px;align-items:end}
-.param-row input{font-size:13px;padding:10px 8px}
-.param-row button{padding:10px;font-size:12px;margin:0}
-.sz-toggle{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:14px;
-  background:rgba(0,0,0,0.2);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:12px;
-  margin-bottom:12px;
-  cursor:pointer;
-  transition:all .2s;
-}
-.sz-toggle:hover{background:rgba(0,0,0,0.3)}
-.sz-toggle input[type=checkbox]{width:22px;height:22px;accent-color:var(--yel)}
-.sz-toggle span{font-size:14px;font-weight:600}
-.sz-settings{
-  background:rgba(252,204,0,0.05);
-  border:1px solid rgba(252,204,0,0.2);
-  border-radius:12px;
-  padding:16px;
-  margin-bottom:14px;
-  display:none;
-}
-.sz-settings.show{display:block}
-.sz-row-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mode-selector{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-bottom:14px;
-}
-.mode-option{
-  background:rgba(0,0,0,0.2);
-  border:2px solid rgba(255,255,255,0.1);
-  border-radius:12px;
-  padding:16px;
-  text-align:center;
-  cursor:pointer;
-  transition:all .2s;
-}
-.mode-option:hover{background:rgba(0,0,0,0.3)}
-.mode-option.active{
-  border-color:var(--yel);
-  background:rgba(252,204,0,0.1);
-}
-.mode-option input{display:none}
-.mode-icon{font-size:28px;margin-bottom:6px}
-.mode-label{font-size:14px;font-weight:600}
-.mode-desc{font-size:11px;color:var(--t2);margin-top:4px}
-.bottom-nav{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  background:rgba(20,20,40,0.95);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-top:1px solid rgba(255,255,255,0.1);
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0 calc(10px + env(safe-area-inset-bottom));
-  z-index:100;
-}
-.nav-item{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:6px 8px;
-  color:var(--t2);
-  font-size:11px;
-  cursor:pointer;
-  border:none;
-  background:none;
-  transition:all .2s;
-}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-around;padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 8px;color:var(--t2);font-size:11px;cursor:pointer;border:none;background:none;transition:all .2s}
 .nav-item.active{color:var(--yel)}
 .nav-item.active .nav-icon{transform:scale(1.1)}
 .nav-icon{font-size:24px;margin-bottom:3px;transition:transform .2s}
-.info{
-  background:rgba(252,204,0,0.08);
-  border-left:3px solid var(--yel);
-  padding:14px;
-  border-radius:10px;
-  margin:14px 0;
-  font-size:13px;
-  line-height:1.6;
-}
+.info{background:rgba(252,204,0,0.08);border-left:3px solid var(--yel);padding:14px;border-radius:10px;margin:14px 0;font-size:13px;line-height:1.6}
 .info strong{color:var(--yel);display:block;margin-bottom:6px}
 .info code{background:rgba(0,0,0,0.3);padding:3px 8px;border-radius:5px;font-family:'Courier New',monospace;font-size:12px;display:inline-block;margin:2px 0}
-.test-box{
-  background:rgba(255,255,255,0.03);
-  border:1px dashed rgba(255,255,255,0.15);
-  border-radius:12px;
-  padding:14px;
-  margin:14px 0;
-}
-.test-ok{color:#4caf50;font-size:13px;margin-top:10px;line-height:1.6}
-.test-err{color:#f44336;font-size:13px;margin-top:10px}
 .empty{text-align:center;padding:40px;color:rgba(255,255,255,0.3);font-size:14px}
 .hint{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.4}
-@media(min-width:768px){
-  body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}
-  .bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}
-  .header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}
-}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--t2)}
+.fi{width:100%;padding:14px;background:rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--t1);font-size:15px;transition:all .3s}
+.fi:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 15px rgba(252,204,0,0.15)}
+.fi::placeholder{color:rgba(255,255,255,0.3)}
+textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
+.param-row{display:grid;grid-template-columns:1fr 80px auto;gap:8px;margin-bottom:8px;align-items:end}
+.param-row input{font-size:13px;padding:10px 8px}
+@media(min-width:768px){body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}.header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:3px}
@@ -461,8 +131,8 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             <h3>📋 Расшифровка</h3>
             <p><b>Тип:</b> <span id="r-type"></span></p>
             <div id="r-params-block"></div>
-            <p><b>Размеры:</b> <span id="r-sizes"></span></p>
-            <p><b>Количество:</b> <span id="r-amount"></span></p>
+            <div id="r-sizes-block"></div>
+            <p><b>Итого:</b> <span id="r-amount"></span></p>
             <div style="font-size:24px;margin-top:10px;text-align:center">
                 <b>💰 <span id="r-pay"></span> ₽</b>
             </div>
@@ -477,15 +147,15 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
-            Примеры кодов
+            Несколько размеров
         </div>
         <div style="font-family:monospace;background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin:10px 0">
-            <div style="color:var(--yel)">ВП162100 800-ВБ-154.002</div>
+            <div style="color:var(--yel)">ВП162100 800/522 500/300 400-ВБ-154.002</div>
             <div style="color:var(--t2);font-size:12px;margin-top:8px;line-height:1.6">
-                <div>ВП = тип (внутренняя панель)</div>
-                <div>16 = толщина 2 символа</div>
-                <div>2100 800 = длина и ширина</div>
-                <div>ВБ-154.002 = номер детали</div>
+                <div>Используйте <b style="color:var(--yel)">/</b> для разделения размеров:</div>
+                <div>2100 800 — первый размер</div>
+                <div>522 500 — второй размер</div>
+                <div>300 400 — третий размер</div>
             </div>
         </div>
     </div>
@@ -574,30 +244,10 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             </svg>
             Настройки
         </div>
-        <button class="btn btn-p" onclick="exportData()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Экспорт
-        </button>
-        <button class="btn btn-s" onclick="document.getElementById('import').click()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            Импорт
-        </button>
+        <button class="btn btn-p" onclick="exportData()">📤 Экспорт</button>
+        <button class="btn btn-s" onclick="document.getElementById('import').click()">📥 Импорт</button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
-        <button class="btn btn-d" onclick="resetAll()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-            Сбросить всё
-        </button>
+        <button class="btn btn-d" onclick="resetAll()">️ Сбросить всё</button>
     </div>
 </div>
 
@@ -617,7 +267,6 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             <polyline points="14 2 14 8 20 8"></polyline>
             <line x1="16" y1="13" x2="8" y2="13"></line>
             <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
         История
     </button>
@@ -715,31 +364,37 @@ function extractData(code, type){
     let pairs = sizesBlock.split('/');
     let sizes = [];
     let totalAmount = 0;
+    let sizeDetails = [];
     
-    for(let pair of pairs){
+    for(let i = 0; i < pairs.length; i++){
+        let pair = pairs[i];
         let dims = pair.trim().split(/\s+/);
         if(dims.length >= type.dims.length){
             let pairData = {};
             let pairText = [];
-            for(let i = 0; i < type.dims.length; i++){
-                let val = parseFloat(dims[i]);
+            for(let j = 0; j < type.dims.length; j++){
+                let val = parseFloat(dims[j]);
                 if(!isNaN(val)){
-                    pairData[type.dims[i]] = val;
-                    pairText.push(type.dims[i] + ': ' + val);
+                    pairData[type.dims[j]] = val;
+                    pairText.push(type.dims[j] + ': ' + val);
                 }
             }
             if(Object.keys(pairData).length > 0){
-                sizes.push(pairText.join(', '));
                 let formula = type.formula;
                 for(let key in pairData){
                     formula = formula.replace(new RegExp(key, 'g'), '(' + pairData[key] + ')');
                 }
-                try{
-                    let result = eval(formula);
-                    totalAmount += result;
-                }catch(e){
-                    throw new Error('Ошибка формулы: ' + e.message);
-                }
+                let result = eval(formula);
+                let payment = Math.round(result * type.rate);
+                
+                sizes.push(pairText.join(', '));
+                sizeDetails.push({
+                    num: i + 1,
+                    dims: pairText.join(', '),
+                    amount: result,
+                    payment: payment
+                });
+                totalAmount += result;
             }
         }
     }
@@ -754,6 +409,7 @@ function extractData(code, type){
         type: type.name,
         params: displayParams,
         sizes: sizes,
+        sizeDetails: sizeDetails,
         partNumber: partNumber || '—',
         amount: totalAmount,
         unit: type.unit.replace('₽/', ''),
@@ -777,7 +433,7 @@ function addWork(){
     
     let data = parseCode(code);
     if(!data){
-        showError('Код не распознан. Проверьте префикс и формат.<br><br>Пример: ВП162100 800-ВБ-154.002');
+        showError('Код не распознан. Проверьте префикс и формат.<br><br>Пример: ВП162100 800/522 500-ВБ-154.002');
         return;
     }
     
@@ -789,7 +445,16 @@ function addWork(){
     }
     document.getElementById('r-params-block').innerHTML = paramsHtml;
     
-    document.getElementById('r-sizes').textContent = data.sizes.join(' / ');
+    let sizesHtml = '';
+    if(data.sizeDetails.length > 0){
+        sizesHtml = '<div class="sizes-list">';
+        data.sizeDetails.forEach(s => {
+            sizesHtml += '<div class="size-item"><span class="size-label">Размер #' + s.num + ': ' + s.dims + '</span><span class="size-value">' + s.amount.toFixed(4) + ' ' + data.unit + ' = <span class="size-pay">' + s.payment + ' ₽</span></span></div>';
+        });
+        sizesHtml += '</div>';
+    }
+    document.getElementById('r-sizes-block').innerHTML = sizesHtml;
+    
     document.getElementById('r-amount').textContent = data.amount.toFixed(4) + ' ' + data.unit;
     document.getElementById('r-pay').textContent = data.payment.toLocaleString('ru-RU');
     resultDiv.classList.add('show');
@@ -800,6 +465,7 @@ function addWork(){
         type: data.type,
         params: data.params,
         sizes: data.sizes,
+        sizeDetails: data.sizeDetails,
         amount: data.amount,
         unit: data.unit,
         payment: data.payment
@@ -837,14 +503,20 @@ function renderHistory(){
         let div = document.createElement('div');
         div.className = 'h-item';
         
-        let paramsText = item.params && item.params.length > 0 ? '<div class="h-info">' + item.params.join(', ') + '</div>' : '';
+        let sizesHtml = '';
+        if(item.sizeDetails && item.sizeDetails.length > 0){
+            sizesHtml = '<div class="sizes-list" style="margin-top:8px">';
+            item.sizeDetails.forEach(s => {
+                sizesHtml += '<div class="size-item"><span class="size-label">#' + s.num + ': ' + s.dims + '</span><span class="size-pay">' + s.payment + ' ₽</span></div>';
+            });
+            sizesHtml += '</div>';
+        }
         
         div.innerHTML = `
             <div class="h-item-left">
                 <div class="h-code">${item.code}</div>
                 <div class="h-type">${item.type}</div>
-                ${paramsText}
-                <div class="h-sizes">${item.sizes.join(' / ')}</div>
+                ${sizesHtml}
                 <div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>
                 <div class="h-time">${item.date}</div>
             </div>
@@ -896,11 +568,11 @@ function renderTypes(){
                 <div class="wt-code">${t.prefix}</div>
             </div>
             <div class="wt-info">Параметры: ${paramsText}</div>
-            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
+            <div class="wt-info">${t.mode === 'area' ? ' м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
             <div class="wt-formula">${t.formula}</div>
             <div style="display:flex;gap:10px;margin-top:10px">
                 <button class="btn btn-s btn-sm" onclick="editType(${idx})" style="flex:1">✏️</button>
-                <button class="btn btn-d btn-sm" onclick="deleteType(${idx})" style="flex:1">️</button>
+                <button class="btn btn-d btn-sm" onclick="deleteType(${idx})" style="flex:1">🗑️</button>
             </div>
         `;
         list.appendChild(div);
