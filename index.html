@@ -79,6 +79,97 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .wt-info{font-size:12px;color:var(--t2);margin:6px 0}
 .wt-formula{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;font-family:'Courier New',monospace;font-size:12px;margin:10px 0;word-break:break-all}
 .wt-rate{font-size:13px;color:var(--yel);font-weight:600}
+
+/* Стили для раскрывающегося списка типов на главной */
+.types-accordion{margin-top:10px}
+.accordion-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 16px;
+    background:rgba(0,0,0,0.2);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    cursor:pointer;
+    transition:all .2s;
+    user-select:none;
+}
+.accordion-header:hover{background:rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.2)}
+.accordion-header.open{border-radius:12px 12px 0 0;border-color:rgba(252,204,0,0.3)}
+.accordion-header .acc-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.accordion-header .acc-arrow{
+    font-size:18px;
+    transition:transform .3s;
+    color:var(--yel);
+}
+.accordion-header.open .acc-arrow{transform:rotate(180deg)}
+.accordion-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .4s ease;
+    background:rgba(0,0,0,0.15);
+    border:1px solid rgba(255,255,255,0.1);
+    border-top:none;
+    border-radius:0 0 12px 12px;
+}
+.accordion-body.open{max-height:2000px;padding:12px}
+.type-accordion-item{
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:10px;
+    border-left:3px solid var(--yel);
+}
+.type-accordion-item:last-child{margin-bottom:0}
+.type-acc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.type-acc-name{font-size:14px;font-weight:600}
+.type-acc-prefix{
+    background:linear-gradient(135deg,var(--yel),var(--org));
+    color:#000;
+    padding:3px 10px;
+    border-radius:6px;
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    font-size:13px;
+}
+.type-acc-detail{font-size:12px;color:var(--t2);margin:4px 0;line-height:1.5}
+.type-acc-detail b{color:rgba(255,255,255,0.9)}
+.type-acc-formula{
+    background:rgba(0,0,0,0.3);
+    padding:8px 10px;
+    border-radius:6px;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    margin:8px 0;
+    word-break:break-all;
+}
+.type-acc-rate{font-size:12px;color:var(--yel);font-weight:600}
+.type-acc-example{
+    background:rgba(252,204,0,0.08);
+    border:1px dashed rgba(252,204,0,0.3);
+    border-radius:6px;
+    padding:8px 10px;
+    margin-top:8px;
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    color:var(--yel);
+    word-break:break-all;
+}
+.type-acc-example-label{
+    font-family:system-ui,sans-serif;
+    font-size:10px;
+    color:var(--t2);
+    margin-bottom:4px;
+    font-weight:600;
+}
+.empty-types-msg{
+    text-align:center;
+    padding:20px;
+    color:var(--t2);
+    font-size:14px;
+}
+
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-around;padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:100}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 8px;color:var(--t2);font-size:11px;cursor:pointer;border:none;background:none;transition:all .2s}
 .nav-item.active{color:var(--yel)}
@@ -117,7 +208,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
 
 <div id="input" class="panel active">
     <div class="total-inline">
-        <div class="label">💰 Всего заработано:</div>
+        <div class="label"> Всего заработано:</div>
         <div class="amount"><span id="current-total">0</span> ₽</div>
     </div>
     
@@ -130,7 +221,6 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             <span id="input-title">Ввод кода</span>
         </div>
         
-        <!-- Баннер редактирования -->
         <div id="edit-banner" class="edit-banner">
             <div class="edit-icon">✏️</div>
             <div class="edit-text">
@@ -177,6 +267,27 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
                 <div>2100 800 — первый размер</div>
                 <div>522 500 — второй размер</div>
                 <div>300 400 — третий размер</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Раскрывающийся список типов работ -->
+    <div class="glass">
+        <div class="types-accordion">
+            <div class="accordion-header" id="types-acc-header" onclick="toggleTypesAccordion()">
+                <div class="acc-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    Справочник типов работ
+                </div>
+                <div class="acc-arrow">▼</div>
+            </div>
+            <div class="accordion-body" id="types-acc-body">
+                <div id="types-acc-content"></div>
             </div>
         </div>
     </div>
@@ -266,7 +377,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             Настройки
         </div>
         <button class="btn btn-p" onclick="exportData()">📤 Экспорт</button>
-        <button class="btn btn-s" onclick="document.getElementById('import').click()"> Импорт</button>
+        <button class="btn btn-s" onclick="document.getElementById('import').click()">📥 Импорт</button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
         <button class="btn btn-d" onclick="resetAll()">🗑️ Сбросить всё</button>
     </div>
@@ -310,7 +421,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
 let history = JSON.parse(localStorage.getItem('workHistory') || '[]');
 let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
 let tempParams = [];
-let editingIndex = -1; // Индекс редактируемой записи (-1 = не редактируем)
+let editingIndex = -1;
 
 if(types.length === 0){
     types = [
@@ -338,6 +449,76 @@ function showPanel(id){
     event.target.closest('.nav-item').classList.add('active');
     if(id === 'history') renderHistory();
     if(id === 'types') renderTypes();
+    if(id === 'input') renderTypesAccordion();
+}
+
+// ===== РАСКРЫВАЮЩИЙСЯ СПИСОК ТИПОВ =====
+function toggleTypesAccordion(){
+    let header = document.getElementById('types-acc-header');
+    let body = document.getElementById('types-acc-body');
+    header.classList.toggle('open');
+    body.classList.toggle('open');
+    if(body.classList.contains('open')){
+        renderTypesAccordion();
+    }
+}
+
+function renderTypesAccordion(){
+    let container = document.getElementById('types-acc-content');
+    
+    if(types.length === 0){
+        container.innerHTML = '<div class="empty-types-msg">Нет типов работ. Добавьте первый в разделе "Типы".</div>';
+        return;
+    }
+    
+    let html = '';
+    types.forEach((t, idx) => {
+        // Параметры
+        let paramsText = '';
+        if(t.params && t.params.length > 0){
+            paramsText = t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.' + (p.unit ? ', ' + p.unit : '') + ')').join(', ');
+        } else {
+            paramsText = 'нет';
+        }
+        
+        // Режим
+        let modeText = t.mode === 'area' ? '📐 Площадь (м²)' : '📏 Погонные метры';
+        
+        // Размеры
+        let dimsText = t.dims ? t.dims.join(' × ') : (t.mode === 'area' ? 'Длина × Ширина' : 'Длина');
+        
+        // Пример кода
+        let exampleCode = t.prefix;
+        if(t.params && t.params.length > 0){
+            t.params.forEach(p => {
+                exampleCode += p.length === 1 ? 'X' : '16';
+            });
+        }
+        if(t.mode === 'area'){
+            exampleCode += '2100 800/1500 600';
+        } else {
+            exampleCode += '2100/1500';
+        }
+        exampleCode += '-ДЕТ-001';
+        
+        html += `
+            <div class="type-accordion-item">
+                <div class="type-acc-head">
+                    <div class="type-acc-name">${t.name}</div>
+                    <div class="type-acc-prefix">${t.prefix}</div>
+                </div>
+                <div class="type-acc-detail"><b>Режим:</b> ${modeText}</div>
+                <div class="type-acc-detail"><b>Параметры:</b> ${paramsText}</div>
+                <div class="type-acc-detail"><b>Размеры:</b> ${dimsText} (через пробел, пары через /)</div>
+                <div class="type-acc-detail"><b>Тариф:</b> ${t.rate} ${t.unit}</div>
+                <div class="type-acc-formula">${t.formula}</div>
+                <div class="type-acc-example-label">Пример кода:</div>
+                <div class="type-acc-example">${exampleCode}</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
 
 function parseCode(code){
@@ -440,32 +621,26 @@ function extractData(code, type){
     };
 }
 
-// Режим редактирования
 function startEdit(idx){
     editingIndex = idx;
     let item = history[idx];
     
-    // Подставляем код в поле ввода
     document.getElementById('code').value = item.code;
     document.getElementById('code').classList.add('editing');
     
-    // Показываем баннер редактирования
     document.getElementById('edit-banner').classList.add('show');
     document.getElementById('edit-index-display').textContent = idx + 1;
     
-    // Меняем кнопку и заголовок
     document.getElementById('input-title').textContent = 'Редактирование';
     document.getElementById('add-btn-text').textContent = 'Сохранить изменения';
     document.getElementById('add-btn').classList.remove('btn-p');
     document.getElementById('add-btn').classList.add('btn-w');
     
-    // Автоматически показываем расшифровку
     let data = parseCode(item.code);
     if(data){
         showResult(data);
     }
     
-    // Переходим на вкладку ввода
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('input').classList.add('active');
@@ -506,10 +681,9 @@ function addWork(){
         return;
     }
     
-    // Если режим редактирования — обновляем запись
     if(editingIndex >= 0){
         history[editingIndex] = {
-            date: history[editingIndex].date, // сохраняем оригинальную дату
+            date: history[editingIndex].date,
             code: data.code,
             type: data.type,
             params: data.params,
@@ -518,7 +692,7 @@ function addWork(){
             amount: data.amount,
             unit: data.unit,
             payment: data.payment,
-            edited: new Date().toLocaleString('ru-RU') // метка редактирования
+            edited: new Date().toLocaleString('ru-RU')
         };
         saveHistory();
         updateTotalDisplay();
@@ -527,7 +701,6 @@ function addWork(){
         return;
     }
     
-    // Обычное добавление
     history.push({
         date: new Date().toLocaleString('ru-RU'),
         code: data.code,
@@ -622,7 +795,7 @@ function renderHistory(){
                 <div class="h-pay">${item.payment.toLocaleString('ru-RU')} ₽</div>
                 <div class="h-actions">
                     <button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="Редактировать">✏️</button>
-                    <button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить">🗑️</button>
+                    <button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить">️</button>
                 </div>
             </div>
         `;
@@ -671,7 +844,7 @@ function renderTypes(){
                 <div class="wt-code">${t.prefix}</div>
             </div>
             <div class="wt-info">Параметры: ${paramsText}</div>
-            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
+            <div class="wt-info">${t.mode === 'area' ? ' м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
             <div class="wt-formula">${t.formula}</div>
             <div style="display:flex;gap:10px;margin-top:10px">
                 <button class="btn btn-s btn-sm" onclick="editType(${idx})" style="flex:1">✏️</button>
@@ -852,6 +1025,7 @@ function resetAll(){
 }
 
 updateTotalDisplay();
+renderTypesAccordion();
 
 document.getElementById('code').addEventListener('keypress', function(e){
     if(e.key === 'Enter') addWork();
