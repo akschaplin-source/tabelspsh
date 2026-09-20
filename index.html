@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Учет работ</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -75,10 +74,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .fi:focus{outline:none;border-color:var(--yel)}
 .fi::placeholder{color:#555}
 textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
-.pr{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:end}
-.pr input{font-size:13px;padding:10px 6px}
-.pr button{padding:8px;font-size:12px;margin:0}
-.pr-lbl{font-size:11px;color:var(--t2);margin-bottom:2px}
+.step{background:rgba(255,255,255,.03);border:1px solid #3a3a3a;border-radius:12px;padding:14px;margin-bottom:12px}
+.step-num{display:inline-block;background:var(--yel);color:#000;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;font-weight:700;font-size:13px;margin-right:8px}
+.step-title{font-weight:600;font-size:14px;margin-bottom:10px}
+.param-row{display:grid;grid-template-columns:1fr 80px auto;gap:6px;margin-bottom:6px;align-items:end}
+.param-row input{font-size:13px;padding:10px 8px}
+.param-row button{padding:10px;font-size:12px;margin:0}
 .sz-toggle{display:flex;align-items:center;gap:10px;padding:12px;background:var(--inp);border-radius:10px;margin-bottom:12px;cursor:pointer}
 .sz-toggle input[type=checkbox]{width:20px;height:20px;accent-color:var(--yel)}
 .sz-toggle span{font-size:14px;font-weight:600}
@@ -93,9 +94,16 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
 .info strong{color:var(--yel);display:block;margin-bottom:4px}
 .info code{background:var(--inp);padding:2px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:12px}
 .test-box{background:rgba(255,255,255,.05);border:1px dashed #555;border-radius:10px;padding:12px;margin:12px 0}
-.test-ok{color:var(--ok);font-size:13px;margin-top:8px}
+.test-ok{color:var(--ok);font-size:13px;margin-top:8px;line-height:1.6}
 .test-err{color:var(--err);font-size:13px;margin-top:8px}
 .empty{text-align:center;padding:30px;color:#555;font-size:14px}
+.preview-code{background:#000;color:var(--yel);padding:12px;border-radius:8px;font-family:'Courier New',monospace;font-size:14px;word-break:break-all;margin:8px 0;border:1px solid #444}
+.preview-code .hl-prefix{background:var(--org);color:#000;padding:1px 3px;border-radius:3px}
+.preview-code .hl-param{background:#1976d2;color:#fff;padding:1px 3px;border-radius:3px}
+.preview-code .hl-size{background:#7b1fa2;color:#fff;padding:1px 3px;border-radius:3px}
+.preview-code .hl-part{background:#388e3c;color:#fff;padding:1px 3px;border-radius:3px}
+.preview-code .hl-sep{color:#888}
+.hint{font-size:11px;color:#666;margin-top:4px;line-height:1.4}
 @media(min-width:768px){body{max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.5)}.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}.header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
@@ -131,9 +139,9 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
     </div>
     <div class="info">
         <strong>💡 Формат кода:</strong>
-        <code>НП162100x800/522x500-ВБ-154.002</code><br>
-        <code>x</code> — разделитель длины и ширины<br>
-        <code>/</code> — разделитель пар размеров<br>
+        <code>НП162100 800/522 500-ВБ-154.002</code><br>
+        Пробел — между длиной и шириной<br>
+        <code>/</code> — между парами размеров<br>
         <code>-</code> — перед номером детали
     </div>
 </div>
@@ -156,10 +164,6 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
         <button class="btn btn-g" onclick="openModal()">➕ Добавить тип работы</button>
     </div>
     <div id="wt-list"></div>
-    <div class="info">
-        <strong>📚 Как создать тип:</strong>
-        Укажите префикс, параметры, при необходимости включите группу размеров с разделителями, задайте формулу и тариф.
-    </div>
 </div>
 
 <div id="settings" class="panel">
@@ -172,100 +176,124 @@ textarea.fi{min-height:60px;resize:vertical;font-family:'Courier New',monospace;
     </div>
     <div class="info">
         <strong>📌 О приложении:</strong>
-        Данные хранятся в браузере (localStorage). Работает оффлайн. Поддерживает USB/Bluetooth сканеры штрих-кодов.
+        Данные хранятся в браузере. Работает оффлайн. Поддерживает USB/Bluetooth сканеры.
     </div>
 </div>
 
 </div>
 
+<!-- ===== МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ТИПА ===== -->
 <div id="modal" class="modal">
 <div class="modal-body">
     <div class="modal-head">
-        <div class="modal-title" id="m-title">Новый тип</div>
+        <div class="modal-title" id="m-title">Новый тип работы</div>
         <button class="close-btn" onclick="closeModal()">&times;</button>
     </div>
 
-    <div class="fg">
-        <div class="fl">Код-префикс</div>
-        <input type="text" id="m-prefix" class="fi" placeholder="НП" maxlength="5">
-    </div>
-    <div class="fg">
-        <div class="fl">Название</div>
-        <input type="text" id="m-name" class="fi" placeholder="Наружная панель">
+    <!-- ШАГ 1: Пример кода -->
+    <div class="step">
+        <div class="step-title"><span class="step-num">1</span>Пример кода</div>
+        <div class="fl">Введите любой код этого типа — он поможет настроить всё остальное</div>
+        <input type="text" id="m-example" class="fi" placeholder="НП162100 800/522 500-ВБ-154.002" oninput="updatePreview()">
+        <div class="hint">Необязательно, но удобно — программа покажет как будет разбираться код</div>
     </div>
 
-    <div class="fg">
-        <div class="fl">Обычные параметры (толщина и т.д.)</div>
+    <!-- ШАГ 2: Префикс -->
+    <div class="step">
+        <div class="step-title"><span class="step-num">2</span>Префикс (первые буквы)</div>
+        <div class="sz-row-inputs">
+            <div class="fg" style="margin:0">
+                <div class="fl">Буквы</div>
+                <input type="text" id="m-prefix" class="fi" placeholder="НП" maxlength="5" oninput="updatePreview()">
+            </div>
+            <div class="fg" style="margin:0">
+                <div class="fl">Название типа</div>
+                <input type="text" id="m-name" class="fi" placeholder="Наружная панель">
+            </div>
+        </div>
+        <div class="hint">Первые буквы кода — всегда определяют тип работы</div>
+    </div>
+
+    <!-- ШАГ 3: Обычные параметры -->
+    <div class="step">
+        <div class="step-title"><span class="step-num">3</span>Параметры после префикса</div>
+        <div class="fl">Например: толщина, материал и т.д. Укажите имя и сколько символов занимает</div>
         <div id="m-params"></div>
-        <button class="btn btn-s btn-sm" onclick="addParam()" style="margin-top:8px">➕ Параметр</button>
+        <button class="btn btn-s btn-sm" onclick="addParam()" style="margin-top:6px">➕ Добавить параметр</button>
+        <div class="hint">Позиция считается автоматически — сразу после префикса и предыдущих параметров</div>
     </div>
 
-    <div class="sz-toggle" onclick="toggleSizeGroup()">
-        <input type="checkbox" id="m-sz-on">
-        <span>📐 Группа размеров (длина×ширина)</span>
+    <!-- ШАГ 4: Группа размеров -->
+    <div class="step">
+        <div class="step-title"><span class="step-num">4</span>Размеры (длина × ширина)</div>
+        <div class="sz-toggle" onclick="toggleSizeGroup()">
+            <input type="checkbox" id="m-sz-on" onchange="updatePreview()">
+            <span>📐 Есть группа размеров</span>
+        </div>
+        <div id="m-sz-settings" class="sz-settings">
+            <div class="sz-row-inputs">
+                <div class="fg" style="margin:0">
+                    <div class="fl">Разделитель пар</div>
+                    <input type="text" id="m-sz-pair" class="fi" value="/" maxlength="2" oninput="updatePreview()">
+                </div>
+                <div class="fg" style="margin:0">
+                    <div class="fl">Разделитель номера детали</div>
+                    <input type="text" id="m-part-sep" class="fi" value="-" maxlength="3" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="sz-row-inputs" style="margin-top:8px">
+                <div class="fg" style="margin:0">
+                    <div class="fl">Имя 1-го измерения</div>
+                    <input type="text" id="m-sz-n1" class="fi" value="Длина" oninput="updatePreview()">
+                </div>
+                <div class="fg" style="margin:0">
+                    <div class="fl">Имя 2-го измерения</div>
+                    <input type="text" id="m-sz-n2" class="fi" value="Ширина" oninput="updatePreview()">
+                </div>
+            </div>
+            <div class="hint" style="margin-top:8px">Внутри пары размеры разделяются <b>пробелом</b>. Между парами — символом выше.</div>
+        </div>
     </div>
-    <div id="m-sz-settings" class="sz-settings">
+
+    <!-- ШАГ 5: Формула и тариф -->
+    <div class="step">
+        <div class="step-title"><span class="step-num">5</span>Формула и тариф</div>
         <div class="fg">
-            <div class="fl">Позиция начала блока размеров</div>
-            <input type="number" id="m-sz-start" class="fi" value="4" min="0">
+            <div class="fl">Формула расчета</div>
+            <textarea id="m-formula" class="fi" placeholder="(Длина * Ширина / 1000000)"></textarea>
+            <div class="hint">Используйте имена параметров. Для группы размеров формула считается по каждой паре и суммируется</div>
         </div>
         <div class="sz-row-inputs">
-            <div class="fg">
-                <div class="fl">Разделитель пар</div>
-                <input type="text" id="m-sz-pair" class="fi" value="/" maxlength="2">
+            <div class="fg" style="margin:0">
+                <div class="fl">Единица результата</div>
+                <input type="text" id="m-funit" class="fi" placeholder="м²">
             </div>
-            <div class="fg">
-                <div class="fl">Разделитель внутри пары</div>
-                <input type="text" id="m-sz-dim" class="fi" value="x" maxlength="2">
+            <div class="fg" style="margin:0">
+                <div class="fl">Тариф ₽</div>
+                <input type="number" id="m-rate" class="fi" value="500" min="0" step="0.01">
             </div>
         </div>
-        <div class="fg">
-            <div class="fl">Имена измерений (через запятую)</div>
-            <input type="text" id="m-sz-names" class="fi" value="Длина,Ширина" placeholder="Длина,Ширина">
-        </div>
-        <div class="fg">
-            <div class="fl">Единицы (через запятую)</div>
-            <input type="text" id="m-sz-units" class="fi" value="мм,мм" placeholder="мм,мм">
-        </div>
-        <div class="info" style="margin:8px 0">
-            <strong>Пример блока:</strong>
-            <code>2100x800/522x500</code> — две пары размеров
+        <div class="fg" style="margin-top:8px">
+            <div class="fl">Единица тарифа</div>
+            <input type="text" id="m-unit" class="fi" value="₽/м²">
         </div>
     </div>
 
-    <div class="fg">
-        <div class="fl">Разделитель перед номером детали</div>
-        <input type="text" id="m-part-sep" class="fi" value="-" maxlength="3">
+    <!-- ПРЕДПРОСМОТР -->
+    <div class="step" style="background:rgba(252,204,0,.05);border-color:rgba(252,204,0,.3)">
+        <div class="step-title">👁️ Предпросмотр разбора</div>
+        <div id="preview-box" class="preview-code">Введите пример кода выше...</div>
     </div>
 
-    <div class="fg">
-        <div class="fl">Формула расчета</div>
-        <textarea id="m-formula" class="fi" placeholder="(Длина * Ширина / 1000000)"></textarea>
-        <div style="font-size:11px;color:#666;margin-top:4px">Используйте имена параметров. Для группы размеров формула считается по каждой паре и суммируется.</div>
-    </div>
-    <div class="sz-row-inputs">
-        <div class="fg">
-            <div class="fl">Единица результата</div>
-            <input type="text" id="m-funit" class="fi" placeholder="м²">
-        </div>
-        <div class="fg">
-            <div class="fl">Тариф (₽)</div>
-            <input type="number" id="m-rate" class="fi" value="500" min="0" step="0.01">
-        </div>
-    </div>
-    <div class="fg">
-        <div class="fl">Единица тарифа</div>
-        <input type="text" id="m-unit" class="fi" value="₽/м²">
-    </div>
-
+    <!-- ТЕСТ -->
     <div class="test-box">
-        <div class="fl">🧪 Тест кода</div>
-        <input type="text" id="m-test" class="fi" placeholder="НП162100x800/522x500-ВБ-154.002" style="margin-bottom:8px">
+        <div class="fl">🧪 Тест — введите код и проверьте расчет</div>
+        <input type="text" id="m-test" class="fi" placeholder="НП162100 800/522 500-ВБ-154.002" style="margin-bottom:8px">
         <button class="btn btn-s btn-sm" onclick="testCode()">Проверить</button>
         <div id="m-test-res"></div>
     </div>
 
-    <button class="btn btn-g" onclick="saveWT()" style="margin-top:8px">💾 Сохранить</button>
+    <button class="btn btn-g" onclick="saveWT()" style="margin-top:8px">💾 Сохранить тип работы</button>
     <button class="btn btn-s" onclick="closeModal()">Отмена</button>
 </div>
 </div>
@@ -286,24 +314,24 @@ if(!types.length){
     types = [
         {
             prefix:"ВП", name:"Внутренняя панель",
-            params:[{name:"Толщина",start:2,length:2,unit:"мм"}],
-            sizeGroup:{on:true,start:4,pairSep:"/",dimSep:"x",dims:["Длина","Ширина"],units:["мм","мм"]},
+            params:[{name:"Толщина",length:2,unit:"мм"}],
+            sizeGroup:{on:true,pairSep:"/",dims:["Длина","Ширина"],units:["мм","мм"]},
             partSep:"-",
             formula:"(Длина * Ширина / 1000000)", funit:"м²", rate:500, unit:"₽/м²"
         },
         {
             prefix:"НП", name:"Наружная панель",
-            params:[{name:"Толщина",start:2,length:2,unit:"мм"}],
-            sizeGroup:{on:true,start:4,pairSep:"/",dimSep:"x",dims:["Длина","Ширина"],units:["мм","мм"]},
+            params:[{name:"Толщина",length:2,unit:"мм"}],
+            sizeGroup:{on:true,pairSep:"/",dims:["Длина","Ширина"],units:["мм","мм"]},
             partSep:"-",
             formula:"(Длина * Ширина / 1000000)", funit:"м²", rate:500, unit:"₽/м²"
         },
         {
             prefix:"Н", name:"Наличник",
             params:[
-                {name:"Расположение",start:1,length:1,unit:""},
-                {name:"Ширина",start:2,length:2,unit:"см"},
-                {name:"Длина",start:4,length:4,unit:"мм"}
+                {name:"Расположение",length:1,unit:""},
+                {name:"Ширина",length:2,unit:"см"},
+                {name:"Длина",length:4,unit:"мм"}
             ],
             sizeGroup:{on:false},
             partSep:"-",
@@ -316,6 +344,17 @@ if(!types.length){
 function saveTypes(){localStorage.setItem('wt',JSON.stringify(types))}
 function saveHist(){localStorage.setItem('wh',JSON.stringify(hist))}
 
+// ========== ПОДСЧЕТ ПОЗИЦИИ ==========
+function calcParamStarts(params, prefixLen){
+    let pos = prefixLen;
+    return params.map(p=>{
+        const start = pos;
+        pos += p.length;
+        return {...p, start};
+    });
+}
+
+// ========== ПАРСИНГ ==========
 function parseCode(code){
     code = code.toUpperCase().trim();
     if(!code) return null;
@@ -331,8 +370,10 @@ function parseCode(code){
 function parseWT(code, wt){
     const params = {};
     const display = [];
+    const paramsWithStarts = calcParamStarts(wt.params, wt.prefix.length);
 
-    for(const p of wt.params){
+    // 1. Обычные параметры
+    for(const p of paramsWithStarts){
         const v = code.substring(p.start, p.start+p.length);
         if(!v) throw new Error('Код слишком короткий');
         const n = parseFloat(v);
@@ -342,13 +383,15 @@ function parseWT(code, wt){
 
     let sizesDisplay = [];
     let totalFormulaResult = 0;
+    const blockStart = wt.prefix.length + paramsWithStarts.reduce((s,p)=>s+p.length,0);
 
+    // 2. Группа размеров
     if(wt.sizeGroup && wt.sizeGroup.on){
         const sg = wt.sizeGroup;
         const sep = wt.partSep || '-';
-        let blockEnd = code.indexOf(sep, sg.start);
+        let blockEnd = code.indexOf(sep, blockStart);
         if(blockEnd === -1) blockEnd = code.length;
-        const block = code.substring(sg.start, blockEnd);
+        const block = code.substring(blockStart, blockEnd);
         if(!block) throw new Error('Блок размеров пуст');
 
         const pairs = block.split(sg.pairSep);
@@ -358,9 +401,10 @@ function parseWT(code, wt){
         const dimUnits = sg.units || ['мм','мм'];
 
         for(let i=0; i<pairs.length; i++){
-            const dims = pairs[i].split(sg.dimSep);
+            // Разделитель внутри пары — пробел
+            const dims = pairs[i].trim().split(/\s+/);
             if(dims.length !== dimNames.length){
-                throw new Error('Пара '+(i+1)+': ожидалось '+dimNames.length+' измерений, получено '+dims.length);
+                throw new Error('Пара '+(i+1)+': ожидалось '+dimNames.length+' чисел через пробел, получено '+dims.length);
             }
             const pairParams = {...params};
             const pairDisplay = [];
@@ -378,17 +422,11 @@ function parseWT(code, wt){
         totalFormulaResult = evalFormula(wt.formula, params);
     }
 
+    // 3. Номер детали
     let partNumber = '—';
-    if(wt.sizeGroup && wt.sizeGroup.on){
-        const sep = wt.partSep || '-';
-        const idx = code.indexOf(sep, wt.sizeGroup.start);
-        if(idx !== -1) partNumber = code.substring(idx+sep.length);
-    } else if(wt.partSep){
-        const lastParam = wt.params.length ? wt.params[wt.params.length-1] : null;
-        const searchFrom = lastParam ? lastParam.start+lastParam.length : 2;
-        const idx = code.indexOf(wt.partSep, searchFrom);
-        if(idx !== -1) partNumber = code.substring(idx+wt.partSep.length);
-    }
+    const sep = wt.partSep || '-';
+    const idx = code.indexOf(sep, blockStart);
+    if(idx !== -1) partNumber = code.substring(idx+sep.length);
 
     const payment = Math.round(totalFormulaResult * wt.rate * 100)/100;
     const fu = wt.funit ? ' '+wt.funit : '';
@@ -416,6 +454,7 @@ function evalFormula(formula, params){
     return r;
 }
 
+// ========== ВВОД ==========
 const ci = document.getElementById('code-input');
 ci.addEventListener('input', function(){
     this.value = this.value.toUpperCase();
@@ -467,6 +506,7 @@ function addWork(){
     ci.focus();
 }
 
+// ========== НАВИГАЦИЯ ==========
 function go(id,el){
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -476,6 +516,7 @@ function go(id,el){
     if(id==='workTypes') renderWT();
 }
 
+// ========== ИСТОРИЯ ==========
 function renderHist(){
     const el = document.getElementById('h-list');
     el.innerHTML='';
@@ -506,22 +547,24 @@ function exportCSV(){
     a.download='work_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
 
+// ========== ТИПЫ РАБОТ ==========
 function renderWT(){
     const el=document.getElementById('wt-list');el.innerHTML='';
     if(!types.length){el.innerHTML='<div class="info">Нет типов работ</div>';return}
     types.forEach((wt,i)=>{
         const d=document.createElement('div');d.className='wt-card';
-        const ptxt=wt.params.map(p=>p.name+' ('+p.start+':'+p.length+')').join(', ');
+        const ptxt=wt.params.map(p=>p.name+': '+p.length+' symb'+(p.unit?' ('+p.unit+')':'')).join(', ');
         let sztxt='';
         if(wt.sizeGroup&&wt.sizeGroup.on){
             const sg=wt.sizeGroup;
-            sztxt='<div class="wt-info">📐 Размеры: поз.'+sg.start+', пары «'+sg.pairSep+'», изм. «'+sg.dimSep+'», '+sg.dims.join('×')+'</div>';
+            sztxt='<div class="wt-info">📐 Размеры: пары «'+sg.pairSep+'», внутри — пробел, '+sg.dims.join(' × ')+'</div>';
         }
-        d.innerHTML='<div class="wt-head"><div class="wt-name">'+wt.name+'</div><div class="wt-code">'+wt.prefix+'</div></div><div class="wt-info">'+ptxt+'</div>'+sztxt+'<div class="wt-formula">'+wt.formula+(wt.funit?' → '+wt.funit:'')+'</div><div class="wt-rate">'+wt.rate+' '+wt.unit+'</div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn btn-s btn-sm" onclick="editWT('+i+')" style="flex:1">✏️</button><button class="btn btn-d btn-sm" onclick="delWT('+i+')" style="flex:1">🗑️</button></div>';
+        d.innerHTML='<div class="wt-head"><div class="wt-name">'+wt.name+'</div><div class="wt-code">'+wt.prefix+'</div></div><div class="wt-info">Параметры: '+ptxt+'</div>'+sztxt+'<div class="wt-formula">'+wt.formula+(wt.funit?' → '+wt.funit:'')+'</div><div class="wt-rate">'+wt.rate+' '+wt.unit+'</div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn btn-s btn-sm" onclick="editWT('+i+')" style="flex:1">✏️</button><button class="btn btn-d btn-sm" onclick="delWT('+i+')" style="flex:1">🗑️</button></div>';
         el.appendChild(d);
     });
 }
 
+// ========== МОДАЛЬНОЕ ОКНО ==========
 function openModal(idx){
     editIdx=idx===undefined?-1:idx;
     curParams=[];
@@ -535,14 +578,13 @@ function openModal(idx){
         document.getElementById('m-funit').value=w.funit||'';
         document.getElementById('m-rate').value=w.rate;
         document.getElementById('m-unit').value=w.unit;
-        curParams=JSON.parse(JSON.stringify(w.params));
+        curParams=JSON.parse(JSON.stringify(w.params.map(p=>({name:p.name,length:p.length,unit:p.unit||''}))));
         const sg=w.sizeGroup||{on:false};
         document.getElementById('m-sz-on').checked=!!sg.on;
-        document.getElementById('m-sz-start').value=sg.start||4;
         document.getElementById('m-sz-pair').value=sg.pairSep||'/';
-        document.getElementById('m-sz-dim').value=sg.dimSep||'x';
-        document.getElementById('m-sz-names').value=(sg.dims||['Длина','Ширина']).join(',');
-        document.getElementById('m-sz-units').value=(sg.units||['мм','мм']).join(',');
+        document.getElementById('m-sz-n1').value=(sg.dims&&sg.dims[0])||'Длина';
+        document.getElementById('m-sz-n2').value=(sg.dims&&sg.dims[1])||'Ширина';
+        document.getElementById('m-example').value='';
     } else {
         document.getElementById('m-title').textContent='Новый тип';
         document.getElementById('m-prefix').value='';
@@ -553,16 +595,16 @@ function openModal(idx){
         document.getElementById('m-rate').value='500';
         document.getElementById('m-unit').value='₽';
         document.getElementById('m-sz-on').checked=false;
-        document.getElementById('m-sz-start').value='4';
         document.getElementById('m-sz-pair').value='/';
-        document.getElementById('m-sz-dim').value='x';
-        document.getElementById('m-sz-names').value='Длина,Ширина';
-        document.getElementById('m-sz-units').value='мм,мм';
+        document.getElementById('m-sz-n1').value='Длина';
+        document.getElementById('m-sz-n2').value='Ширина';
+        document.getElementById('m-example').value='';
     }
     document.getElementById('m-test').value='';
     document.getElementById('m-test-res').innerHTML='';
     renderParams();
     toggleSizeGroup();
+    updatePreview();
     document.getElementById('modal').classList.add('show');
 }
 
@@ -575,14 +617,99 @@ function toggleSizeGroup(){
 
 function renderParams(){
     const el=document.getElementById('m-params');el.innerHTML='';
+    const prefixLen = document.getElementById('m-prefix').value.length;
+    const withStarts = calcParamStarts(curParams, prefixLen);
     curParams.forEach((p,i)=>{
-        const r=document.createElement('div');r.className='pr';
-        r.innerHTML='<div><div class="pr-lbl">Имя</div><input class="fi" value="'+p.name+'" onchange="curParams['+i+'].name=this.value"></div><div><div class="pr-lbl">Поз.</div><input type="number" class="fi" value="'+p.start+'" min="0" onchange="curParams['+i+'].start=+this.value"></div><div><div class="pr-lbl">Дл.</div><input type="number" class="fi" value="'+p.length+'" min="1" onchange="curParams['+i+'].length=+this.value"></div><div><div class="pr-lbl">Ед.</div><input class="fi" value="'+p.unit+'" onchange="curParams['+i+'].unit=this.value"></div><button class="btn btn-d btn-sm" onclick="curParams.splice('+i+',1);renderParams()">✖</button>';
+        const r=document.createElement('div');r.className='param-row';
+        r.innerHTML='<div><input class="fi" value="'+p.name+'" placeholder="Имя (напр. Толщина)" onchange="curParams['+i+'].name=this.value;renderParams()"></div><div><input type="number" class="fi" value="'+p.length+'" min="1" placeholder="дл." onchange="curParams['+i+'].length=+this.value;renderParams()"></div><button class="btn btn-d btn-sm" onclick="curParams.splice('+i+',1);renderParams()">✖</button>';
         el.appendChild(r);
+        const hint=document.createElement('div');
+        hint.className='hint';
+        hint.style.margin='-4px 0 6px 0';
+        hint.textContent='позиция '+withStarts[i].start+(p.unit?', ед.: '+p.unit:'');
+        el.appendChild(hint);
     });
 }
 
-function addParam(){curParams.push({name:'',start:0,length:1,unit:''});renderParams()}
+document.getElementById('m-prefix').addEventListener('input',function(){
+    this.value=this.value.toUpperCase();
+    renderParams();
+    updatePreview();
+});
+
+function addParam(){curParams.push({name:'',length:1,unit:''});renderParams()}
+
+// ========== ПРЕДПРОСМОТР ==========
+function updatePreview(){
+    const box = document.getElementById('preview-box');
+    const ex = document.getElementById('m-example').value.toUpperCase().trim();
+    const prefix = document.getElementById('m-prefix').value.toUpperCase();
+    const szOn = document.getElementById('m-sz-on').checked;
+    const partSep = document.getElementById('m-part-sep').value || '-';
+
+    if(!ex){
+        box.innerHTML='<span style="color:#666">Введите пример кода выше — здесь появится разбор</span>';
+        return;
+    }
+
+    if(!prefix){
+        box.innerHTML='<span style="color:var(--err)">Укажите префикс</span>';
+        return;
+    }
+
+    if(!ex.startsWith(prefix)){
+        box.innerHTML='<span style="color:var(--err)">Пример не начинается с префикса "'+prefix+'"</span>';
+        return;
+    }
+
+    const prefixLen = prefix.length;
+    const paramsWithStarts = calcParamStarts(curParams, prefixLen);
+    const blockStart = prefixLen + paramsWithStarts.reduce((s,p)=>s+p.length,0);
+
+    let html = '<span class="hl-prefix">'+ex.substring(0,prefixLen)+'</span>';
+
+    // Параметры
+    for(const p of paramsWithStarts){
+        const val = ex.substring(p.start, p.start+p.length);
+        if(!val){
+            box.innerHTML='<span style="color:var(--err)">Код короче, чем нужно для параметра "'+p.name+'"</span>';
+            return;
+        }
+        html += '<span class="hl-param" title="'+p.name+'">'+val+'</span>';
+    }
+
+    if(szOn){
+        const sepIdx = ex.indexOf(partSep, blockStart);
+        const blockEnd = sepIdx===-1 ? ex.length : sepIdx;
+        const block = ex.substring(blockStart, blockEnd);
+        if(!block){
+            box.innerHTML+='<span style="color:var(--err)">[блок размеров пуст]</span>';
+            return;
+        }
+        const pairSep = document.getElementById('m-sz-pair').value || '/';
+        const pairs = block.split(pairSep);
+        pairs.forEach((pair,i)=>{
+            if(i>0) html+='<span class="hl-sep">'+pairSep+'</span>';
+            const parts = pair.trim().split(/\s+/);
+            parts.forEach((pt,j)=>{
+                if(j>0) html+='<span class="hl-sep">␣</span>';
+                html+='<span class="hl-size">'+pt+'</span>';
+            });
+        });
+        if(sepIdx !== -1){
+            html += '<span class="hl-sep">'+partSep+'</span>';
+            html += '<span class="hl-part">'+ex.substring(sepIdx+partSep.length)+'</span>';
+        }
+    } else {
+        const sepIdx = ex.indexOf(partSep, blockStart);
+        if(sepIdx !== -1){
+            html += '<span class="hl-sep">'+partSep+'</span>';
+            html += '<span class="hl-part">'+ex.substring(sepIdx+partSep.length)+'</span>';
+        }
+    }
+
+    box.innerHTML = html;
+}
 
 function testCode(){
     const code=document.getElementById('m-test').value.toUpperCase().trim();
@@ -593,7 +720,7 @@ function testCode(){
         const r=parseWT(code,wt);
         let sz='';
         if(r.sizes.length) sz='<br>'+r.sizes.join('<br>');
-        res.innerHTML='<div class="test-ok">✅ '+r.params+sz+'<br><b>'+r.payment.toLocaleString('ru-RU')+' ₽</b></div>';
+        res.innerHTML='<div class="test-ok">✅ '+r.params+sz+'<br>Расчет: '+r.calc+'<br><b>Оплата: '+r.payment.toLocaleString('ru-RU')+' ₽</b></div>';
     }catch(e){
         res.innerHTML='<div class="test-err">❌ '+e.message+'</div>';
     }
@@ -601,19 +728,19 @@ function testCode(){
 
 function buildTempWT(){
     const szOn=document.getElementById('m-sz-on').checked;
+    const n1 = document.getElementById('m-sz-n1').value.trim() || 'Длина';
+    const n2 = document.getElementById('m-sz-n2').value.trim() || 'Ширина';
     return {
         prefix:document.getElementById('m-prefix').value.toUpperCase(),
         name:document.getElementById('m-name').value,
-        params:curParams.filter(p=>p.name),
+        params:curParams.filter(p=>p.name).map(p=>({name:p.name,length:p.length,unit:p.unit||''})),
         sizeGroup: szOn ? {
             on:true,
-            start:+document.getElementById('m-sz-start').value,
-            pairSep:document.getElementById('m-sz-pair').value,
-            dimSep:document.getElementById('m-sz-dim').value,
-            dims:document.getElementById('m-sz-names').value.split(',').map(s=>s.trim()),
-            units:document.getElementById('m-sz-units').value.split(',').map(s=>s.trim())
+            pairSep:document.getElementById('m-sz-pair').value||'/',
+            dims:[n1,n2],
+            units:['мм','мм']
         } : {on:false},
-        partSep:document.getElementById('m-part-sep').value,
+        partSep:document.getElementById('m-part-sep').value||'-',
         formula:document.getElementById('m-formula').value,
         funit:document.getElementById('m-funit').value,
         rate:+document.getElementById('m-rate').value,
@@ -626,7 +753,7 @@ function saveWT(){
     if(!wt.prefix){alert('Укажите префикс');return}
     if(!wt.name){alert('Укажите название');return}
     if(!wt.formula){alert('Укажите формулу');return}
-    if(!wt.params.length && !(wt.sizeGroup&&wt.sizeGroup.on)){alert('Добавьте параметры или группу размеров');return}
+    if(!wt.params.length && !(wt.sizeGroup&&wt.sizeGroup.on)){alert('Добавьте параметры или включите размеры');return}
     if(editIdx>=0) types[editIdx]=wt; else types.push(wt);
     saveTypes();closeModal();renderWT();
     alert('✅ Сохранено!');
@@ -635,8 +762,9 @@ function saveWT(){
 function editWT(i){openModal(i)}
 function delWT(i){if(confirm('Удалить?')){types.splice(i,1);saveTypes();renderWT()}}
 
+// ========== НАСТРОЙКИ ==========
 function exportAll(){
-    const d={v:'2.0',date:new Date().toISOString(),types,hist};
+    const d={v:'3.0',date:new Date().toISOString(),types,hist};
     const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
     const a=document.createElement('a');a.href=URL.createObjectURL(b);
     a.download='backup_'+new Date().toISOString().split('T')[0]+'.json';a.click();
