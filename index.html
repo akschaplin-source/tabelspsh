@@ -39,6 +39,7 @@ label{display:block;margin-bottom:5px;color:#aaa;font-size:14px}
 select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;background:#1a1a2e;color:#fff;margin-bottom:10px}
 .row{display:flex;gap:10px}
 .row > div{flex:1}
+.param-item{background:#1a1a2e;padding:8px;border-radius:5px;margin:5px 0;font-size:14px}
 </style>
 </head>
 <body>
@@ -59,7 +60,7 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
         
         <div id="result" class="result">
             <div><b>Тип:</b> <span id="r-type"></span></div>
-            <div><b>Параметры:</b> <span id="r-params"></span></div>
+            <div id="r-params-block"></div>
             <div><b>Размеры:</b> <span id="r-sizes"></span></div>
             <div><b>Количество:</b> <span id="r-amount"></span></div>
             <div style="font-size:24px;margin-top:10px;text-align:center"><b>💰 <span id="r-pay"></span> ₽</b></div>
@@ -71,12 +72,12 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
     <div class="card">
         <h2>📖 Примеры кодов:</h2>
         <div style="font-family:monospace;background:#1a1a2e;padding:10px;border-radius:8px;margin:10px 0">
-            <div>ВП162100 800-ВБ-154.002</div>
+            <div style="color:#fc0">ВП162100 800-ВБ-154.002</div>
             <div style="color:#aaa;font-size:12px;margin-top:5px">
-                ВП = тип<br>
-                16 = толщина<br>
+                ВП = тип (внутренняя панель)<br>
+                16 = толщина 2 символа<br>
                 2100 800 = длина и ширина<br>
-                ВБ-154.002 = номер
+                ВБ-154.002 = номер детали
             </div>
         </div>
     </div>
@@ -108,6 +109,10 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
         <label>Название</label>
         <input type="text" id="t-name" placeholder="Внутренняя панель" style="text-align:left">
         
+        <label>Параметры (толщина и т.д.)</label>
+        <div id="params-container"></div>
+        <button class="btn btn-secondary btn-sm" onclick="addParam()" style="margin-bottom:10px">+ Параметр</button>
+        
         <label>Тип расчета</label>
         <select id="t-mode" onchange="updateFormula()">
             <option value="area">Площадь (м²) - длина × ширина</option>
@@ -137,7 +142,7 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
         <button class="btn btn-primary" onclick="exportData()">📤 Экспорт</button>
         <button class="btn btn-secondary" onclick="document.getElementById('import').click()">📥 Импорт</button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
-        <button class="btn btn-danger" onclick="resetAll()">️ Сбросить всё</button>
+        <button class="btn btn-danger" onclick="resetAll()">🗑️ Сбросить всё</button>
     </div>
 </div>
 
@@ -147,20 +152,48 @@ select,textarea{width:100%;padding:10px;border:2px solid #444;border-radius:8px;
     <button class="active" onclick="showPanel('input')"><div>📱</div>Ввод</button>
     <button onclick="showPanel('history')"><div>📋</div>История</button>
     <button onclick="showPanel('types')"><div>🔧</div>Типы</button>
-    <button onclick="showPanel('settings')"><div>⚙️</div>Ещё</button>
+    <button onclick="showPanel('settings')"><div>️</div>Ещё</button>
 </div>
 
 <script>
 // ДАННЫЕ
 let history = JSON.parse(localStorage.getItem('workHistory') || '[]');
 let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
+let tempParams = [];
 
 // Типы по умолчанию
 if(types.length === 0){
     types = [
-        {prefix:'ВП', name:'Внутренняя панель', mode:'area', formula:'(Длина * Ширина / 1000000)', rate:500, unit:'₽/м²', dims:['Длина','Ширина']},
-        {prefix:'НП', name:'Наружная панель', mode:'area', formula:'(Длина * Ширина / 1000000)', rate:500, unit:'₽/м²', dims:['Длина','Ширина']},
-        {prefix:'Н', name:'Наличник', mode:'linear', formula:'(Длина / 1000)', rate:300, unit:'₽/м.п.', dims:['Длина']}
+        {
+            prefix:'ВП', 
+            name:'Внутренняя панель', 
+            mode:'area', 
+            formula:'(Длина * Ширина / 1000000)', 
+            rate:500, 
+            unit:'₽/м²', 
+            dims:['Длина','Ширина'],
+            params:[{name:'Толщина',length:2,unit:'мм'}]
+        },
+        {
+            prefix:'НП', 
+            name:'Наружная панель', 
+            mode:'area', 
+            formula:'(Длина * Ширина / 1000000)', 
+            rate:500, 
+            unit:'₽/м²', 
+            dims:['Длина','Ширина'],
+            params:[{name:'Толщина',length:2,unit:'мм'}]
+        },
+        {
+            prefix:'Н', 
+            name:'Наличник', 
+            mode:'linear', 
+            formula:'(Длина / 1000)', 
+            rate:300, 
+            unit:'₽/м.п.', 
+            dims:['Длина'],
+            params:[{name:'Расположение',length:1,unit:''},{name:'Ширина',length:2,unit:'см'}]
+        }
     ];
     saveTypes();
 }
@@ -199,10 +232,21 @@ function parseCode(code){
 function extractData(code, type){
     let pos = type.prefix.length;
     let params = {};
-    let display = [];
+    let displayParams = [];
     
-    // Здесь можно добавить извлечение параметров (толщина и т.д.)
-    // Для простоты пропускаем
+    // Извлекаем параметры (толщина и т.д.)
+    if(type.params && type.params.length > 0){
+        for(let p of type.params){
+            if(pos + p.length > code.length){
+                throw new Error('Код слишком короткий для параметра "'+p.name+'"');
+            }
+            let val = code.substring(pos, pos + p.length);
+            let num = parseFloat(val);
+            params[p.name] = isNaN(num) ? val : num;
+            displayParams.push(p.name + ': ' + val + (p.unit ? ' ' + p.unit : ''));
+            pos += p.length;
+        }
+    }
     
     // Извлекаем размеры
     let sizesBlock = '';
@@ -210,11 +254,15 @@ function extractData(code, type){
     
     // Ищем разделитель номера детали (-)
     let dashIndex = code.indexOf('-', pos);
-    if(dashIndex > 0){
+    if(dashIndex > pos){
         sizesBlock = code.substring(pos, dashIndex);
         partNumber = code.substring(dashIndex);
     } else {
         sizesBlock = code.substring(pos);
+    }
+    
+    if(!sizesBlock.trim()){
+        throw new Error('Не найдены размеры в коде');
     }
     
     // Разбираем размеры (разделены пробелом и /)
@@ -255,14 +303,14 @@ function extractData(code, type){
     }
     
     if(sizes.length === 0){
-        throw new Error('Не найдены размеры в коде');
+        throw new Error('Не удалось разобрать размеры. Формат: 2100 800 или 2100 800/500 300');
     }
     
     let payment = Math.round(totalAmount * type.rate);
     
     return {
         type: type.name,
-        params: display.join(', '),
+        params: displayParams,
         sizes: sizes,
         partNumber: partNumber || '—',
         amount: totalAmount,
@@ -288,13 +336,19 @@ function addWork(){
     
     let data = parseCode(code);
     if(!data){
-        showError('Код не распознан. Проверьте префикс и формат.');
+        showError('Код не распознан. Проверьте префикс и формат.<br><br>Пример: ВП162100 800-ВБ-154.002');
         return;
     }
     
     // Показываем результат
     document.getElementById('r-type').textContent = data.type;
-    document.getElementById('r-params').textContent = data.params || '—';
+    
+    let paramsHtml = '';
+    if(data.params.length > 0){
+        paramsHtml = '<div><b>Параметры:</b> ' + data.params.join(', ') + '</div>';
+    }
+    document.getElementById('r-params-block').innerHTML = paramsHtml;
+    
     document.getElementById('r-sizes').textContent = data.sizes.join(' / ');
     document.getElementById('r-amount').textContent = data.amount.toFixed(4) + ' ' + data.unit;
     document.getElementById('r-pay').textContent = data.payment.toLocaleString();
@@ -305,6 +359,7 @@ function addWork(){
         date: new Date().toLocaleString('ru-RU'),
         code: data.code,
         type: data.type,
+        params: data.params,
         sizes: data.sizes,
         amount: data.amount,
         unit: data.unit,
@@ -319,7 +374,7 @@ function addWork(){
 
 function showError(msg){
     let errorDiv = document.getElementById('error');
-    errorDiv.textContent = '❌ ' + msg;
+    errorDiv.innerHTML = '❌ ' + msg;
     errorDiv.classList.add('show');
 }
 
@@ -343,9 +398,13 @@ function renderHistory(){
         
         let div = document.createElement('div');
         div.className = 'history-item';
+        
+        let paramsText = item.params && item.params.length > 0 ? '<div class="history-info">' + item.params.join(', ') + '</div>' : '';
+        
         div.innerHTML = `
             <div class="history-code">${item.code}</div>
             <div class="history-info">${item.type}</div>
+            ${paramsText}
             <div class="history-info">${item.sizes.join(' / ')}</div>
             <div class="history-info">${item.amount.toFixed(4)} ${item.unit}</div>
             <div class="history-info" style="font-size:11px;color:#666">${item.date}</div>
@@ -387,10 +446,18 @@ function renderTypes(){
     types.forEach((t, idx) => {
         let div = document.createElement('div');
         div.className = 'card';
+        
+        let paramsText = t.params && t.params.length > 0 
+            ? t.params.map(p => p.name + ' (' + p.length + ')').join(', ')
+            : 'нет';
+        
         div.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
                 <b>${t.name}</b>
                 <span style="background:#fc0;color:#000;padding:3px 8px;border-radius:5px;font-family:monospace">${t.prefix}</span>
+            </div>
+            <div style="font-size:13px;color:#aaa;margin:5px 0">
+                Параметры: ${paramsText}
             </div>
             <div style="font-size:13px;color:#aaa;margin:5px 0">
                 ${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}
@@ -408,6 +475,7 @@ function renderTypes(){
 }
 
 function showTypeForm(){
+    tempParams = [];
     document.getElementById('type-form').style.display = 'block';
     document.getElementById('form-title').textContent = 'Новый тип';
     document.getElementById('t-prefix').value = '';
@@ -416,10 +484,39 @@ function showTypeForm(){
     document.getElementById('t-formula').value = '(Длина * Ширина / 1000000)';
     document.getElementById('t-rate').value = '500';
     document.getElementById('t-unit').value = '₽/м²';
+    renderParams();
 }
 
 function hideTypeForm(){
     document.getElementById('type-form').style.display = 'none';
+}
+
+function addParam(){
+    tempParams.push({name:'',length:1,unit:''});
+    renderParams();
+}
+
+function renderParams(){
+    let container = document.getElementById('params-container');
+    if(tempParams.length === 0){
+        container.innerHTML = '<div style="color:#666;font-size:13px;margin-bottom:10px">Параметры не добавлены (например, толщина)</div>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    tempParams.forEach((p, idx) => {
+        let div = document.createElement('div');
+        div.className = 'param-item';
+        div.style.display = 'flex';
+        div.style.gap = '10px';
+        div.innerHTML = `
+            <input type="text" placeholder="Название" value="${p.name}" onchange="tempParams[${idx}].name=this.value" style="flex:2;margin:0">
+            <input type="number" placeholder="Длина" value="${p.length}" min="1" onchange="tempParams[${idx}].length=parseInt(this.value)" style="flex:1;margin:0">
+            <input type="text" placeholder="Ед." value="${p.unit}" onchange="tempParams[${idx}].unit=this.value" style="flex:1;margin:0">
+            <button onclick="tempParams.splice(${idx},1);renderParams()" style="background:#f44336;color:#fff;border:none;padding:0 10px;border-radius:5px">✖</button>
+        `;
+        container.appendChild(div);
+    });
 }
 
 function updateFormula(){
@@ -445,13 +542,22 @@ function saveType(){
     let unit = document.getElementById('t-unit').value.trim();
     
     if(!prefix || !name || !formula){
-        alert('Заполните все поля');
+        alert('Заполните префикс, название и формулу');
         return;
     }
     
     let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
     
-    types.push({prefix, name, mode, formula, rate, unit, dims});
+    types.push({
+        prefix, 
+        name, 
+        mode, 
+        formula, 
+        rate, 
+        unit, 
+        dims,
+        params: tempParams.filter(p => p.name)
+    });
     saveTypes();
     hideTypeForm();
     renderTypes();
@@ -460,6 +566,8 @@ function saveType(){
 
 function editType(idx){
     let t = types[idx];
+    tempParams = t.params ? JSON.parse(JSON.stringify(t.params)) : [];
+    
     document.getElementById('type-form').style.display = 'block';
     document.getElementById('form-title').textContent = 'Редактировать';
     document.getElementById('t-prefix').value = t.prefix;
@@ -469,8 +577,46 @@ function editType(idx){
     document.getElementById('t-rate').value = t.rate;
     document.getElementById('t-unit').value = t.unit;
     
-    // Удаляем старый при сохранении
-    window.editingType = idx;
+    renderParams();
+    
+    // Запоминаем индекс для удаления при сохранении
+    window.editingTypeIdx = idx;
+    
+    // Переопределяем saveType для редактирования
+    let originalSaveType = saveType;
+    saveType = function(){
+        let prefix = document.getElementById('t-prefix').value.toUpperCase().trim();
+        let name = document.getElementById('t-name').value.trim();
+        let mode = document.getElementById('t-mode').value;
+        let formula = document.getElementById('t-formula').value.trim();
+        let rate = parseFloat(document.getElementById('t-rate').value);
+        let unit = document.getElementById('t-unit').value.trim();
+        
+        if(!prefix || !name || !formula){
+            alert('Заполните все обязательные поля');
+            return;
+        }
+        
+        let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
+        
+        types[window.editingTypeIdx] = {
+            prefix, 
+            name, 
+            mode, 
+            formula, 
+            rate, 
+            unit, 
+            dims,
+            params: tempParams.filter(p => p.name)
+        };
+        saveTypes();
+        hideTypeForm();
+        renderTypes();
+        alert('✅ Обновлено!');
+        
+        // Возвращаем оригинальную функцию
+        saveType = originalSaveType;
+    };
 }
 
 function deleteType(idx){
@@ -514,8 +660,8 @@ function importData(event){
 }
 
 function resetAll(){
-    if(confirm('️ Удалить ВСЕ данные?')){
-        if(confirm('Точно?')){
+    if(confirm('⚠️ Удалить ВСЕ данные?')){
+        if(confirm('Точно? Это нельзя отменить!')){
             localStorage.removeItem('workTypes');
             localStorage.removeItem('workHistory');
             location.reload();
