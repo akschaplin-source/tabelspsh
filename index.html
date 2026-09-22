@@ -30,28 +30,8 @@
     --r-sm:14px;
     --transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-body{
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    background:linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-mid) 50%,var(--bg-light) 100%);
-    background-attachment:fixed;
-    color:var(--text-primary);
-    min-height:100vh;
-    padding-bottom:100px;
-    font-size:15px;
-    line-height:1.5;
-    overflow-x:hidden;
-}
-body::before{
-    content:'';
-    position:fixed;
-    top:-50%;left:-50%;
-    width:200%;height:200%;
-    background:radial-gradient(circle at 20% 30%,rgba(255,107,53,0.12) 0%,transparent 50%),
-               radial-gradient(circle at 80% 70%,rgba(79,172,254,0.08) 0%,transparent 50%),
-               radial-gradient(circle at 50% 50%,rgba(245,87,108,0.06) 0%,transparent 50%);
-    z-index:-1;
-    animation:float 25s ease-in-out infinite;
-}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-mid) 50%,var(--bg-light) 100%);background-attachment:fixed;color:var(--text-primary);min-height:100vh;padding-bottom:100px;font-size:15px;line-height:1.5;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 20% 30%,rgba(255,107,53,0.12) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(79,172,254,0.08) 0%,transparent 50%),radial-gradient(circle at 50% 50%,rgba(245,87,108,0.06) 0%,transparent 50%);z-index:-1;animation:float 25s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-3%,3%) rotate(180deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
@@ -96,6 +76,8 @@ body::before{
 .btn-danger:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(244,67,54,0.5)}
 .btn-warning{background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%);color:#fff;box-shadow:0 4px 20px rgba(255,152,0,0.4)}
 .btn-warning:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,152,0,0.5)}
+.btn-time{background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%);color:#fff;box-shadow:0 4px 20px rgba(102,126,234,0.4)}
+.btn-time:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(102,126,234,0.5)}
 .btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:10px}
 .result{background:linear-gradient(135deg,rgba(76,175,80,0.15) 0%,rgba(69,160,73,0.1) 100%);border:1px solid rgba(76,175,80,0.3);border-radius:var(--r);padding:20px;margin:14px 0;display:none;backdrop-filter:var(--blur);animation:slideIn 0.3s ease}
 .result.show{display:block}
@@ -123,7 +105,6 @@ body::before{
 .total-inline .label{font-size:14px;color:var(--text-secondary);margin-bottom:10px;font-weight:500}
 .total-inline .amount{font-size:32px;font-weight:700;background:linear-gradient(135deg,var(--accent-orange) 0%,var(--accent-orange-light) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-/* Счётчики статусов */
 .status-counters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .status-counter{flex:1;min-width:70px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:12px;padding:10px 8px;text-align:center;backdrop-filter:var(--blur)}
 .status-counter .sc-value{font-size:18px;font-weight:700;margin-bottom:2px}
@@ -148,6 +129,9 @@ body::before{
 .h-item.closed:hover{transform:none;background:rgba(128,128,128,0.12)}
 .h-item.closed .h-code,.h-item.closed .h-type,.h-item.closed .h-sizes,.h-item.closed .h-amount,.h-item.closed .h-time{color:rgba(255,255,255,0.5)}
 .h-item.closed .h-pay{color:rgba(129,199,132,0.6)}
+.h-item.time-work{background:rgba(102,126,234,0.08);border-color:rgba(102,126,234,0.25);border-left-color:var(--accent-purple)}
+.h-item.time-work:hover{background:rgba(102,126,234,0.12);border-color:rgba(102,126,234,0.35)}
+.h-item.time-work .h-code{color:#b39ddb}
 
 .h-item-left{flex:1;min-width:0}
 .h-code{font-family:'SF Mono',monospace;font-size:13px;font-weight:600;color:var(--accent-yellow);word-break:break-all;margin-bottom:3px}
@@ -187,6 +171,7 @@ body::before{
 .status-badge.planned-badge{background:rgba(255,193,7,0.2);border-top:1px solid rgba(255,193,7,0.3);color:#ffd54f}
 .status-badge.done-badge{background:rgba(76,175,80,0.2);border-top:1px solid rgba(76,175,80,0.3);color:#81c784}
 .status-badge.closed-badge{background:rgba(128,128,128,0.3);border-top:1px solid rgba(128,128,128,0.3);color:rgba(255,255,255,0.7)}
+.status-badge.time-badge{background:rgba(102,126,234,0.2);border-top:1px solid rgba(102,126,234,0.3);color:#b39ddb}
 
 .wt-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r);padding:18px;margin-bottom:14px;border-left:3px solid var(--accent-orange);transition:var(--transition);backdrop-filter:var(--blur)}
 .wt-card:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover)}
@@ -252,6 +237,33 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
 .notification-empty{text-align:center;padding:30px 20px;color:var(--text-muted)}
 .notification-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
 
+/* Модальное окно для работы по времени */
+.time-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.3s ease}
+.time-modal.show{display:flex}
+.time-content{background:linear-gradient(135deg,rgba(30,35,60,0.98) 0%,rgba(20,25,45,0.98) 100%);border:1px solid var(--glass-border);border-radius:var(--r);padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:slideIn 0.4s ease;max-height:90vh;overflow-y:auto}
+.time-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.time-title{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.time-close{width:32px;height:32px;border-radius:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:18px}
+.time-close:hover{background:var(--glass-bg-hover)}
+.time-input-group{margin-bottom:18px}
+.time-input-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
+.time-input{width:100%;padding:13px 16px;background:rgba(0,0,0,0.3);border:1.5px solid var(--glass-border);border-radius:var(--r-sm);color:var(--text-primary);font-size:15px;transition:var(--transition)}
+.time-input:focus{outline:none;border-color:var(--accent-purple);background:rgba(0,0,0,0.4);box-shadow:0 0 0 3px rgba(102,126,234,0.15)}
+.time-input::placeholder{color:var(--text-muted)}
+textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
+.time-unit-toggle{display:flex;gap:8px;margin-bottom:16px}
+.time-unit-btn{flex:1;padding:12px;background:var(--glass-bg);border:1.5px solid var(--glass-border);border-radius:10px;color:var(--text-secondary);font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);text-align:center}
+.time-unit-btn:hover{background:var(--glass-bg-hover)}
+.time-unit-btn.active{background:rgba(102,126,234,0.2);border-color:var(--accent-purple);color:var(--accent-purple)}
+.time-calc-result{background:rgba(102,126,234,0.1);border:1px solid rgba(102,126,234,0.3);border-radius:12px;padding:16px;margin:16px 0;text-align:center}
+.time-calc-label{font-size:12px;color:var(--text-secondary);margin-bottom:6px}
+.time-calc-value{font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.time-calc-details{font-size:12px;color:var(--text-muted);margin-top:6px}
+.time-submit-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:16px}
+.time-submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(102,126,234,0.5)}
+.time-submit-btn:active{transform:scale(0.98)}
+.time-submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
 @media(min-width:768px){body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}.header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -264,7 +276,7 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
 <header class="header">
     <div class="header-content">
         <div class="logo">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap:round" stroke-linejoin="round">
                 <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
             </svg>
@@ -289,6 +301,45 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
     </div>
 </div>
 
+<!-- Модальное окно для работы по времени -->
+<div class="time-modal" id="time-modal">
+    <div class="time-content">
+        <div class="time-header">
+            <div class="time-title">⏱️ Работа по времени</div>
+            <button class="time-close" onclick="closeTimeModal()">✕</button>
+        </div>
+        
+        <div class="time-input-group">
+            <label class="time-input-label">Номер заказа</label>
+            <input type="text" id="time-order" class="time-input" placeholder="Например: 12345">
+        </div>
+        
+        <div class="time-input-group">
+            <label class="time-input-label">Комментарий</label>
+            <textarea id="time-comment" class="time-input" placeholder="Описание работы..."></textarea>
+        </div>
+        
+        <div class="time-input-group">
+            <label class="time-input-label">Время работы</label>
+            <div class="time-unit-toggle">
+                <button class="time-unit-btn active" onclick="setTimeUnit('minutes')" id="btn-minutes">Минуты</button>
+                <button class="time-unit-btn" onclick="setTimeUnit('hours')" id="btn-hours">Часы</button>
+            </div>
+            <input type="number" id="time-value" class="time-input" placeholder="Введите время" min="0" step="0.1" oninput="calculateTimePayment()">
+        </div>
+        
+        <div class="time-calc-result" id="time-result" style="display:none">
+            <div class="time-calc-label">Оплата</div>
+            <div class="time-calc-value"><span id="time-payment">0</span> ₽</div>
+            <div class="time-calc-details" id="time-details"></div>
+        </div>
+        
+        <button class="time-submit-btn" id="time-submit" onclick="addTimeWork()" disabled>
+            Добавить в историю
+        </button>
+    </div>
+</div>
+
 <div class="content">
 
 <div id="input" class="panel active">
@@ -308,20 +359,18 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
             <span id="input-title">Ввод кода</span>
         </div>
         
-        <div id="edit-banner" class="edit-banner">
-            <div class="edit-icon">✏️</div>
-            <div class="edit-text">
-                <b>Редактирование записи #<span id="edit-index-display">0</span></b><br>
-                <span style="font-size:12px;opacity:0.8">Измените код и нажмите "Сохранить изменения"</span>
-            </div>
-            <button class="cancel-edit" onclick="cancelEdit()">Отмена</button>
-        </div>
-        
         <input type="text" id="code" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off">
-        <button class="btn btn-primary" id="add-btn" onclick="addWork()">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span id="add-btn-text">Добавить</span>
-        </button>
+        
+        <div style="display:flex;gap:10px;margin-bottom:14px">
+            <button class="btn btn-primary" id="add-btn" onclick="addWork()" style="flex:1">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span id="add-btn-text">Добавить</span>
+            </button>
+            <button class="btn btn-time" onclick="openTimeModal()" style="flex:0 0 auto;width:auto;padding:15px 20px">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Время
+            </button>
+        </div>
         
         <div id="result" class="result">
             <h3>📋 Расшифровка</h3>
@@ -456,17 +505,18 @@ let history = JSON.parse(localStorage.getItem('workHistory') || '[]');
 let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
 let tempParams = [];
 let editingIndex = -1;
+let timeUnit = 'minutes';
 
 let notifications = {
     lastBackupTime: parseInt(localStorage.getItem('lastBackupTime') || '0'),
     milestone5000Seen: localStorage.getItem('milestone5000Seen') === 'true'
 };
 
-// Миграция старых записей — добавляем поля статусов если их нет
 history.forEach(item => {
     if(item.closed === undefined) item.closed = false;
     if(item.planned === undefined) item.planned = false;
     if(item.done === undefined) item.done = false;
+    if(item.workType === undefined) item.workType = 'code';
 });
 
 if(types.length === 0){
@@ -485,7 +535,6 @@ function saveNotifications(){
     localStorage.setItem('milestone5000Seen', notifications.milestone5000Seen.toString());
 }
 
-// Считаем только готовые и закрытые (closed = был done)
 function calcEarnedTotal(){
     return history.reduce((sum, item) => {
         if(item.done || item.closed) return sum + (item.payment || 0);
@@ -564,6 +613,84 @@ document.getElementById('notification-modal').addEventListener('click', function
     if(e.target === this) closeNotifications();
 });
 
+// Функции для работы по времени
+function openTimeModal(){
+    document.getElementById('time-modal').classList.add('show');
+    document.getElementById('time-order').value = '';
+    document.getElementById('time-comment').value = '';
+    document.getElementById('time-value').value = '';
+    document.getElementById('time-result').style.display = 'none';
+    document.getElementById('time-submit').disabled = true;
+    setTimeUnit('minutes');
+}
+
+function closeTimeModal(){
+    document.getElementById('time-modal').classList.remove('show');
+}
+
+function setTimeUnit(unit){
+    timeUnit = unit;
+    document.getElementById('btn-minutes').classList.toggle('active', unit === 'minutes');
+    document.getElementById('btn-hours').classList.toggle('active', unit === 'hours');
+    calculateTimePayment();
+}
+
+function calculateTimePayment(){
+    const value = parseFloat(document.getElementById('time-value').value);
+    const orderNumber = document.getElementById('time-order').value.trim();
+    
+    if(!value || value <= 0 || !orderNumber){
+        document.getElementById('time-result').style.display = 'none';
+        document.getElementById('time-submit').disabled = true;
+        return;
+    }
+    
+    let hours = timeUnit === 'hours' ? value : value / 60;
+    let payment = Math.round(hours * 350);
+    
+    document.getElementById('time-payment').textContent = payment.toLocaleString('ru-RU');
+    document.getElementById('time-details').textContent = `${value} ${timeUnit === 'hours' ? 'ч' : 'мин'} = ${hours.toFixed(2)} ч × 350 ₽/ч`;
+    document.getElementById('time-result').style.display = 'block';
+    document.getElementById('time-submit').disabled = false;
+}
+
+function addTimeWork(){
+    const orderNumber = document.getElementById('time-order').value.trim();
+    const comment = document.getElementById('time-comment').value.trim();
+    const value = parseFloat(document.getElementById('time-value').value);
+    
+    if(!orderNumber || !value || value <= 0){
+        alert('Заполните номер заказа и время');
+        return;
+    }
+    
+    let hours = timeUnit === 'hours' ? value : value / 60;
+    let payment = Math.round(hours * 350);
+    
+    history.push({
+        workType: 'time',
+        orderNumber: orderNumber,
+        comment: comment,
+        timeMinutes: timeUnit === 'minutes' ? value : value * 60,
+        timeHours: hours,
+        rate: 350,
+        payment: payment,
+        date: new Date().toLocaleString('ru-RU'),
+        closed: false,
+        planned: false,
+        done: false
+    });
+    
+    saveHistory();
+    updateTotalDisplay();
+    closeTimeModal();
+    alert(`✅ Работа по времени добавлена!\n\nЗаказ: ${orderNumber}\nВремя: ${hours.toFixed(2)} ч\nОплата: ${payment.toLocaleString('ru-RU')} ₽`);
+}
+
+document.getElementById('time-modal').addEventListener('click', function(e){
+    if(e.target === this) closeTimeModal();
+});
+
 function showPanel(id){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -588,7 +715,7 @@ function renderTypesAccordion(){
     let html = '';
     types.forEach(t => {
         let paramsText = t.params && t.params.length > 0 ? t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.' + (p.unit ? ', ' + p.unit : '') + ')').join(', ') : 'нет';
-        let modeText = t.mode === 'area' ? '📐 Площадь (м²)' : '📏 Погонные метры';
+        let modeText = t.mode === 'area' ? ' Площадь (м²)' : '📏 Погонные метры';
         let dimsText = t.dims ? t.dims.join(' × ') : (t.mode === 'area' ? 'Длина × Ширина' : 'Длина');
         let exampleCode = t.prefix;
         if(t.params && t.params.length > 0) t.params.forEach(p => exampleCode += p.length === 1 ? 'X' : '16');
@@ -653,8 +780,9 @@ function extractData(code, type){
 }
 
 function startEdit(idx){
-    if(history[idx].closed){alert('⛔ Нельзя редактировать закрытую сделку.');return;}
-    if(history[idx].done){alert('⛔ Нельзя редактировать готовую сделку. Сначала закройте её, затем откройте.');return;}
+    if(history[idx].closed){alert(' Нельзя редактировать закрытую сделку.');return;}
+    if(history[idx].done){alert(' Нельзя редактировать готовую сделку.');return;}
+    if(history[idx].workType === 'time'){alert('⛔ Работу по времени нельзя редактировать.');return;}
     editingIndex = idx;
     let item = history[idx];
     document.getElementById('code').value = item.code;
@@ -699,7 +827,7 @@ function addWork(){
         saveHistory();updateTotalDisplay();cancelEdit();
         alert('✅ Запись обновлена!');return;
     }
-    history.push({date: new Date().toLocaleString('ru-RU'), code: data.code, type: data.type, params: data.params, sizes: data.sizes, sizeDetails: data.sizeDetails, amount: data.amount, unit: data.unit, payment: data.payment, closed: false, planned: false, done: false});
+    history.push({workType: 'code', date: new Date().toLocaleString('ru-RU'), code: data.code, type: data.type, params: data.params, sizes: data.sizes, sizeDetails: data.sizeDetails, amount: data.amount, unit: data.unit, payment: data.payment, closed: false, planned: false, done: false});
     saveHistory();updateTotalDisplay();showResult(data);
     document.getElementById('code').value = '';
     setTimeout(() => document.getElementById('code').focus(), 100);
@@ -722,11 +850,6 @@ function showResult(data){
 
 function showError(msg){let e = document.getElementById('error');e.innerHTML = '⚠️ ' + msg;e.classList.add('show');}
 
-// ===== ЛОГИКА СТАТУСОВ =====
-// Обычный / Запланировано — НЕ засчитываются в заработок
-// Готово — ЗАСЧИТЫВАЕТСЯ в заработок (нельзя изменить, только закрыть)
-// Закрыто — индикатор, баланс не меняется (был done)
-
 function togglePlanned(idx){
     const item = history[idx];
     if(item.closed){alert('⛔ Сначала откройте закрытую сделку.');return;}
@@ -739,13 +862,8 @@ function togglePlanned(idx){
 function toggleDone(idx){
     const item = history[idx];
     if(item.closed){alert('⛔ Сначала откройте закрытую сделку.');return;}
-    if(item.done){
-        alert('⛔ Статус "Готово" нельзя отменить. Можно только закрыть сделку.');
-        return;
-    }
-    if(!confirm('⚠️ Установить статус "Готово"?\n\nС этого момента сумма будет засчитана в общий заработок.\nИзменить статус можно будет только на "Закрыть сделку".')){
-        return;
-    }
+    if(item.done){alert('⛔ Статус "Готово" нельзя отменить. Можно только закрыть сделку.');return;}
+    if(!confirm('⚠️ Установить статус "Готово"?\n\nС этого момента сумма будет засчитана в общий заработок.\nИзменить статус можно будет только на "Закрыть сделку".')){return;}
     item.done = true;
     item.planned = false;
     saveHistory();renderHistory();
@@ -758,10 +876,8 @@ function toggleCloseDeal(idx){
     if(item.closed){
         item.closedDate = new Date().toLocaleString('ru-RU');
         item.planned = false;
-        // done сохраняется — баланс не меняется
     } else {
         delete item.closedDate;
-        // При открытии возвращаем в done (т.к. из done только в closed)
         item.done = true;
     }
     saveHistory();renderHistory();
@@ -809,37 +925,43 @@ function renderHistory(){
         let isClosed = item.closed === true;
         let isPlanned = item.planned === true;
         let isDone = item.done === true;
+        let isTimeWork = item.workType === 'time';
         
         let statusClass = '';
         if(isClosed) statusClass = 'closed';
         else if(isDone) statusClass = 'done';
         else if(isPlanned) statusClass = 'planned';
+        if(isTimeWork && !isClosed && !isDone && !isPlanned) statusClass = 'time-work';
         
         let div = document.createElement('div');
         div.className = 'h-item' + (statusClass ? ' ' + statusClass : '');
         
+        let codeDisplay = isTimeWork ? `Заказ #${item.orderNumber}` : item.code;
+        let typeDisplay = isTimeWork ? '⏱️ Работа по времени' : item.type;
         let sizesHtml = '';
-        if(item.sizeDetails && item.sizeDetails.length > 0){
+        
+        if(isTimeWork){
+            let timeDisplay = item.timeHours >= 1 ? `${item.timeHours.toFixed(2)} ч` : `${Math.round(item.timeMinutes)} мин`;
+            sizesHtml = `<div class="h-sizes">🕐 ${timeDisplay} × 350 ₽/ч</div>`;
+            if(item.comment) sizesHtml += `<div class="h-sizes"> ${item.comment}</div>`;
+        } else if(item.sizeDetails && item.sizeDetails.length > 0){
             sizesHtml = '<div class="h-sizes">' + item.sizeDetails.map(s => '#' + s.num + ': ' + s.dims).join(' | ') + '</div>';
         }
         
         let editedMark = item.edited ? '<div class="h-time">✏️ ' + item.edited + '</div>' : '';
-        
-        // Сумма: если не done и не closed — показываем приглушённо
         let payClass = (isDone || isClosed) ? 'h-pay' : 'h-pay not-counted';
         let paySuffix = (isDone || isClosed) ? ' ₽' : ' ₽ (не учтено)';
         
-        // Кнопки: planned/done блокируются если done или closed
-        const canChangeStatus = !isDone && !isClosed;
-        const canEdit = !isDone && !isClosed;
+        const canChangeStatus = !isDone && !isClosed && !isTimeWork;
+        const canEdit = !isDone && !isClosed && !isTimeWork;
         
         let closeBtn = isClosed 
-            ? `<button class="h-btn h-btn-open" onclick="toggleCloseDeal(${realIdx})" title="Открыть сделку (вернуть в Готово)"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></button>`
-            : `<button class="h-btn h-btn-close" onclick="toggleCloseDeal(${realIdx})" title="Закрыть сделку (индикатор)"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>`;
+            ? `<button class="h-btn h-btn-open" onclick="toggleCloseDeal(${realIdx})" title="Открыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></button>`
+            : `<button class="h-btn h-btn-close" onclick="toggleCloseDeal(${realIdx})" title="Закрыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>`;
         
-        let plannedBtn = `<button class="h-btn h-btn-planned${isPlanned ? ' active' : ''}" onclick="togglePlanned(${realIdx})" title="Запланировано" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
+        let plannedBtn = isTimeWork ? '' : `<button class="h-btn h-btn-planned${isPlanned ? ' active' : ''}" onclick="togglePlanned(${realIdx})" title="Запланировано" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
         
-        let doneBtn = `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${realIdx})" title="${isDone ? 'Готово (нельзя изменить)' : 'Отметить как готово'}" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
+        let doneBtn = isTimeWork ? '' : `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${realIdx})" title="${isDone ? 'Готово' : 'Отметить как готово'}" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
         
         let editBtn = `<button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="${canEdit ? 'Редактировать' : 'Нельзя редактировать'}" ${!canEdit ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
         
@@ -852,16 +974,18 @@ function renderHistory(){
             statusBadge = '<div class="status-badge done-badge"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> ГОТОВО • в заработке</div>';
         } else if(isPlanned){
             statusBadge = '<div class="status-badge planned-badge"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ЗАПЛАНИРОВАНО • не учтено</div>';
+        } else if(isTimeWork){
+            statusBadge = '<div class="status-badge time-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ПО ВРЕМЕНИ • не учтено</div>';
         } else {
             statusBadge = '<div class="status-badge" style="background:rgba(255,255,255,0.05);border-top:1px solid rgba(255,255,255,0.1);color:var(--text-muted)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg> ОБЫЧНЫЙ • не учтено</div>';
         }
         
         div.innerHTML = `
             <div class="h-item-left">
-                <div class="h-code">${item.code}</div>
-                <div class="h-type">${item.type}</div>
+                <div class="h-code">${codeDisplay}</div>
+                <div class="h-type">${typeDisplay}</div>
                 ${sizesHtml}
-                <div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>
+                ${!isTimeWork ? `<div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>` : ''}
                 <div class="h-time">${item.date}</div>
                 ${editedMark}
             </div>
@@ -894,7 +1018,7 @@ function renderTypes(){
         let div = document.createElement('div');
         div.className = 'wt-card';
         let paramsText = t.params && t.params.length > 0 ? t.params.map(p => p.name + ' (' + p.length + ')').join(', ') : 'нет';
-        div.innerHTML = `<div class="wt-head"><div class="wt-name">${t.name}</div><div class="wt-code">${t.prefix}</div></div><div class="wt-info">Параметры: ${paramsText}</div><div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div><div class="wt-formula">${t.formula}</div><div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-glass btn-sm" onclick="editType(${idx})" style="flex:1">️ Редактировать</button><button class="btn btn-danger btn-sm" onclick="deleteType(${idx})" style="flex:1">🗑️ Удалить</button></div>`;
+        div.innerHTML = `<div class="wt-head"><div class="wt-name">${t.name}</div><div class="wt-code">${t.prefix}</div></div><div class="wt-info">Параметры: ${paramsText}</div><div class="wt-info">${t.mode === 'area' ? ' м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div><div class="wt-formula">${t.formula}</div><div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-glass btn-sm" onclick="editType(${idx})" style="flex:1">✏️ Редактировать</button><button class="btn btn-danger btn-sm" onclick="deleteType(${idx})" style="flex:1">🗑️ Удалить</button></div>`;
         list.appendChild(div);
     });
 }
@@ -993,6 +1117,7 @@ function importData(event){
                     if(item.closed === undefined) item.closed = false;
                     if(item.planned === undefined) item.planned = false;
                     if(item.done === undefined) item.done = false;
+                    if(item.workType === undefined) item.workType = 'code';
                 });
             }
             saveTypes();saveHistory();updateTotalDisplay();renderHistory();alert('✅ Импорт выполнен!');
@@ -1001,7 +1126,7 @@ function importData(event){
     reader.readAsText(file);event.target.value = '';
 }
 function resetAll(){
-    if(confirm('️ Удалить ВСЕ данные?')){
+    if(confirm('⚠️ Удалить ВСЕ данные?')){
         if(confirm('Точно?')){
             localStorage.removeItem('workTypes');localStorage.removeItem('workHistory');
             localStorage.removeItem('lastBackupTime');localStorage.removeItem('milestone5000Seen');
