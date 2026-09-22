@@ -133,7 +133,7 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 .h-type{font-size:12px;color:var(--text-secondary);margin-bottom:2px}
 .h-sizes{font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.4}
 .h-amount{font-size:11px;color:var(--accent-yellow);font-weight:600;margin-top:3px}
-.h-time{font-size:10px;color:var(--text-muted);margin-top:3px}
+.h-time{font-size:10px;color:var(--text-muted);margin-top:3px;display:flex;align-items:center;gap:4px}
 .h-pay{font-size:17px;font-weight:700;color:#81c784;text-align:right;white-space:nowrap}
 .h-pay.not-counted{color:var(--text-muted);font-size:14px}
 
@@ -157,6 +157,8 @@ body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;backg
 .h-btn-edit:hover:not(:disabled){background:rgba(79,172,254,0.2)}
 .h-btn-delete{background:rgba(244,67,54,0.12);border-color:rgba(244,67,54,0.25);color:#ef5350}
 .h-btn-delete:hover:not(:disabled){background:rgba(244,67,54,0.2)}
+.h-btn-date{background:rgba(102,126,234,0.12);border-color:rgba(102,126,234,0.25);color:var(--accent-blue)}
+.h-btn-date:hover:not(:disabled){background:rgba(102,126,234,0.2)}
 
 .h-item.closed .h-btn-planned,.h-item.closed .h-btn-done,.h-item.closed .h-btn-edit{opacity:0.3;cursor:not-allowed;pointer-events:none}
 .h-item.done .h-btn-planned,.h-item.done .h-btn-done{opacity:0.3;cursor:not-allowed;pointer-events:none}
@@ -214,13 +216,13 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'SF Mono',monospace;font
 select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
 .param-row{display:grid;grid-template-columns:1fr 90px auto;gap:10px;margin-bottom:10px;align-items:end}
 .param-row input{font-size:13px;padding:11px 10px}
-.notification-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:1000;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.3s ease}
-.notification-modal.show{display:flex}
-.notification-content{background:rgba(17,24,39,0.98);border:1px solid var(--glass-border);border-radius:var(--r);padding:28px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:slideIn 0.4s ease}
-.notification-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.notification-title{font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--accent-blue) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.notification-close{width:32px;height:32px;border-radius:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:18px}
-.notification-close:hover{background:var(--glass-bg-hover)}
+.notification-modal,.time-modal,.date-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:1000;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.3s ease}
+.notification-modal.show,.time-modal.show,.date-modal.show{display:flex}
+.notification-content,.time-content,.date-content{background:rgba(17,24,39,0.98);border:1px solid var(--glass-border);border-radius:var(--r);padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:slideIn 0.4s ease;max-height:90vh;overflow-y:auto}
+.notification-header,.time-header,.date-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.notification-title,.time-title,.date-title{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent-blue) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.notification-close,.time-close,.date-close{width:32px;height:32px;border-radius:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:18px}
+.notification-close:hover,.time-close:hover,.date-close:hover{background:var(--glass-bg-hover)}
 .notification-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:14px;animation:slideIn 0.3s ease}
 .notification-item:last-child{margin-bottom:0}
 .notification-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
@@ -232,19 +234,12 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
 .notification-empty{text-align:center;padding:30px 20px;color:var(--text-muted)}
 .notification-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
 
-.time-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:1000;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.3s ease}
-.time-modal.show{display:flex}
-.time-content{background:rgba(17,24,39,0.98);border:1px solid var(--glass-border);border-radius:var(--r);padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6);animation:slideIn 0.4s ease;max-height:90vh;overflow-y:auto}
-.time-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-.time-title{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.time-close{width:32px;height:32px;border-radius:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:18px}
-.time-close:hover{background:var(--glass-bg-hover)}
-.time-input-group{margin-bottom:18px}
-.time-input-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
-.time-input{width:100%;padding:13px 16px;background:rgba(0,0,0,0.4);border:1.5px solid var(--glass-border);border-radius:var(--r-sm);color:var(--text-primary);font-size:15px;transition:var(--transition)}
-.time-input:focus{outline:none;border-color:var(--accent-purple);background:rgba(0,0,0,0.5);box-shadow:0 0 0 3px rgba(168,85,247,0.15)}
-.time-input::placeholder{color:var(--text-muted)}
-textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
+.time-input-group,.date-input-group{margin-bottom:18px}
+.time-input-label,.date-input-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
+.time-input,.date-input{width:100%;padding:13px 16px;background:rgba(0,0,0,0.4);border:1.5px solid var(--glass-border);border-radius:var(--r-sm);color:var(--text-primary);font-size:15px;transition:var(--transition)}
+.time-input:focus,.date-input:focus{outline:none;border-color:var(--accent-purple);background:rgba(0,0,0,0.5);box-shadow:0 0 0 3px rgba(168,85,247,0.15)}
+.time-input::placeholder,.date-input::placeholder{color:var(--text-muted)}
+textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-family:inherit}
 .time-unit-toggle{display:flex;gap:8px;margin-bottom:16px}
 .time-unit-btn{flex:1;padding:12px;background:var(--glass-bg);border:1.5px solid var(--glass-border);border-radius:10px;color:var(--text-secondary);font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);text-align:center}
 .time-unit-btn:hover{background:var(--glass-bg-hover)}
@@ -253,10 +248,13 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
 .time-calc-label{font-size:12px;color:var(--text-secondary);margin-bottom:6px}
 .time-calc-value{font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .time-calc-details{font-size:12px;color:var(--text-muted);margin-top:6px}
-.time-submit-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:16px}
-.time-submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(168,85,247,0.4)}
-.time-submit-btn:active{transform:scale(0.98)}
+.time-submit-btn,.date-submit-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent-blue) 0%,var(--accent-pink) 100%);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:16px}
+.time-submit-btn:hover,.date-submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(102,126,234,0.4)}
+.time-submit-btn:active,.date-submit-btn:active{transform:scale(0.98)}
 .time-submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.date-submit-btn{background:linear-gradient(135deg,var(--accent-purple) 0%,var(--accent-pink) 100%)}
+.date-submit-btn:hover{box-shadow:0 6px 28px rgba(168,85,247,0.4)}
+.date-hint{font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center}
 
 @media(min-width:768px){body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}.header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}}
 ::-webkit-scrollbar{width:6px}
@@ -301,17 +299,14 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
             <div class="time-title">⏱️ Работа по времени</div>
             <button class="time-close" onclick="closeTimeModal()">✕</button>
         </div>
-        
         <div class="time-input-group">
             <label class="time-input-label">Номер заказа</label>
             <input type="text" id="time-order" class="time-input" placeholder="Например: 12345">
         </div>
-        
         <div class="time-input-group">
             <label class="time-input-label">Комментарий</label>
             <textarea id="time-comment" class="time-input" placeholder="Описание работы..."></textarea>
         </div>
-        
         <div class="time-input-group">
             <label class="time-input-label">Время работы</label>
             <div class="time-unit-toggle">
@@ -320,16 +315,31 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
             </div>
             <input type="number" id="time-value" class="time-input" placeholder="Введите время" min="0" step="0.1" oninput="calculateTimePayment()">
         </div>
-        
         <div class="time-calc-result" id="time-result" style="display:none">
             <div class="time-calc-label">Оплата</div>
             <div class="time-calc-value"><span id="time-payment">0</span> ₽</div>
             <div class="time-calc-details" id="time-details"></div>
         </div>
-        
-        <button class="time-submit-btn" id="time-submit" onclick="addTimeWork()" disabled>
-            Добавить в историю
-        </button>
+        <button class="time-submit-btn" id="time-submit" onclick="addTimeWork()" disabled>Добавить в историю</button>
+    </div>
+</div>
+
+<div class="date-modal" id="date-modal">
+    <div class="date-content">
+        <div class="date-header">
+            <div class="date-title"> Редактировать дату</div>
+            <button class="date-close" onclick="closeDateModal()">✕</button>
+        </div>
+        <div class="date-input-group">
+            <label class="date-input-label">Текущая дата</label>
+            <div id="current-date-display" style="padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;color:var(--text-secondary);font-size:14px"></div>
+        </div>
+        <div class="date-input-group">
+            <label class="date-input-label">Новая дата</label>
+            <input type="datetime-local" id="new-date-input" class="date-input">
+            <div class="date-hint">Выберите дату и время</div>
+        </div>
+        <button class="date-submit-btn" onclick="saveNewDate()"> Сохранить дату</button>
     </div>
 </div>
 
@@ -340,20 +350,16 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
         <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,var(--accent-blue) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Ввод кода</h1>
         <p style="font-size:13px;color:var(--text-secondary)">Введите код работы для расчета</p>
     </div>
-    
     <div class="total-inline">
         <div class="label">💰 Всего заработано (готовые)</div>
         <div class="amount"><span id="current-total">0</span> ₽</div>
     </div>
-    
     <div class="glass-card">
         <div class="card-title">
             <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
             <span id="input-title">Ввод кода</span>
         </div>
-        
         <input type="text" id="code" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off">
-        
         <div style="display:flex;gap:10px;margin-bottom:14px">
             <button class="btn btn-primary" id="add-btn" onclick="addWork()" style="flex:1">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -364,21 +370,18 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
                 Время
             </button>
         </div>
-        
         <div id="result" class="result">
-            <h3>📋 Расшифровка</h3>
+            <h3> Расшифровка</h3>
             <p><b>Тип:</b> <span id="r-type"></span></p>
             <div id="r-params-block"></div>
             <div id="r-sizes-block"></div>
             <p><b>Итого:</b> <span id="r-amount"></span></p>
             <div style="font-size:24px;margin-top:12px;text-align:center;font-weight:700">
-                <b> <span id="r-pay"></span> ₽</b>
+                <b>💰 <span id="r-pay"></span> ₽</b>
             </div>
         </div>
-        
         <div id="error" class="error"></div>
     </div>
-    
     <div class="glass-card">
         <div class="types-accordion">
             <div class="accordion-header" id="types-acc-header" onclick="toggleTypesAccordion()">
@@ -388,9 +391,7 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
                 </div>
                 <div class="acc-arrow">▼</div>
             </div>
-            <div class="accordion-body" id="types-acc-body">
-                <div id="types-acc-content"></div>
-            </div>
+            <div class="accordion-body" id="types-acc-body"><div id="types-acc-content"></div></div>
         </div>
     </div>
 </div>
@@ -400,14 +401,11 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
         <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,var(--accent-blue) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">История</h1>
         <p style="font-size:13px;color:var(--text-secondary)">Все выполненные работы</p>
     </div>
-    
     <div class="total-card">
         <div class="total-lbl">Всего заработано (готовые + закрытые)</div>
         <div class="total-amt"><span id="total-sum">0</span> ₽</div>
     </div>
-
     <div class="status-counters" id="status-counters"></div>
-    
     <div class="h-list" id="history-list"></div>
     <button class="btn btn-danger" onclick="clearHistory()" style="margin-top:16px">
         <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -420,7 +418,6 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
         <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,var(--accent-blue) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Типы работ</h1>
         <p style="font-size:13px;color:var(--text-secondary)">Управление типами работ</p>
     </div>
-    
     <div class="glass-card">
         <button class="btn btn-success" onclick="showTypeForm()">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -428,7 +425,6 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
         </button>
     </div>
     <div id="types-list"></div>
-    
     <div id="type-form" class="glass-card" style="display:none">
         <h2 id="form-title" style="margin-bottom:18px;font-size:18px">Новый тип</h2>
         <div class="fg"><div class="fl">Префикс (первые буквы)</div><input type="text" id="t-prefix" class="fi" placeholder="ВП"></div>
@@ -450,7 +446,6 @@ textarea.time-input{min-height:80px;resize:vertical;font-family:inherit}
         <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,var(--accent-blue) 0%,var(--accent-pink) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Настройки</h1>
         <p style="font-size:13px;color:var(--text-secondary)">Управление данными</p>
     </div>
-    
     <div class="glass-card">
         <div class="card-title">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -499,6 +494,7 @@ let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
 let tempParams = [];
 let editingIndex = -1;
 let timeUnit = 'minutes';
+let editingDateIndex = -1;
 
 let notifications = {
     lastBackupTime: parseInt(localStorage.getItem('lastBackupTime') || '0'),
@@ -553,7 +549,7 @@ function updateBellState(total){
     const needsBackup = notifications.lastBackupTime === 0 || hoursSinceBackup >= 12;
     if(needsBackup){
         bell.classList.add('bell-red');
-        bell.title = '⚠️ Нужно сделать резервную копию!';
+        bell.title = '️ Нужно сделать резервную копию!';
         const badge = document.createElement('div');
         badge.className = 'notification-badge';
         bell.appendChild(badge);
@@ -578,7 +574,7 @@ function openNotifications(){
     let hasNotifications = false;
     if(total >= 5000 && !notifications.milestone5000Seen){
         hasNotifications = true;
-        html += `<div class="notification-item"><div class="notification-icon success">🎉</div><div class="notification-text"><div class="notification-text-title">Поздравляем!</div><div class="notification-text-desc">Вы заработали <b style="color:var(--accent-green)">${total.toLocaleString('ru-RU')} ₽</b> (готовые сделки)! Отличная работа!</div></div></div>`;
+        html += `<div class="notification-item"><div class="notification-icon success"></div><div class="notification-text"><div class="notification-text-title">Поздравляем!</div><div class="notification-text-desc">Вы заработали <b style="color:var(--accent-green)">${total.toLocaleString('ru-RU')} ₽</b> (готовые сделки)! Отличная работа!</div></div></div>`;
     }
     if(needsBackup){
         hasNotifications = true;
@@ -630,16 +626,13 @@ function setTimeUnit(unit){
 function calculateTimePayment(){
     const value = parseFloat(document.getElementById('time-value').value);
     const orderNumber = document.getElementById('time-order').value.trim();
-    
     if(!value || value <= 0 || !orderNumber){
         document.getElementById('time-result').style.display = 'none';
         document.getElementById('time-submit').disabled = true;
         return;
     }
-    
     let hours = timeUnit === 'hours' ? value : value / 60;
     let payment = Math.round(hours * 350);
-    
     document.getElementById('time-payment').textContent = payment.toLocaleString('ru-RU');
     document.getElementById('time-details').textContent = `${value} ${timeUnit === 'hours' ? 'ч' : 'мин'} = ${hours.toFixed(2)} ч × 350 ₽/ч`;
     document.getElementById('time-result').style.display = 'block';
@@ -650,15 +643,9 @@ function addTimeWork(){
     const orderNumber = document.getElementById('time-order').value.trim();
     const comment = document.getElementById('time-comment').value.trim();
     const value = parseFloat(document.getElementById('time-value').value);
-    
-    if(!orderNumber || !value || value <= 0){
-        alert('Заполните номер заказа и время');
-        return;
-    }
-    
+    if(!orderNumber || !value || value <= 0){alert('Заполните номер заказа и время');return;}
     let hours = timeUnit === 'hours' ? value : value / 60;
     let payment = Math.round(hours * 350);
-    
     history.push({
         workType: 'time',
         orderNumber: orderNumber,
@@ -672,7 +659,6 @@ function addTimeWork(){
         planned: false,
         done: false
     });
-    
     saveHistory();
     updateTotalDisplay();
     closeTimeModal();
@@ -681,6 +667,67 @@ function addTimeWork(){
 
 document.getElementById('time-modal').addEventListener('click', function(e){
     if(e.target === this) closeTimeModal();
+});
+
+// ===== РЕДАКТИРОВАНИЕ ДАТЫ =====
+function openDateModal(idx){
+    editingDateIndex = idx;
+    const item = history[idx];
+    document.getElementById('current-date-display').textContent = item.date;
+    
+    // Преобразуем дату в формат datetime-local
+    let dateForInput = '';
+    try {
+        // Пытаемся распарсить дату из localStorage
+        const parts = item.date.split(', ');
+        if(parts.length === 2){
+            const datePart = parts[0];
+            const timePart = parts[1];
+            const dateComponents = datePart.split('.');
+            const timeComponents = timePart.split(':');
+            if(dateComponents.length === 3 && timeComponents.length >= 2){
+                const year = dateComponents[2];
+                const month = dateComponents[1].padStart(2, '0');
+                const day = dateComponents[0].padStart(2, '0');
+                const hour = timeComponents[0].padStart(2, '0');
+                const minute = timeComponents[1].padStart(2, '0');
+                dateForInput = `${year}-${month}-${day}T${hour}:${minute}`;
+            }
+        }
+    } catch(e){
+        console.log('Не удалось распарсить дату:', e);
+    }
+    
+    document.getElementById('new-date-input').value = dateForInput;
+    document.getElementById('date-modal').classList.add('show');
+}
+
+function closeDateModal(){
+    document.getElementById('date-modal').classList.remove('show');
+    editingDateIndex = -1;
+}
+
+function saveNewDate(){
+    if(editingDateIndex < 0) return;
+    const newDateValue = document.getElementById('new-date-input').value;
+    if(!newDateValue){
+        alert('Выберите дату и время');
+        return;
+    }
+    
+    // Преобразуем в формат ru-RU
+    const dateObj = new Date(newDateValue);
+    const formattedDate = dateObj.toLocaleString('ru-RU');
+    
+    history[editingDateIndex].date = formattedDate;
+    saveHistory();
+    closeDateModal();
+    renderHistory();
+    alert('✅ Дата обновлена!');
+}
+
+document.getElementById('date-modal').addEventListener('click', function(e){
+    if(e.target === this) closeDateModal();
 });
 
 function showPanel(id){
@@ -707,7 +754,7 @@ function renderTypesAccordion(){
     let html = '';
     types.forEach(t => {
         let paramsText = t.params && t.params.length > 0 ? t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.' + (p.unit ? ', ' + p.unit : '') + ')').join(', ') : 'нет';
-        let modeText = t.mode === 'area' ? '📐 Площадь (м²)' : ' Погонные метры';
+        let modeText = t.mode === 'area' ? '📐 Площадь (м²)' : '📏 Погонные метры';
         let dimsText = t.dims ? t.dims.join(' × ') : (t.mode === 'area' ? 'Длина × Ширина' : 'Длина');
         let exampleCode = t.prefix;
         if(t.params && t.params.length > 0) t.params.forEach(p => exampleCode += p.length === 1 ? 'X' : '16');
@@ -773,8 +820,8 @@ function extractData(code, type){
 
 function startEdit(idx){
     if(history[idx].closed){alert('⛔ Нельзя редактировать закрытую сделку.');return;}
-    if(history[idx].done){alert(' Нельзя редактировать готовую сделку.');return;}
-    if(history[idx].workType === 'time'){alert('⛔ Работу по времени нельзя редактировать.');return;}
+    if(history[idx].done){alert('⛔ Нельзя редактировать готовую сделку.');return;}
+    if(history[idx].workType === 'time'){alert(' Работу по времени нельзя редактировать.');return;}
     editingIndex = idx;
     let item = history[idx];
     document.getElementById('code').value = item.code;
@@ -840,11 +887,11 @@ function showResult(data){
     document.getElementById('result').classList.add('show');
 }
 
-function showError(msg){let e = document.getElementById('error');e.innerHTML = '️ ' + msg;e.classList.add('show');}
+function showError(msg){let e = document.getElementById('error');e.innerHTML = '⚠️ ' + msg;e.classList.add('show');}
 
 function togglePlanned(idx){
     const item = history[idx];
-    if(item.closed){alert('⛔ Сначала откройте закрытую сделку.');return;}
+    if(item.closed){alert(' Сначала откройте закрытую сделку.');return;}
     if(item.done){alert('⛔ После статуса "Готово" можно только закрыть сделку.');return;}
     item.planned = !item.planned;
     if(item.planned) item.done = false;
@@ -853,13 +900,15 @@ function togglePlanned(idx){
 
 function toggleDone(idx){
     const item = history[idx];
-    if(item.closed){alert('⛔ Сначала откройте закрытую сделку.');return;}
+    if(item.closed){alert(' Сначала откройте закрытую сделку.');return;}
     if(item.done){alert('⛔ Статус "Готово" нельзя отменить. Можно только закрыть сделку.');return;}
-    if(!confirm('⚠️ Установить статус "Готово"?\n\nС этого момента сумма будет засчитана в общий заработок.\nИзменить статус можно будет только на "Закрыть сделку".')){return;}
+    if(!confirm('⚠️ Установить статус "Готово"?\n\nС этого момента сумма будет засчитана в общий заработок.\nИзменить статус можно будет только на "Закрыть сделку".\n\n📅 Дата будет изменена на текущую.')){return;}
     item.done = true;
     item.planned = false;
+    // Обновляем дату на текущую
+    item.date = new Date().toLocaleString('ru-RU');
     saveHistory();renderHistory();
-    alert('✅ Статус "Готово" установлен. Сумма засчитана в заработок.');
+    alert('✅ Статус "Готово" установлен. Сумма засчитана в заработок. Дата обновлена.');
 }
 
 function toggleCloseDeal(idx){
@@ -886,24 +935,11 @@ function renderStatusCounters(){
     });
     const earnedSum = calcEarnedTotal();
     const pendingSum = history.filter(i => !i.done && !i.closed && !i.planned).reduce((s,i) => s + i.payment, 0);
-    
     container.innerHTML = `
-        <div class="status-counter sc-earned">
-            <div class="sc-value">${earned + closed}</div>
-            <div class="sc-label">В заработке</div>
-        </div>
-        <div class="status-counter sc-planned">
-            <div class="sc-value">${planned}</div>
-            <div class="sc-label">Заплан.</div>
-        </div>
-        <div class="status-counter sc-pending">
-            <div class="sc-value">${pending}</div>
-            <div class="sc-label">Обычные</div>
-        </div>
-        <div class="status-counter">
-            <div class="sc-value" style="color:var(--text-secondary)">${(earnedSum + pendingSum).toLocaleString('ru-RU')} ₽</div>
-            <div class="sc-label">Всего сумма</div>
-        </div>
+        <div class="status-counter sc-earned"><div class="sc-value">${earned + closed}</div><div class="sc-label">В заработке</div></div>
+        <div class="status-counter sc-planned"><div class="sc-value">${planned}</div><div class="sc-label">Заплан.</div></div>
+        <div class="status-counter sc-pending"><div class="sc-value">${pending}</div><div class="sc-label">Обычные</div></div>
+        <div class="status-counter"><div class="sc-value" style="color:var(--text-secondary)">${(earnedSum + pendingSum).toLocaleString('ru-RU')} ₽</div><div class="sc-label">Всего сумма</div></div>
     `;
 }
 
@@ -955,6 +991,8 @@ function renderHistory(){
         
         let doneBtn = isTimeWork ? '' : `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${realIdx})" title="${isDone ? 'Готово' : 'Отметить как готово'}" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
         
+        let dateBtn = `<button class="h-btn h-btn-date" onclick="openDateModal(${realIdx})" title="Редактировать дату"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
+        
         let editBtn = `<button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="${canEdit ? 'Редактировать' : 'Нельзя редактировать'}" ${!canEdit ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
         
         let deleteBtn = `<button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
@@ -978,7 +1016,7 @@ function renderHistory(){
                 <div class="h-type">${typeDisplay}</div>
                 ${sizesHtml}
                 ${!isTimeWork ? `<div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>` : ''}
-                <div class="h-time">${item.date}</div>
+                <div class="h-time">📅 ${item.date}</div>
                 ${editedMark}
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
@@ -987,6 +1025,7 @@ function renderHistory(){
                     ${plannedBtn}
                     ${doneBtn}
                     ${closeBtn}
+                    ${dateBtn}
                     ${editBtn}
                     ${deleteBtn}
                 </div>
@@ -1010,7 +1049,7 @@ function renderTypes(){
         let div = document.createElement('div');
         div.className = 'wt-card';
         let paramsText = t.params && t.params.length > 0 ? t.params.map(p => p.name + ' (' + p.length + ')').join(', ') : 'нет';
-        div.innerHTML = `<div class="wt-head"><div class="wt-name">${t.name}</div><div class="wt-code">${t.prefix}</div></div><div class="wt-info">Параметры: ${paramsText}</div><div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div><div class="wt-formula">${t.formula}</div><div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-glass btn-sm" onclick="editType(${idx})" style="flex:1">✏️ Редактировать</button><button class="btn btn-danger btn-sm" onclick="deleteType(${idx})" style="flex:1">️ Удалить</button></div>`;
+        div.innerHTML = `<div class="wt-head"><div class="wt-name">${t.name}</div><div class="wt-code">${t.prefix}</div></div><div class="wt-info">Параметры: ${paramsText}</div><div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div><div class="wt-formula">${t.formula}</div><div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-glass btn-sm" onclick="editType(${idx})" style="flex:1">✏️ Редактировать</button><button class="btn btn-danger btn-sm" onclick="deleteType(${idx})" style="flex:1">🗑️ Удалить</button></div>`;
         list.appendChild(div);
     });
 }
@@ -1118,7 +1157,7 @@ function importData(event){
     reader.readAsText(file);event.target.value = '';
 }
 function resetAll(){
-    if(confirm('⚠️ Удалить ВСЕ данные?')){
+    if(confirm('️ Удалить ВСЕ данные?')){
         if(confirm('Точно?')){
             localStorage.removeItem('workTypes');localStorage.removeItem('workHistory');
             localStorage.removeItem('lastBackupTime');localStorage.removeItem('milestone5000Seen');
