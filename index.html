@@ -6,218 +6,560 @@
 <title>Учет работ</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--glass-bg:rgba(255,255,255,0.08);--glass-border:rgba(255,255,255,0.15);--glass-shadow:0 8px 32px rgba(0,0,0,0.3);--blur:blur(20px);--yel:#fc0;--org:#ff6b00;--bg1:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--t1:#fff;--t2:rgba(255,255,255,0.7);--ok:#4caf50;--err:#f44336;--r:20px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);background-attachment:fixed;color:var(--t1);min-height:100vh;padding-bottom:90px;font-size:16px;line-height:1.5;overflow-x:hidden}
-body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 20% 30%,rgba(252,204,0,0.1) 0%,transparent 50%),radial-gradient(circle at 80% 70%,rgba(255,107,0,0.08) 0%,transparent 50%);z-index:-1;animation:float 20s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(-2%,2%) rotate(180deg)}}
-.header{background:var(--glass-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);border-radius:0 0 var(--r) var(--r);padding:20px 15px 24px;box-shadow:var(--glass-shadow);position:sticky;top:0;z-index:100}
-.header h1{font-size:24px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px}
-.header-sub{font-size:12px;color:var(--t2);text-align:center;margin-top:4px}
-.content{padding:16px;margin-top:-8px}
-.panel{display:none;animation:fadeIn .3s}
+:root{
+    --glass-bg:rgba(255,255,255,0.06);
+    --glass-bg-hover:rgba(255,255,255,0.1);
+    --glass-border:rgba(255,255,255,0.1);
+    --glass-border-hover:rgba(255,255,255,0.2);
+    --glass-highlight:rgba(255,255,255,0.15);
+    --blur:blur(20px);
+    --accent-orange:#ff6b35;
+    --accent-orange-light:#f7931e;
+    --accent-blue:#4facfe;
+    --accent-pink:#f5576c;
+    --accent-purple:#667eea;
+    --accent-green:#4caf50;
+    --accent-yellow:#ffc107;
+    --bg-dark:#0f1419;
+    --bg-mid:#1a1f3a;
+    --bg-light:#2d3561;
+    --text-primary:#ffffff;
+    --text-secondary:rgba(255,255,255,0.7);
+    --text-muted:rgba(255,255,255,0.5);
+    --r:20px;
+    --r-sm:14px;
+    --transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:linear-gradient(135deg,var(--bg-dark) 0%,var(--bg-mid) 50%,var(--bg-light) 100%);
+    background-attachment:fixed;
+    color:var(--text-primary);
+    min-height:100vh;
+    padding-bottom:100px;
+    font-size:15px;
+    line-height:1.5;
+    overflow-x:hidden;
+}
+body::before{
+    content:'';
+    position:fixed;
+    top:-50%;left:-50%;
+    width:200%;height:200%;
+    background:radial-gradient(circle at 20% 30%,rgba(255,107,53,0.12) 0%,transparent 50%),
+               radial-gradient(circle at 80% 70%,rgba(79,172,254,0.08) 0%,transparent 50%),
+               radial-gradient(circle at 50% 50%,rgba(245,87,108,0.06) 0%,transparent 50%);
+    z-index:-1;
+    animation:float 25s ease-in-out infinite;
+}
+@keyframes float{
+    0%,100%{transform:translate(0,0) rotate(0deg)}
+    50%{transform:translate(-3%,3%) rotate(180deg)}
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.05);opacity:0.8}}
+
+.header{
+    background:var(--glass-bg);
+    backdrop-filter:var(--blur);
+    -webkit-backdrop-filter:var(--blur);
+    border-bottom:1px solid var(--glass-border);
+    padding:18px 20px 24px;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+.header-content{
+    max-width:480px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:20px;
+    font-weight:700;
+    background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+.header-icons{display:flex;gap:10px}
+.icon-btn{
+    width:40px;height:40px;
+    border-radius:12px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    backdrop-filter:var(--blur);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:var(--transition);
+    color:var(--text-primary);
+}
+.icon-btn:hover{background:var(--glass-highlight);transform:translateY(-2px)}
+.icon-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.avatar{
+    width:40px;height:40px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--accent-orange) 0%,var(--accent-orange-light) 100%);
+    border:2px solid rgba(255,255,255,0.2);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:14px;color:#fff;
+}
+.content{padding:20px;max-width:480px;margin:0 auto}
+.panel{display:none;animation:fadeIn 0.4s ease}
 .panel.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.glass{background:var(--glass-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--glass-shadow)}
-.card-title{font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.code-input{width:100%;padding:18px 16px;background:rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.1);border-radius:14px;font-size:22px;font-family:'Courier New',monospace;color:var(--t1);text-transform:uppercase;letter-spacing:1px;text-align:center;transition:all .3s;margin-bottom:12px}
-.code-input:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 20px rgba(252,204,0,0.2)}
-.code-input::placeholder{color:rgba(255,255,255,0.3);font-size:15px;letter-spacing:0;font-family:inherit}
-.code-input.editing{border-color:var(--org);box-shadow:0 0 20px rgba(255,107,0,0.3)}
-.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn:active{transform:scale(0.97)}
-.btn-p{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;box-shadow:0 4px 20px rgba(252,204,0,0.4)}
-.btn-s{background:rgba(255,255,255,0.1);color:var(--t1);border:1px solid rgba(255,255,255,0.2)}
-.btn-g{background:linear-gradient(135deg,#4caf50,#45a049);color:#fff;box-shadow:0 4px 15px rgba(76,175,80,0.4)}
-.btn-d{background:linear-gradient(135deg,#f44336,#d32f2f);color:#fff;box-shadow:0 4px 15px rgba(244,67,54,0.4)}
-.btn-w{background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;box-shadow:0 4px 15px rgba(255,152,0,0.4)}
+.glass-card{
+    background:var(--glass-bg);
+    backdrop-filter:var(--blur);
+    -webkit-backdrop-filter:var(--blur);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r);
+    padding:22px;
+    margin-bottom:16px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);
+    transition:var(--transition);
+}
+.glass-card:hover{border-color:var(--glass-border-hover)}
+.card-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.card-title svg{width:20px;height:20px;stroke:var(--accent-orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.card-subtitle{font-size:13px;color:var(--text-secondary);margin-bottom:16px}
+.code-input{
+    width:100%;
+    padding:16px 18px;
+    background:rgba(0,0,0,0.3);
+    border:1.5px solid var(--glass-border);
+    border-radius:var(--r-sm);
+    font-size:18px;
+    font-family:'SF Mono',monospace;
+    color:var(--text-primary);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    text-align:center;
+    transition:var(--transition);
+    margin-bottom:14px;
+}
+.code-input:focus{
+    outline:none;
+    border-color:var(--accent-orange);
+    background:rgba(0,0,0,0.4);
+    box-shadow:0 0 0 3px rgba(255,107,53,0.15);
+}
+.code-input::placeholder{color:var(--text-muted);font-size:14px;letter-spacing:0;font-family:inherit}
+.code-input.editing{border-color:var(--accent-orange-light);box-shadow:0 0 0 3px rgba(247,147,30,0.15)}
+.btn{
+    width:100%;
+    padding:15px 20px;
+    border:none;
+    border-radius:var(--r-sm);
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:var(--transition);
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    position:relative;
+    overflow:hidden;
+}
+.btn:active{transform:scale(0.98)}
+.btn svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.btn-primary{
+    background:linear-gradient(135deg,var(--accent-orange) 0%,var(--accent-orange-light) 100%);
+    color:#fff;
+    box-shadow:0 4px 20px rgba(255,107,53,0.4);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,107,53,0.5)}
+.btn-glass{
+    background:var(--glass-bg);
+    color:var(--text-primary);
+    border:1px solid var(--glass-border);
+    backdrop-filter:var(--blur);
+}
+.btn-glass:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover)}
+.btn-success{
+    background:linear-gradient(135deg,#4caf50 0%,#45a049 100%);
+    color:#fff;
+    box-shadow:0 4px 20px rgba(76,175,80,0.4);
+}
+.btn-success:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(76,175,80,0.5)}
+.btn-danger{
+    background:linear-gradient(135deg,#f44336 0%,#e53935 100%);
+    color:#fff;
+    box-shadow:0 4px 20px rgba(244,67,54,0.4);
+}
+.btn-danger:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(244,67,54,0.5)}
+.btn-warning{
+    background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%);
+    color:#fff;
+    box-shadow:0 4px 20px rgba(255,152,0,0.4);
+}
+.btn-warning:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(255,152,0,0.5)}
 .btn-sm{padding:10px 14px;font-size:13px;width:auto;border-radius:10px}
-.result{background:linear-gradient(135deg,rgba(76,175,80,0.15),rgba(69,160,73,0.1));border:1px solid rgba(76,175,80,0.3);border-radius:16px;padding:18px;margin:12px 0;display:none}
-.result.show{display:block;animation:fadeIn .3s}
-.result h3{font-size:16px;margin-bottom:12px;color:#4caf50}
-.result p{font-size:14px;margin:8px 0;color:rgba(255,255,255,0.9)}
-.sizes-list{background:rgba(0,0,0,0.2);border-radius:10px;padding:12px;margin:10px 0}
-.size-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:13px}
+.result{
+    background:linear-gradient(135deg,rgba(76,175,80,0.15) 0%,rgba(69,160,73,0.1) 100%);
+    border:1px solid rgba(76,175,80,0.3);
+    border-radius:var(--r);
+    padding:20px;
+    margin:14px 0;
+    display:none;
+    backdrop-filter:var(--blur);
+    animation:slideIn 0.3s ease;
+}
+.result.show{display:block}
+.result h3{font-size:15px;margin-bottom:14px;color:#81c784;font-weight:600}
+.result p{font-size:14px;margin:8px 0;color:rgba(255,255,255,0.9);line-height:1.6}
+.sizes-list{background:rgba(0,0,0,0.2);border-radius:12px;padding:14px;margin:12px 0}
+.size-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px}
 .size-item:last-child{border:none}
-.size-label{opacity:0.8}
-.size-value{font-weight:600;color:var(--yel)}
-.size-pay{color:#4caf50;font-weight:600}
-.error{background:linear-gradient(135deg,rgba(244,67,54,0.15),rgba(211,47,47,0.1));border:1px solid rgba(244,67,54,0.3);border-radius:12px;padding:14px;margin:12px 0;display:none;color:#ff6b6b;font-size:14px}
+.size-label{opacity:0.8;color:var(--text-secondary)}
+.size-value{font-weight:600;color:var(--accent-yellow)}
+.size-pay{color:#81c784;font-weight:600}
+.error{
+    background:linear-gradient(135deg,rgba(244,67,54,0.15) 0%,rgba(211,47,47,0.1) 100%);
+    border:1px solid rgba(244,67,54,0.3);
+    border-radius:var(--r-sm);
+    padding:14px 16px;
+    margin:14px 0;
+    display:none;
+    color:#ef5350;
+    font-size:14px;
+    line-height:1.6;
+}
 .error.show{display:block}
-.edit-banner{background:linear-gradient(135deg,rgba(255,152,0,0.2),rgba(245,124,0,0.15));border:1px solid rgba(255,152,0,0.4);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:none;align-items:center;gap:10px;font-size:14px}
+.edit-banner{
+    background:linear-gradient(135deg,rgba(255,152,0,0.15) 0%,rgba(245,124,0,0.1) 100%);
+    border:1px solid rgba(255,152,0,0.4);
+    border-radius:var(--r-sm);
+    padding:14px 16px;
+    margin-bottom:14px;
+    display:none;
+    align-items:center;
+    gap:12px;
+    font-size:14px;
+    backdrop-filter:var(--blur);
+    animation:slideIn 0.3s ease;
+}
 .edit-banner.show{display:flex}
 .edit-banner .edit-icon{font-size:20px}
 .edit-banner .edit-text{flex:1;color:#ffb74d}
-.edit-banner .cancel-edit{background:rgba(255,152,0,0.3);border:1px solid rgba(255,152,0,0.5);color:#ffb74d;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
-.edit-banner .cancel-edit:hover{background:rgba(255,152,0,0.4)}
-.total{background:linear-gradient(135deg,rgba(252,204,0,0.2),rgba(255,107,0,0.15));border:1px solid rgba(252,204,0,0.3);border-radius:var(--r);padding:24px;margin-bottom:16px;text-align:right;box-shadow:0 8px 32px rgba(252,204,0,0.2)}
-.total-lbl{font-size:13px;color:var(--t2);margin-bottom:6px}
-.total-amt{font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.total-inline{background:rgba(252,204,0,0.1);border:1px solid rgba(252,204,0,0.3);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center}
-.total-inline .label{font-size:14px;color:var(--t2);margin-bottom:8px}
-.total-inline .amount{font-size:32px;font-weight:700;background:linear-gradient(135deg,var(--yel),var(--org));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.h-list{display:flex;flex-direction:column;gap:10px}
-.h-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:all .2s}
-.h-item:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15)}
+.edit-banner .cancel-edit{
+    background:rgba(255,152,0,0.2);
+    border:1px solid rgba(255,152,0,0.4);
+    color:#ffb74d;
+    padding:6px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    transition:var(--transition);
+}
+.edit-banner .cancel-edit:hover{background:rgba(255,152,0,0.3)}
+.total-card{
+    background:linear-gradient(135deg,rgba(255,107,53,0.2) 0%,rgba(247,147,30,0.15) 100%);
+    border:1px solid rgba(255,107,53,0.3);
+    border-radius:var(--r);
+    padding:26px;
+    margin-bottom:18px;
+    text-align:right;
+    box-shadow:0 8px 32px rgba(255,107,53,0.2);
+    position:relative;
+    overflow:hidden;
+}
+.total-card::before{
+    content:'';
+    position:absolute;
+    top:-50%;right:-50%;
+    width:200%;height:200%;
+    background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);
+    animation:pulse 4s ease-in-out infinite;
+}
+.total-lbl{font-size:13px;color:var(--text-secondary);margin-bottom:8px;font-weight:500;position:relative;z-index:1}
+.total-amt{
+    font-size:36px;
+    font-weight:700;
+    background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.9) 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    position:relative;
+    z-index:1;
+}
+.total-inline{
+    background:rgba(255,107,53,0.1);
+    border:1px solid rgba(255,107,53,0.25);
+    border-radius:var(--r);
+    padding:22px;
+    margin-bottom:18px;
+    text-align:center;
+    backdrop-filter:var(--blur);
+}
+.total-inline .label{font-size:14px;color:var(--text-secondary);margin-bottom:10px;font-weight:500}
+.total-inline .amount{
+    font-size:32px;
+    font-weight:700;
+    background:linear-gradient(135deg,var(--accent-orange) 0%,var(--accent-orange-light) 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+.h-list{display:flex;flex-direction:column;gap:12px}
+.h-item{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r);
+    padding:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+    transition:var(--transition);
+    backdrop-filter:var(--blur);
+}
+.h-item:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover);transform:translateY(-2px)}
 .h-item-left{flex:1;min-width:0}
-.h-code{font-family:'Courier New',monospace;font-size:14px;font-weight:600;color:var(--yel);word-break:break-all;margin-bottom:4px}
-.h-type{font-size:13px;color:var(--t2)}
-.h-sizes{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px}
-.h-amount{font-size:13px;color:var(--yel);font-weight:600;margin-top:3px}
-.h-time{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px}
-.h-pay{font-size:18px;font-weight:700;color:#4caf50;text-align:right;white-space:nowrap}
-.h-actions{display:flex;gap:6px;flex-shrink:0}
-.h-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;border:1px solid}
-.h-btn:hover{transform:scale(1.1)}
-.h-btn-edit{background:rgba(33,150,243,0.2);border-color:rgba(33,150,243,0.4);color:#64b5f6}
-.h-btn-edit:hover{background:rgba(33,150,243,0.3)}
-.h-btn-delete{background:rgba(244,67,54,0.2);border-color:rgba(244,67,54,0.4);color:#ff6b6b}
-.h-btn-delete:hover{background:rgba(244,67,54,0.3)}
-.wt-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-bottom:12px;border-left:3px solid var(--yel)}
-.wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.h-code{font-family:'SF Mono',monospace;font-size:14px;font-weight:600;color:var(--accent-yellow);word-break:break-all;margin-bottom:6px}
+.h-type{font-size:13px;color:var(--text-secondary);margin-bottom:4px}
+.h-sizes{font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5}
+.h-amount{font-size:13px;color:var(--accent-yellow);font-weight:600;margin-top:6px}
+.h-time{font-size:11px;color:var(--text-muted);margin-top:6px}
+.h-pay{font-size:20px;font-weight:700;color:#81c784;text-align:right;white-space:nowrap}
+.h-actions{display:flex;gap:8px;flex-shrink:0}
+.h-btn{
+    width:36px;height:36px;
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    font-size:14px;
+    transition:var(--transition);
+    border:1px solid;
+    background:var(--glass-bg);
+}
+.h-btn:hover{transform:translateY(-2px)}
+.h-btn-edit{background:rgba(79,172,254,0.15);border-color:rgba(79,172,254,0.3);color:var(--accent-blue)}
+.h-btn-edit:hover{background:rgba(79,172,254,0.25)}
+.h-btn-delete{background:rgba(244,67,54,0.15);border-color:rgba(244,67,54,0.3);color:#ef5350}
+.h-btn-delete:hover{background:rgba(244,67,54,0.25)}
+.wt-card{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r);
+    padding:18px;
+    margin-bottom:14px;
+    border-left:3px solid var(--accent-orange);
+    transition:var(--transition);
+    backdrop-filter:var(--blur);
+}
+.wt-card:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover)}
+.wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .wt-name{font-size:15px;font-weight:600}
-.wt-code{background:linear-gradient(135deg,var(--yel),var(--org));color:#000;padding:4px 10px;border-radius:6px;font-family:'Courier New',monospace;font-weight:700;font-size:13px}
-.wt-info{font-size:12px;color:var(--t2);margin:6px 0}
-.wt-formula{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;font-family:'Courier New',monospace;font-size:12px;margin:10px 0;word-break:break-all}
-.wt-rate{font-size:13px;color:var(--yel);font-weight:600}
-
-/* Стили для раскрывающегося списка типов на главной */
-.types-accordion{margin-top:10px}
+.wt-code{
+    background:linear-gradient(135deg,var(--accent-orange) 0%,var(--accent-orange-light) 100%);
+    color:#fff;
+    padding:4px 12px;
+    border-radius:10px;
+    font-family:'SF Mono',monospace;
+    font-weight:700;
+    font-size:13px;
+}
+.wt-info{font-size:12px;color:var(--text-secondary);margin:6px 0;line-height:1.5}
+.wt-formula{
+    background:rgba(0,0,0,0.3);
+    padding:10px 12px;
+    border-radius:10px;
+    font-family:'SF Mono',monospace;
+    font-size:12px;
+    margin:12px 0;
+    word-break:break-all;
+    color:var(--accent-yellow);
+}
+.types-accordion{margin-top:12px}
 .accordion-header{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:14px 16px;
-    background:rgba(0,0,0,0.2);
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:12px;
+    padding:16px 18px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-sm);
     cursor:pointer;
-    transition:all .2s;
+    transition:var(--transition);
     user-select:none;
 }
-.accordion-header:hover{background:rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.2)}
-.accordion-header.open{border-radius:12px 12px 0 0;border-color:rgba(252,204,0,0.3)}
-.accordion-header .acc-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
-.accordion-header .acc-arrow{
-    font-size:18px;
-    transition:transform .3s;
-    color:var(--yel);
-}
+.accordion-header:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover)}
+.accordion-header.open{border-radius:var(--r-sm) var(--r-sm) 0 0;border-color:rgba(255,107,53,0.4)}
+.accordion-header .acc-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+.accordion-header .acc-title svg{width:18px;height:18px;stroke:var(--accent-orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.accordion-header .acc-arrow{font-size:16px;transition:transform 0.3s;color:var(--accent-orange)}
 .accordion-header.open .acc-arrow{transform:rotate(180deg)}
 .accordion-body{
     max-height:0;
     overflow:hidden;
-    transition:max-height .4s ease;
+    transition:max-height 0.4s ease;
     background:rgba(0,0,0,0.15);
-    border:1px solid rgba(255,255,255,0.1);
+    border:1px solid var(--glass-border);
     border-top:none;
-    border-radius:0 0 12px 12px;
+    border-radius:0 0 var(--r-sm) var(--r-sm);
 }
-.accordion-body.open{max-height:2000px;padding:12px}
+.accordion-body.open{max-height:3000px;padding:16px}
 .type-accordion-item{
-    background:rgba(255,255,255,0.04);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:10px;
-    border-left:3px solid var(--yel);
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-sm);
+    padding:16px;
+    margin-bottom:12px;
+    border-left:3px solid var(--accent-orange);
+    transition:var(--transition);
 }
+.type-accordion-item:hover{background:var(--glass-bg-hover)}
 .type-accordion-item:last-child{margin-bottom:0}
-.type-acc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.type-acc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .type-acc-name{font-size:14px;font-weight:600}
 .type-acc-prefix{
-    background:linear-gradient(135deg,var(--yel),var(--org));
-    color:#000;
-    padding:3px 10px;
-    border-radius:6px;
-    font-family:'Courier New',monospace;
+    background:linear-gradient(135deg,var(--accent-orange) 0%,var(--accent-orange-light) 100%);
+    color:#fff;
+    padding:4px 12px;
+    border-radius:10px;
+    font-family:'SF Mono',monospace;
     font-weight:700;
     font-size:13px;
 }
-.type-acc-detail{font-size:12px;color:var(--t2);margin:4px 0;line-height:1.5}
-.type-acc-detail b{color:rgba(255,255,255,0.9)}
+.type-acc-detail{font-size:12px;color:var(--text-secondary);margin:5px 0;line-height:1.5}
+.type-acc-detail b{color:var(--text-primary)}
 .type-acc-formula{
     background:rgba(0,0,0,0.3);
-    padding:8px 10px;
-    border-radius:6px;
-    font-family:'Courier New',monospace;
+    padding:10px 12px;
+    border-radius:10px;
+    font-family:'SF Mono',monospace;
     font-size:12px;
-    margin:8px 0;
+    margin:10px 0;
     word-break:break-all;
+    color:var(--accent-yellow);
 }
-.type-acc-rate{font-size:12px;color:var(--yel);font-weight:600}
 .type-acc-example{
-    background:rgba(252,204,0,0.08);
-    border:1px dashed rgba(252,204,0,0.3);
-    border-radius:6px;
-    padding:8px 10px;
-    margin-top:8px;
-    font-family:'Courier New',monospace;
+    background:rgba(255,193,7,0.08);
+    border:1px dashed rgba(255,193,7,0.3);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-top:10px;
+    font-family:'SF Mono',monospace;
     font-size:12px;
-    color:var(--yel);
+    color:var(--accent-yellow);
     word-break:break-all;
 }
-.type-acc-example-label{
-    font-family:system-ui,sans-serif;
-    font-size:10px;
-    color:var(--t2);
-    margin-bottom:4px;
-    font-weight:600;
+.type-acc-example-label{font-family:inherit;font-size:11px;color:var(--text-secondary);margin-bottom:5px;font-weight:600}
+.empty-types-msg{text-align:center;padding:24px;color:var(--text-secondary);font-size:14px}
+.bottom-nav{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:rgba(15,20,25,0.95);
+    backdrop-filter:var(--blur);
+    -webkit-backdrop-filter:var(--blur);
+    border-top:1px solid var(--glass-border);
+    display:flex;
+    justify-content:space-around;
+    padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+    z-index:100;
 }
-.empty-types-msg{
-    text-align:center;
-    padding:20px;
-    color:var(--t2);
-    font-size:14px;
+.nav-item{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:8px 12px;
+    color:var(--text-secondary);
+    font-size:11px;
+    cursor:pointer;
+    border:none;
+    background:none;
+    transition:var(--transition);
+    border-radius:12px;
+    margin:0 4px;
 }
-
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(20,20,40,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-around;padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:100}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 8px;color:var(--t2);font-size:11px;cursor:pointer;border:none;background:none;transition:all .2s}
-.nav-item.active{color:var(--yel)}
+.nav-item:hover{background:var(--glass-bg)}
+.nav-item.active{color:var(--accent-orange);background:rgba(255,107,53,0.1)}
 .nav-item.active .nav-icon{transform:scale(1.1)}
-.nav-icon{font-size:24px;margin-bottom:3px;transition:transform .2s}
-.empty{text-align:center;padding:40px;color:rgba(255,255,255,0.3);font-size:14px}
-.hint{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.4}
-.fg{margin-bottom:14px}
-.fl{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--t2)}
-.fi{width:100%;padding:14px;background:rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--t1);font-size:15px;transition:all .3s}
-.fi:focus{outline:none;border-color:var(--yel);background:rgba(0,0,0,0.4);box-shadow:0 0 15px rgba(252,204,0,0.15)}
-.fi::placeholder{color:rgba(255,255,255,0.3)}
-textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;font-size:14px}
-.param-row{display:grid;grid-template-columns:1fr 80px auto;gap:8px;margin-bottom:8px;align-items:end}
-.param-row input{font-size:13px;padding:10px 8px}
-@media(min-width:768px){body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}.header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}}
-::-webkit-scrollbar{width:5px}
+.nav-icon{width:24px;height:24px;margin-bottom:4px;transition:transform 0.2s;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.empty{text-align:center;padding:48px 20px;color:var(--text-muted);font-size:14px}
+.hint{font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
+.fi{
+    width:100%;
+    padding:13px 16px;
+    background:rgba(0,0,0,0.3);
+    border:1.5px solid var(--glass-border);
+    border-radius:var(--r-sm);
+    color:var(--text-primary);
+    font-size:15px;
+    transition:var(--transition);
+}
+.fi:focus{outline:none;border-color:var(--accent-orange);background:rgba(0,0,0,0.4);box-shadow:0 0 0 3px rgba(255,107,53,0.15)}
+.fi::placeholder{color:var(--text-muted)}
+textarea.fi{min-height:70px;resize:vertical;font-family:'SF Mono',monospace;font-size:14px}
+select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+.param-row{display:grid;grid-template-columns:1fr 90px auto;gap:10px;margin-bottom:10px;align-items:end}
+.param-row input{font-size:13px;padding:11px 10px}
+@media(min-width:768px){
+    body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}
+    .bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}
+    .header{max-width:480px;left:50%;transform:translateX(-50%);width:100%}
+}
+::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.3)}
 </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-        </svg>
-        Учет работ
-    </h1>
-    <div class="header-sub">Ввод • Расчет • История</div>
-</div>
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            Учет работ
+        </div>
+        <div class="header-icons">
+            <div class="icon-btn">
+                <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <div class="avatar">ОП</div>
+        </div>
+    </div>
+</header>
 
 <div class="content">
 
 <div id="input" class="panel active">
+    <div style="margin-bottom:20px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Ввод кода</h1>
+        <p style="font-size:13px;color:var(--text-secondary)">Введите код работы для расчета</p>
+    </div>
+    
     <div class="total-inline">
-        <div class="label"> Всего заработано:</div>
+        <div class="label">💰 Всего заработано</div>
         <div class="amount"><span id="current-total">0</span> ₽</div>
     </div>
     
-    <div class="glass">
+    <div class="glass-card">
         <div class="card-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                <line x1="12" y1="18" x2="12.01" y2="18"></line>
-            </svg>
+            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
             <span id="input-title">Ввод кода</span>
         </div>
         
@@ -231,10 +573,8 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
         </div>
         
         <input type="text" id="code" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off">
-        <button class="btn btn-p" id="add-btn" onclick="addWork()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
+        <button class="btn btn-primary" id="add-btn" onclick="addWork()">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
             <span id="add-btn-text">Добавить</span>
         </button>
         
@@ -244,7 +584,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             <div id="r-params-block"></div>
             <div id="r-sizes-block"></div>
             <p><b>Итого:</b> <span id="r-amount"></span></p>
-            <div style="font-size:24px;margin-top:10px;text-align:center">
+            <div style="font-size:24px;margin-top:12px;text-align:center;font-weight:700">
                 <b>💰 <span id="r-pay"></span> ₽</b>
             </div>
         </div>
@@ -252,18 +592,15 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
         <div id="error" class="error"></div>
     </div>
     
-    <div class="glass">
+    <div class="glass-card">
         <div class="card-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             Несколько размеров
         </div>
-        <div style="font-family:monospace;background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin:10px 0">
-            <div style="color:var(--yel)">ВП162100 800/522 500/300 400-ВБ-154.002</div>
-            <div style="color:var(--t2);font-size:12px;margin-top:8px;line-height:1.6">
-                <div>Используйте <b style="color:var(--yel)">/</b> для разделения размеров:</div>
+        <div style="font-family:'SF Mono',monospace;background:rgba(0,0,0,0.3);padding:14px;border-radius:12px;margin:12px 0;line-height:1.6">
+            <div style="color:var(--accent-yellow);font-weight:600">ВП162100 800/522 500/300 400-ВБ-154.002</div>
+            <div style="color:var(--text-secondary);font-size:12px;margin-top:10px">
+                <div>Используйте <b style="color:var(--accent-yellow)">/</b> для разделения:</div>
                 <div>2100 800 — первый размер</div>
                 <div>522 500 — второй размер</div>
                 <div>300 400 — третий размер</div>
@@ -271,17 +608,11 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
         </div>
     </div>
     
-    <!-- Раскрывающийся список типов работ -->
-    <div class="glass">
+    <div class="glass-card">
         <div class="types-accordion">
             <div class="accordion-header" id="types-acc-header" onclick="toggleTypesAccordion()">
                 <div class="acc-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                    </svg>
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     Справочник типов работ
                 </div>
                 <div class="acc-arrow">▼</div>
@@ -294,40 +625,38 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
 </div>
 
 <div id="history" class="panel">
-    <div class="total">
-        <div class="total-lbl">Всего заработано:</div>
+    <div style="margin-bottom:20px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">История</h1>
+        <p style="font-size:13px;color:var(--text-secondary)">Все выполненные работы</p>
+    </div>
+    
+    <div class="total-card">
+        <div class="total-lbl">Всего заработано</div>
         <div class="total-amt"><span id="total-sum">0</span> ₽</div>
     </div>
     <div class="h-list" id="history-list"></div>
-    <button class="btn btn-d" onclick="clearHistory()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-        </svg>
+    <button class="btn btn-danger" onclick="clearHistory()" style="margin-top:16px">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         Очистить всё
     </button>
 </div>
 
 <div id="types" class="panel">
-    <div class="glass">
-        <div class="card-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-            </svg>
-            Типы работ
-        </div>
-        <button class="btn btn-g" onclick="showTypeForm()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
+    <div style="margin-bottom:20px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Типы работ</h1>
+        <p style="font-size:13px;color:var(--text-secondary)">Управление типами работ</p>
+    </div>
+    
+    <div class="glass-card">
+        <button class="btn btn-success" onclick="showTypeForm()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Добавить тип
         </button>
     </div>
     <div id="types-list"></div>
     
-    <div id="type-form" class="glass" style="display:none">
-        <h2 id="form-title" style="margin-bottom:15px">Новый тип</h2>
+    <div id="type-form" class="glass-card" style="display:none">
+        <h2 id="form-title" style="margin-bottom:18px;font-size:18px">Новый тип</h2>
         <div class="fg">
             <div class="fl">Префикс (первые буквы)</div>
             <input type="text" id="t-prefix" class="fi" placeholder="ВП">
@@ -339,7 +668,7 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
         <div class="fg">
             <div class="fl">Параметры (толщина и т.д.)</div>
             <div id="params-container"></div>
-            <button class="btn btn-s btn-sm" onclick="addParam()" style="margin-top:10px">+ Параметр</button>
+            <button class="btn btn-glass btn-sm" onclick="addParam()" style="margin-top:12px">+ Параметр</button>
         </div>
         <div class="fg">
             <div class="fl">Тип расчета</div>
@@ -360,62 +689,60 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'Courier New',monospace;
             <div class="fl">Единица</div>
             <input type="text" id="t-unit" class="fi" value="₽/м²">
         </div>
-        <div style="display:flex;gap:10px;margin-top:15px">
-            <button class="btn btn-g" onclick="saveType()" style="flex:1">💾 Сохранить</button>
-            <button class="btn btn-s" onclick="hideTypeForm()" style="flex:1">Отмена</button>
+        <div style="display:flex;gap:12px;margin-top:20px">
+            <button class="btn btn-success" onclick="saveType()" style="flex:1">💾 Сохранить</button>
+            <button class="btn btn-glass" onclick="hideTypeForm()" style="flex:1">Отмена</button>
         </div>
     </div>
 </div>
 
 <div id="settings" class="panel">
-    <div class="glass">
+    <div style="margin-bottom:20px">
+        <h1 style="font-size:26px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Настройки</h1>
+        <p style="font-size:13px;color:var(--text-secondary)">Управление данными</p>
+    </div>
+    
+    <div class="glass-card">
         <div class="card-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-            Настройки
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Данные приложения
         </div>
-        <button class="btn btn-p" onclick="exportData()">📤 Экспорт</button>
-        <button class="btn btn-s" onclick="document.getElementById('import').click()">📥 Импорт</button>
+        <button class="btn btn-primary" onclick="exportData()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Экспорт данных
+        </button>
+        <button class="btn btn-glass" onclick="document.getElementById('import').click()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Импорт данных
+        </button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
-        <button class="btn btn-d" onclick="resetAll()">🗑️ Сбросить всё</button>
+        <button class="btn btn-danger" onclick="resetAll()">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Сбросить всё
+        </button>
     </div>
 </div>
 
 </div>
 
-<div class="bottom-nav">
+<nav class="bottom-nav">
     <button class="nav-item active" onclick="showPanel('input')">
-        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-            <line x1="12" y1="18" x2="12.01" y2="18"></line>
-        </svg>
-        Ввод
+        <svg class="nav-icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        <span class="nav-label">Ввод</span>
     </button>
     <button class="nav-item" onclick="showPanel('history')">
-        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-        </svg>
-        История
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span class="nav-label">История</span>
     </button>
     <button class="nav-item" onclick="showPanel('types')">
-        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-        </svg>
-        Типы
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span class="nav-label">Типы</span>
     </button>
     <button class="nav-item" onclick="showPanel('settings')">
-        <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-        Ещё
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="nav-label">Ещё</span>
     </button>
-</div>
+</nav>
 
 <script>
 let history = JSON.parse(localStorage.getItem('workHistory') || '[]');
@@ -452,7 +779,6 @@ function showPanel(id){
     if(id === 'input') renderTypesAccordion();
 }
 
-// ===== РАСКРЫВАЮЩИЙСЯ СПИСОК ТИПОВ =====
 function toggleTypesAccordion(){
     let header = document.getElementById('types-acc-header');
     let body = document.getElementById('types-acc-body');
@@ -473,7 +799,6 @@ function renderTypesAccordion(){
     
     let html = '';
     types.forEach((t, idx) => {
-        // Параметры
         let paramsText = '';
         if(t.params && t.params.length > 0){
             paramsText = t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.' + (p.unit ? ', ' + p.unit : '') + ')').join(', ');
@@ -481,13 +806,9 @@ function renderTypesAccordion(){
             paramsText = 'нет';
         }
         
-        // Режим
         let modeText = t.mode === 'area' ? '📐 Площадь (м²)' : '📏 Погонные метры';
-        
-        // Размеры
         let dimsText = t.dims ? t.dims.join(' × ') : (t.mode === 'area' ? 'Длина × Ширина' : 'Длина');
         
-        // Пример кода
         let exampleCode = t.prefix;
         if(t.params && t.params.length > 0){
             t.params.forEach(p => {
@@ -633,8 +954,8 @@ function startEdit(idx){
     
     document.getElementById('input-title').textContent = 'Редактирование';
     document.getElementById('add-btn-text').textContent = 'Сохранить изменения';
-    document.getElementById('add-btn').classList.remove('btn-p');
-    document.getElementById('add-btn').classList.add('btn-w');
+    document.getElementById('add-btn').classList.remove('btn-primary');
+    document.getElementById('add-btn').classList.add('btn-warning');
     
     let data = parseCode(item.code);
     if(data){
@@ -656,8 +977,8 @@ function cancelEdit(){
     document.getElementById('edit-banner').classList.remove('show');
     document.getElementById('input-title').textContent = 'Ввод кода';
     document.getElementById('add-btn-text').textContent = 'Добавить';
-    document.getElementById('add-btn').classList.add('btn-p');
-    document.getElementById('add-btn').classList.remove('btn-w');
+    document.getElementById('add-btn').classList.add('btn-primary');
+    document.getElementById('add-btn').classList.remove('btn-warning');
     document.getElementById('result').classList.remove('show');
     document.getElementById('error').classList.remove('show');
 }
@@ -747,7 +1068,7 @@ function showResult(data){
 
 function showError(msg){
     let errorDiv = document.getElementById('error');
-    errorDiv.innerHTML = '❌ ' + msg;
+    errorDiv.innerHTML = ' ' + msg;
     errorDiv.classList.add('show');
 }
 
@@ -773,14 +1094,14 @@ function renderHistory(){
         
         let sizesHtml = '';
         if(item.sizeDetails && item.sizeDetails.length > 0){
-            sizesHtml = '<div class="sizes-list" style="margin-top:8px">';
+            sizesHtml = '<div class="sizes-list" style="margin-top:10px">';
             item.sizeDetails.forEach(s => {
                 sizesHtml += '<div class="size-item"><span class="size-label">#' + s.num + ': ' + s.dims + '</span><span class="size-pay">' + s.payment + ' ₽</span></div>';
             });
             sizesHtml += '</div>';
         }
         
-        let editedMark = item.edited ? '<div style="font-size:10px;color:#ff9800;margin-top:3px">✏️ отредактировано: ' + item.edited + '</div>' : '';
+        let editedMark = item.edited ? '<div style="font-size:10px;color:#ff9800;margin-top:5px">✏️ отредактировано: ' + item.edited + '</div>' : '';
         
         div.innerHTML = `
             <div class="h-item-left">
@@ -791,7 +1112,7 @@ function renderHistory(){
                 <div class="h-time">${item.date}</div>
                 ${editedMark}
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
                 <div class="h-pay">${item.payment.toLocaleString('ru-RU')} ₽</div>
                 <div class="h-actions">
                     <button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="Редактировать">✏️</button>
@@ -844,11 +1165,11 @@ function renderTypes(){
                 <div class="wt-code">${t.prefix}</div>
             </div>
             <div class="wt-info">Параметры: ${paramsText}</div>
-            <div class="wt-info">${t.mode === 'area' ? ' м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
+            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
             <div class="wt-formula">${t.formula}</div>
-            <div style="display:flex;gap:10px;margin-top:10px">
-                <button class="btn btn-s btn-sm" onclick="editType(${idx})" style="flex:1">✏️</button>
-                <button class="btn btn-d btn-sm" onclick="deleteType(${idx})" style="flex:1">🗑️</button>
+            <div style="display:flex;gap:10px;margin-top:12px">
+                <button class="btn btn-glass btn-sm" onclick="editType(${idx})" style="flex:1">✏️ Редактировать</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteType(${idx})" style="flex:1">🗑️ Удалить</button>
             </div>
         `;
         list.appendChild(div);
@@ -891,7 +1212,7 @@ function renderParams(){
         div.innerHTML = `
             <input type="text" placeholder="Название" value="${p.name}" onchange="tempParams[${idx}].name=this.value" class="fi">
             <input type="number" placeholder="Длина" value="${p.length}" min="1" onchange="tempParams[${idx}].length=parseInt(this.value)" class="fi">
-            <button onclick="tempParams.splice(${idx},1);renderParams()" class="btn btn-d btn-sm">✖</button>
+            <button onclick="tempParams.splice(${idx},1);renderParams()" class="btn btn-danger btn-sm">✖</button>
         `;
         container.appendChild(div);
     });
