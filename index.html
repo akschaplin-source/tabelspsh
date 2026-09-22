@@ -59,6 +59,16 @@ body::before{
 @keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.05);opacity:0.8}}
+@keyframes bellRing{
+    0%,100%{transform:rotate(0)}
+    10%,30%{transform:rotate(-10deg)}
+    20%,40%{transform:rotate(10deg)}
+    50%{transform:rotate(0)}
+}
+@keyframes badgePulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.4)}
+    50%{box-shadow:0 0 0 6px rgba(255,255,255,0)}
+}
 
 .header{
     background:var(--glass-bg);
@@ -88,7 +98,7 @@ body::before{
     -webkit-text-fill-color:transparent;
     background-clip:text;
 }
-.header-icons{display:flex;gap:10px}
+.header-icons{display:flex;gap:10px;align-items:center}
 .icon-btn{
     width:40px;height:40px;
     border-radius:12px;
@@ -99,9 +109,23 @@ body::before{
     cursor:pointer;
     transition:var(--transition);
     color:var(--text-primary);
+    position:relative;
 }
 .icon-btn:hover{background:var(--glass-highlight);transform:translateY(-2px)}
 .icon-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.icon-btn.bell-green{color:var(--accent-green);border-color:rgba(76,175,80,0.4);background:rgba(76,175,80,0.15)}
+.icon-btn.bell-green:hover{background:rgba(76,175,80,0.25)}
+.icon-btn.bell-red{color:#ef5350;border-color:rgba(239,83,80,0.4);background:rgba(239,83,80,0.15);animation:bellRing 2s ease-in-out infinite}
+.icon-btn.bell-red:hover{background:rgba(239,83,80,0.25)}
+.notification-badge{
+    position:absolute;
+    top:-4px;right:-4px;
+    width:10px;height:10px;
+    border-radius:50%;
+    background:#fff;
+    border:2px solid var(--bg-mid);
+    animation:badgePulse 2s infinite;
+}
 .avatar{
     width:40px;height:40px;
     border-radius:12px;
@@ -134,7 +158,6 @@ body::before{
     gap:10px;
 }
 .card-title svg{width:20px;height:20px;stroke:var(--accent-orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
-.card-subtitle{font-size:13px;color:var(--text-secondary);margin-bottom:16px}
 .code-input{
     width:100%;
     padding:16px 18px;
@@ -513,6 +536,88 @@ textarea.fi{min-height:70px;resize:vertical;font-family:'SF Mono',monospace;font
 select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
 .param-row{display:grid;grid-template-columns:1fr 90px auto;gap:10px;margin-bottom:10px;align-items:end}
 .param-row input{font-size:13px;padding:11px 10px}
+
+/* Модальное окно уведомлений */
+.notification-modal{
+    display:none;
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    animation:fadeIn 0.3s ease;
+}
+.notification-modal.show{display:flex}
+.notification-content{
+    background:linear-gradient(135deg,rgba(30,35,60,0.98) 0%,rgba(20,25,45,0.98) 100%);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r);
+    padding:28px;
+    max-width:400px;
+    width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    animation:slideIn 0.4s ease;
+}
+.notification-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+.notification-title{
+    font-size:18px;
+    font-weight:700;
+    background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+.notification-close{
+    width:32px;height:32px;
+    border-radius:10px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    color:var(--text-primary);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:var(--transition);
+    font-size:18px;
+}
+.notification-close:hover{background:var(--glass-bg-hover)}
+.notification-item{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-sm);
+    padding:16px;
+    margin-bottom:12px;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    animation:slideIn 0.3s ease;
+}
+.notification-item:last-child{margin-bottom:0}
+.notification-icon{
+    width:44px;height:44px;
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    font-size:22px;
+}
+.notification-icon.success{background:linear-gradient(135deg,rgba(76,175,80,0.3) 0%,rgba(69,160,73,0.2) 100%);border:1px solid rgba(76,175,80,0.4)}
+.notification-icon.warning{background:linear-gradient(135deg,rgba(244,67,54,0.3) 0%,rgba(211,47,47,0.2) 100%);border:1px solid rgba(244,67,54,0.4)}
+.notification-text{flex:1}
+.notification-text-title{font-weight:600;margin-bottom:4px;font-size:15px}
+.notification-text-desc{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.notification-empty{
+    text-align:center;
+    padding:30px 20px;
+    color:var(--text-muted);
+}
+.notification-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+
 @media(min-width:768px){
     body{max-width:480px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5)}
     .bottom-nav{max-width:480px;left:50%;transform:translateX(-50%)}
@@ -536,13 +641,24 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
             Учет работ
         </div>
         <div class="header-icons">
-            <div class="icon-btn">
+            <div class="icon-btn" id="bell-btn" onclick="openNotifications()" title="Уведомления">
                 <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             </div>
             <div class="avatar">ОП</div>
         </div>
     </div>
 </header>
+
+<!-- Модальное окно уведомлений -->
+<div class="notification-modal" id="notification-modal">
+    <div class="notification-content">
+        <div class="notification-header">
+            <div class="notification-title"> Уведомления</div>
+            <button class="notification-close" onclick="closeNotifications()"></button>
+        </div>
+        <div id="notification-list"></div>
+    </div>
+</div>
 
 <div class="content">
 
@@ -579,7 +695,7 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
         </button>
         
         <div id="result" class="result">
-            <h3>📋 Расшифровка</h3>
+            <h3> Расшифровка</h3>
             <p><b>Тип:</b> <span id="r-type"></span></p>
             <div id="r-params-block"></div>
             <div id="r-sizes-block"></div>
@@ -590,22 +706,6 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
         </div>
         
         <div id="error" class="error"></div>
-    </div>
-    
-    <div class="glass-card">
-        <div class="card-title">
-            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            Несколько размеров
-        </div>
-        <div style="font-family:'SF Mono',monospace;background:rgba(0,0,0,0.3);padding:14px;border-radius:12px;margin:12px 0;line-height:1.6">
-            <div style="color:var(--accent-yellow);font-weight:600">ВП162100 800/522 500/300 400-ВБ-154.002</div>
-            <div style="color:var(--text-secondary);font-size:12px;margin-top:10px">
-                <div>Используйте <b style="color:var(--accent-yellow)">/</b> для разделения:</div>
-                <div>2100 800 — первый размер</div>
-                <div>522 500 — второй размер</div>
-                <div>300 400 — третий размер</div>
-            </div>
-        </div>
     </div>
     
     <div class="glass-card">
@@ -750,6 +850,12 @@ let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
 let tempParams = [];
 let editingIndex = -1;
 
+// Состояние уведомлений
+let notifications = {
+    lastBackupTime: parseInt(localStorage.getItem('lastBackupTime') || '0'),
+    milestone5000Seen: localStorage.getItem('milestone5000Seen') === 'true'
+};
+
 if(types.length === 0){
     types = [
         {prefix:'ВП', name:'Внутренняя панель', mode:'area', formula:'(Длина * Ширина / 1000000)', rate:500, unit:'₽/м²', dims:['Длина','Ширина'], params:[{name:'Толщина',length:2,unit:'мм'}]},
@@ -761,13 +867,119 @@ if(types.length === 0){
 
 function saveTypes(){localStorage.setItem('workTypes', JSON.stringify(types))}
 function saveHistory(){localStorage.setItem('workHistory', JSON.stringify(history))}
+function saveNotifications(){
+    localStorage.setItem('lastBackupTime', notifications.lastBackupTime.toString());
+    localStorage.setItem('milestone5000Seen', notifications.milestone5000Seen.toString());
+}
 
 function updateTotalDisplay(){
     let total = history.reduce((sum, item) => sum + item.payment, 0);
     let totalStr = total.toLocaleString('ru-RU');
     document.getElementById('current-total').textContent = totalStr;
     document.getElementById('total-sum').textContent = totalStr;
+    updateBellState(total);
 }
+
+// Обновление состояния колокольчика
+function updateBellState(total){
+    const bell = document.getElementById('bell-btn');
+    bell.className = 'icon-btn';
+    
+    // Удаляем старый бейдж если есть
+    const oldBadge = bell.querySelector('.notification-badge');
+    if(oldBadge) oldBadge.remove();
+    
+    const now = Date.now();
+    const hoursSinceBackup = (now - notifications.lastBackupTime) / (1000 * 60 * 60);
+    const needsBackup = notifications.lastBackupTime === 0 || hoursSinceBackup >= 12;
+    
+    // Приоритет: красный (нет бэкапа) > зеленый (5000₽)
+    if(needsBackup){
+        bell.classList.add('bell-red');
+        bell.title = '️ Нужно сделать резервную копию!';
+        const badge = document.createElement('div');
+        badge.className = 'notification-badge';
+        bell.appendChild(badge);
+    } else if(total >= 5000 && !notifications.milestone5000Seen){
+        bell.classList.add('bell-green');
+        bell.title = '🎉 Достигнуто 5000₽!';
+        const badge = document.createElement('div');
+        badge.className = 'notification-badge';
+        bell.appendChild(badge);
+    } else {
+        bell.title = 'Уведомления';
+    }
+}
+
+// Открытие уведомлений
+function openNotifications(){
+    const total = history.reduce((sum, item) => sum + item.payment, 0);
+    const now = Date.now();
+    const hoursSinceBackup = (now - notifications.lastBackupTime) / (1000 * 60 * 60);
+    const needsBackup = notifications.lastBackupTime === 0 || hoursSinceBackup >= 12;
+    
+    const list = document.getElementById('notification-list');
+    let html = '';
+    let hasNotifications = false;
+    
+    if(total >= 5000 && !notifications.milestone5000Seen){
+        hasNotifications = true;
+        html += `
+            <div class="notification-item">
+                <div class="notification-icon success">🎉</div>
+                <div class="notification-text">
+                    <div class="notification-text-title">Поздравляем!</div>
+                    <div class="notification-text-desc">Вы заработали <b style="color:var(--accent-green)">${total.toLocaleString('ru-RU')} ₽</b>! Отличная работа, продолжайте в том же духе!</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if(needsBackup){
+        hasNotifications = true;
+        const lastBackupText = notifications.lastBackupTime === 0 ? 'никогда' : 
+            Math.floor(hoursSinceBackup) + ' ч. назад';
+        html += `
+            <div class="notification-item">
+                <div class="notification-icon warning">⚠️</div>
+                <div class="notification-text">
+                    <div class="notification-text-title">Нужна резервная копия</div>
+                    <div class="notification-text-desc">Последняя копия сделана <b>${lastBackupText}</b>. Рекомендуем сделать новую копию данных в разделе "Настройки" → "Экспорт данных".</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if(!hasNotifications){
+        html = `
+            <div class="notification-empty">
+                <div class="notification-empty-icon">🔔</div>
+                <div>Нет новых уведомлений</div>
+            </div>
+        `;
+    }
+    
+    list.innerHTML = html;
+    document.getElementById('notification-modal').classList.add('show');
+}
+
+function closeNotifications(){
+    document.getElementById('notification-modal').classList.remove('show');
+    
+    // Отмечаем milestone как увиденный
+    const total = history.reduce((sum, item) => sum + item.payment, 0);
+    if(total >= 5000){
+        notifications.milestone5000Seen = true;
+        saveNotifications();
+    }
+    
+    updateBellState(total);
+}
+
+// Закрытие по клику вне модалки
+document.getElementById('notification-modal').addEventListener('click', function(e){
+    if(e.target === this) closeNotifications();
+});
 
 function showPanel(id){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -1311,6 +1523,11 @@ function exportData(){
     a.href = url;
     a.download = 'backup_' + new Date().toISOString().split('T')[0] + '.json';
     a.click();
+    
+    // Запоминаем время бэкапа
+    notifications.lastBackupTime = Date.now();
+    saveNotifications();
+    updateBellState(history.reduce((sum, item) => sum + item.payment, 0));
 }
 
 function importData(event){
@@ -1340,6 +1557,8 @@ function resetAll(){
         if(confirm('Точно? Это нельзя отменить!')){
             localStorage.removeItem('workTypes');
             localStorage.removeItem('workHistory');
+            localStorage.removeItem('lastBackupTime');
+            localStorage.removeItem('milestone5000Seen');
             location.reload();
         }
     }
