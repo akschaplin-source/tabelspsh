@@ -341,7 +341,6 @@ body::before{
 }
 .h-list{display:flex;flex-direction:column;gap:10px}
 
-/* Компактные карточки истории */
 .h-item{
     background:var(--glass-bg);
     border:1px solid var(--glass-border);
@@ -355,13 +354,39 @@ body::before{
     backdrop-filter:var(--blur);
     position:relative;
     overflow:hidden;
+    border-left:3px solid transparent;
 }
 .h-item:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover);transform:translateY(-1px)}
 
-/* Закрытая сделка - серый стиль */
+/* Статус: Запланировано - желтоватый */
+.h-item.planned{
+    background:rgba(255,193,7,0.08);
+    border-color:rgba(255,193,7,0.25);
+    border-left-color:var(--accent-yellow);
+}
+.h-item.planned:hover{
+    background:rgba(255,193,7,0.12);
+    border-color:rgba(255,193,7,0.35);
+}
+.h-item.planned .h-code{color:#ffd54f}
+.h-item.planned .h-amount{color:#ffd54f}
+
+/* Статус: Готово - зеленоватый */
+.h-item.done{
+    background:rgba(76,175,80,0.08);
+    border-color:rgba(76,175,80,0.25);
+    border-left-color:var(--accent-green);
+}
+.h-item.done:hover{
+    background:rgba(76,175,80,0.12);
+    border-color:rgba(76,175,80,0.35);
+}
+
+/* Статус: Закрыто - серый (приоритет выше) */
 .h-item.closed{
     background:rgba(128,128,128,0.1);
     border-color:rgba(128,128,128,0.2);
+    border-left-color:#888;
     opacity:0.6;
     filter:grayscale(0.7);
 }
@@ -387,13 +412,13 @@ body::before{
 .h-amount{font-size:11px;color:var(--accent-yellow);font-weight:600;margin-top:3px}
 .h-time{font-size:10px;color:var(--text-muted);margin-top:3px}
 .h-pay{font-size:17px;font-weight:700;color:#81c784;text-align:right;white-space:nowrap}
-.h-actions{display:flex;gap:6px;flex-shrink:0;flex-direction:column}
+.h-actions{display:flex;gap:5px;flex-shrink:0;flex-direction:column}
 .h-btn{
-    width:32px;height:32px;
+    width:30px;height:30px;
     border-radius:8px;
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;
-    font-size:13px;
+    font-size:12px;
     transition:var(--transition);
     border:1px solid;
     background:var(--glass-bg);
@@ -407,33 +432,53 @@ body::before{
 .h-btn-close:hover{background:rgba(76,175,80,0.25)}
 .h-btn-open{background:rgba(255,152,0,0.15);border-color:rgba(255,152,0,0.3);color:#ffb74d}
 .h-btn-open:hover{background:rgba(255,152,0,0.25)}
+.h-btn-planned{background:rgba(255,193,7,0.15);border-color:rgba(255,193,7,0.3);color:var(--accent-yellow)}
+.h-btn-planned:hover{background:rgba(255,193,7,0.25)}
+.h-btn-planned.active{background:rgba(255,193,7,0.35);border-color:var(--accent-yellow);color:#fff}
+.h-btn-done{background:rgba(76,175,80,0.15);border-color:rgba(76,175,80,0.3);color:#81c784}
+.h-btn-done:hover{background:rgba(76,175,80,0.25)}
+.h-btn-done.active{background:rgba(76,175,80,0.35);border-color:var(--accent-green);color:#fff}
 
-/* Плашка "Сделка закрыта" */
-.closed-badge{
+.h-item.closed .h-btn-edit,
+.h-item.closed .h-btn-planned,
+.h-item.closed .h-btn-done{
+    opacity:0.3;
+    cursor:not-allowed;
+    pointer-events:none;
+}
+
+/* Плашка статуса */
+.status-badge{
     position:absolute;
     bottom:0;
     left:0;
     right:0;
-    background:rgba(128,128,128,0.3);
-    border-top:1px solid rgba(128,128,128,0.3);
-    padding:6px 14px;
-    font-size:11px;
-    color:rgba(255,255,255,0.7);
+    padding:5px 14px;
+    font-size:10px;
     text-align:center;
     font-weight:600;
     letter-spacing:0.5px;
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:6px;
+    gap:5px;
+    text-transform:uppercase;
 }
-.closed-badge svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
-
-/* Закрытые кнопки редактирования */
-.h-item.closed .h-btn-edit{
-    opacity:0.3;
-    cursor:not-allowed;
-    pointer-events:none;
+.status-badge svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.status-badge.planned-badge{
+    background:rgba(255,193,7,0.2);
+    border-top:1px solid rgba(255,193,7,0.3);
+    color:#ffd54f;
+}
+.status-badge.done-badge{
+    background:rgba(76,175,80,0.2);
+    border-top:1px solid rgba(76,175,80,0.3);
+    color:#81c784;
+}
+.status-badge.closed-badge{
+    background:rgba(128,128,128,0.3);
+    border-top:1px solid rgba(128,128,128,0.3);
+    color:rgba(255,255,255,0.7);
 }
 
 .wt-card{
@@ -597,7 +642,6 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
 .param-row{display:grid;grid-template-columns:1fr 90px auto;gap:10px;margin-bottom:10px;align-items:end}
 .param-row input{font-size:13px;padding:11px 10px}
 
-/* Модальное окно уведомлений */
 .notification-modal{
     display:none;
     position:fixed;
@@ -709,7 +753,6 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
     </div>
 </header>
 
-<!-- Модальное окно уведомлений -->
 <div class="notification-modal" id="notification-modal">
     <div class="notification-content">
         <div class="notification-header">
@@ -755,13 +798,13 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
         </button>
         
         <div id="result" class="result">
-            <h3>📋 Расшифровка</h3>
+            <h3> Расшифровка</h3>
             <p><b>Тип:</b> <span id="r-type"></span></p>
             <div id="r-params-block"></div>
             <div id="r-sizes-block"></div>
             <p><b>Итого:</b> <span id="r-amount"></span></p>
             <div style="font-size:24px;margin-top:12px;text-align:center;font-weight:700">
-                <b> <span id="r-pay"></span> ₽</b>
+                <b>💰 <span id="r-pay"></span> ₽</b>
             </div>
         </div>
         
@@ -910,7 +953,6 @@ let types = JSON.parse(localStorage.getItem('workTypes') || '[]');
 let tempParams = [];
 let editingIndex = -1;
 
-// Состояние уведомлений
 let notifications = {
     lastBackupTime: parseInt(localStorage.getItem('lastBackupTime') || '0'),
     milestone5000Seen: localStorage.getItem('milestone5000Seen') === 'true'
@@ -940,7 +982,6 @@ function updateTotalDisplay(){
     updateBellState(total);
 }
 
-// Обновление состояния колокольчика
 function updateBellState(total){
     const bell = document.getElementById('bell-btn');
     bell.className = 'icon-btn';
@@ -954,13 +995,13 @@ function updateBellState(total){
     
     if(needsBackup){
         bell.classList.add('bell-red');
-        bell.title = '️ Нужно сделать резервную копию!';
+        bell.title = '⚠️ Нужно сделать резервную копию!';
         const badge = document.createElement('div');
         badge.className = 'notification-badge';
         bell.appendChild(badge);
     } else if(total >= 5000 && !notifications.milestone5000Seen){
         bell.classList.add('bell-green');
-        bell.title = '🎉 Достигнуто 5000₽!';
+        bell.title = ' Достигнуто 5000₽!';
         const badge = document.createElement('div');
         badge.className = 'notification-badge';
         bell.appendChild(badge);
@@ -983,10 +1024,10 @@ function openNotifications(){
         hasNotifications = true;
         html += `
             <div class="notification-item">
-                <div class="notification-icon success">🎉</div>
+                <div class="notification-icon success"></div>
                 <div class="notification-text">
                     <div class="notification-text-title">Поздравляем!</div>
-                    <div class="notification-text-desc">Вы заработали <b style="color:var(--accent-green)">${total.toLocaleString('ru-RU')} ₽</b>! Отличная работа, продолжайте в том же духе!</div>
+                    <div class="notification-text-desc">Вы заработали <b style="color:var(--accent-green)">${total.toLocaleString('ru-RU')} ₽</b>! Отличная работа!</div>
                 </div>
             </div>
         `;
@@ -994,26 +1035,20 @@ function openNotifications(){
     
     if(needsBackup){
         hasNotifications = true;
-        const lastBackupText = notifications.lastBackupTime === 0 ? 'никогда' : 
-            Math.floor(hoursSinceBackup) + ' ч. назад';
+        const lastBackupText = notifications.lastBackupTime === 0 ? 'никогда' : Math.floor(hoursSinceBackup) + ' ч. назад';
         html += `
             <div class="notification-item">
-                <div class="notification-icon warning">⚠️</div>
+                <div class="notification-icon warning">️</div>
                 <div class="notification-text">
                     <div class="notification-text-title">Нужна резервная копия</div>
-                    <div class="notification-text-desc">Последняя копия сделана <b>${lastBackupText}</b>. Рекомендуем сделать новую копию данных в разделе "Настройки" → "Экспорт данных".</div>
+                    <div class="notification-text-desc">Последняя копия: <b>${lastBackupText}</b>. Сделайте новую в разделе "Настройки".</div>
                 </div>
             </div>
         `;
     }
     
     if(!hasNotifications){
-        html = `
-            <div class="notification-empty">
-                <div class="notification-empty-icon"></div>
-                <div>Нет новых уведомлений</div>
-            </div>
-        `;
+        html = '<div class="notification-empty"><div class="notification-empty-icon">🔔</div><div>Нет новых уведомлений</div></div>';
     }
     
     list.innerHTML = html;
@@ -1022,13 +1057,11 @@ function openNotifications(){
 
 function closeNotifications(){
     document.getElementById('notification-modal').classList.remove('show');
-    
     const total = history.reduce((sum, item) => sum + item.payment, 0);
     if(total >= 5000){
         notifications.milestone5000Seen = true;
         saveNotifications();
     }
-    
     updateBellState(total);
 }
 
@@ -1051,53 +1084,32 @@ function toggleTypesAccordion(){
     let body = document.getElementById('types-acc-body');
     header.classList.toggle('open');
     body.classList.toggle('open');
-    if(body.classList.contains('open')){
-        renderTypesAccordion();
-    }
+    if(body.classList.contains('open')) renderTypesAccordion();
 }
 
 function renderTypesAccordion(){
     let container = document.getElementById('types-acc-content');
-    
     if(types.length === 0){
-        container.innerHTML = '<div class="empty-types-msg">Нет типов работ. Добавьте первый в разделе "Типы".</div>';
+        container.innerHTML = '<div class="empty-types-msg">Нет типов работ.</div>';
         return;
     }
-    
     let html = '';
-    types.forEach((t, idx) => {
-        let paramsText = '';
-        if(t.params && t.params.length > 0){
-            paramsText = t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.' + (p.unit ? ', ' + p.unit : '') + ')').join(', ');
-        } else {
-            paramsText = 'нет';
-        }
-        
-        let modeText = t.mode === 'area' ? '📐 Площадь (м²)' : '📏 Погонные метры';
+    types.forEach(t => {
+        let paramsText = t.params && t.params.length > 0 
+            ? t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.' + (p.unit ? ', ' + p.unit : '') + ')').join(', ')
+            : 'нет';
+        let modeText = t.mode === 'area' ? ' Площадь (м²)' : '📏 Погонные метры';
         let dimsText = t.dims ? t.dims.join(' × ') : (t.mode === 'area' ? 'Длина × Ширина' : 'Длина');
-        
         let exampleCode = t.prefix;
-        if(t.params && t.params.length > 0){
-            t.params.forEach(p => {
-                exampleCode += p.length === 1 ? 'X' : '16';
-            });
-        }
-        if(t.mode === 'area'){
-            exampleCode += '2100 800/1500 600';
-        } else {
-            exampleCode += '2100/1500';
-        }
+        if(t.params && t.params.length > 0) t.params.forEach(p => exampleCode += p.length === 1 ? 'X' : '16');
+        exampleCode += t.mode === 'area' ? '2100 800/1500 600' : '2100/1500';
         exampleCode += '-ДЕТ-001';
-        
         html += `
             <div class="type-accordion-item">
-                <div class="type-acc-head">
-                    <div class="type-acc-name">${t.name}</div>
-                    <div class="type-acc-prefix">${t.prefix}</div>
-                </div>
+                <div class="type-acc-head"><div class="type-acc-name">${t.name}</div><div class="type-acc-prefix">${t.prefix}</div></div>
                 <div class="type-acc-detail"><b>Режим:</b> ${modeText}</div>
                 <div class="type-acc-detail"><b>Параметры:</b> ${paramsText}</div>
-                <div class="type-acc-detail"><b>Размеры:</b> ${dimsText} (через пробел, пары через /)</div>
+                <div class="type-acc-detail"><b>Размеры:</b> ${dimsText}</div>
                 <div class="type-acc-detail"><b>Тариф:</b> ${t.rate} ${t.unit}</div>
                 <div class="type-acc-formula">${t.formula}</div>
                 <div class="type-acc-example-label">Пример кода:</div>
@@ -1105,7 +1117,6 @@ function renderTypesAccordion(){
             </div>
         `;
     });
-    
     container.innerHTML = html;
 }
 
@@ -1124,12 +1135,9 @@ function extractData(code, type){
     let pos = type.prefix.length;
     let params = {};
     let displayParams = [];
-    
     if(type.params && type.params.length > 0){
         for(let p of type.params){
-            if(pos + p.length > code.length){
-                throw new Error('Код слишком короткий для параметра "'+p.name+'"');
-            }
+            if(pos + p.length > code.length) throw new Error('Код слишком короткий для "'+p.name+'"');
             let val = code.substring(pos, pos + p.length);
             let num = parseFloat(val);
             params[p.name] = isNaN(num) ? val : num;
@@ -1137,109 +1145,52 @@ function extractData(code, type){
             pos += p.length;
         }
     }
-    
-    let sizesBlock = '';
-    let partNumber = '';
+    let sizesBlock = '', partNumber = '';
     let dashIndex = code.indexOf('-', pos);
-    if(dashIndex > pos){
-        sizesBlock = code.substring(pos, dashIndex);
-        partNumber = code.substring(dashIndex);
-    } else {
-        sizesBlock = code.substring(pos);
-    }
-    
-    if(!sizesBlock.trim()){
-        throw new Error('Не найдены размеры в коде');
-    }
-    
-    let pairs = sizesBlock.split('/');
-    let sizes = [];
-    let totalAmount = 0;
-    let sizeDetails = [];
-    
+    if(dashIndex > pos){sizesBlock = code.substring(pos, dashIndex);partNumber = code.substring(dashIndex);}
+    else{sizesBlock = code.substring(pos);}
+    if(!sizesBlock.trim()) throw new Error('Не найдены размеры');
+    let pairs = sizesBlock.split('/'), sizes = [], totalAmount = 0, sizeDetails = [];
     for(let i = 0; i < pairs.length; i++){
-        let pair = pairs[i];
-        let dims = pair.trim().split(/\s+/);
+        let dims = pairs[i].trim().split(/\s+/);
         if(dims.length >= type.dims.length){
-            let pairData = {};
-            let pairText = [];
+            let pairData = {}, pairText = [];
             for(let j = 0; j < type.dims.length; j++){
                 let val = parseFloat(dims[j]);
-                if(!isNaN(val)){
-                    pairData[type.dims[j]] = val;
-                    pairText.push(type.dims[j] + ': ' + val);
-                }
+                if(!isNaN(val)){pairData[type.dims[j]] = val;pairText.push(type.dims[j] + ': ' + val);}
             }
             if(Object.keys(pairData).length > 0){
                 let formula = type.formula;
-                for(let key in pairData){
-                    formula = formula.replace(new RegExp(key, 'g'), '(' + pairData[key] + ')');
-                }
+                for(let key in pairData) formula = formula.replace(new RegExp(key, 'g'), '(' + pairData[key] + ')');
                 let result = eval(formula);
-                let payment = Math.round(result * type.rate);
-                
                 sizes.push(pairText.join(', '));
-                sizeDetails.push({
-                    num: i + 1,
-                    dims: pairText.join(', '),
-                    amount: result,
-                    payment: payment
-                });
+                sizeDetails.push({num: i + 1, dims: pairText.join(', '), amount: result, payment: Math.round(result * type.rate)});
                 totalAmount += result;
             }
         }
     }
-    
-    if(sizes.length === 0){
-        throw new Error('Не удалось разобрать размеры');
-    }
-    
-    let payment = Math.round(totalAmount * type.rate);
-    
-    return {
-        type: type.name,
-        params: displayParams,
-        sizes: sizes,
-        sizeDetails: sizeDetails,
-        partNumber: partNumber || '—',
-        amount: totalAmount,
-        unit: type.unit.replace('₽/', ''),
-        payment: payment,
-        code: code
-    };
+    if(sizes.length === 0) throw new Error('Не удалось разобрать размеры');
+    return {type: type.name, params: displayParams, sizes, sizeDetails, partNumber: partNumber || '—', amount: totalAmount, unit: type.unit.replace('₽/', ''), payment: Math.round(totalAmount * type.rate), code};
 }
 
 function startEdit(idx){
-    // Проверяем, не закрыта ли сделка
-    if(history[idx].closed){
-        alert(' Нельзя редактировать закрытую сделку. Сначала откройте её.');
-        return;
-    }
-    
+    if(history[idx].closed){alert('⛔ Нельзя редактировать закрытую сделку.');return;}
     editingIndex = idx;
     let item = history[idx];
-    
     document.getElementById('code').value = item.code;
     document.getElementById('code').classList.add('editing');
-    
     document.getElementById('edit-banner').classList.add('show');
     document.getElementById('edit-index-display').textContent = idx + 1;
-    
     document.getElementById('input-title').textContent = 'Редактирование';
     document.getElementById('add-btn-text').textContent = 'Сохранить изменения';
     document.getElementById('add-btn').classList.remove('btn-primary');
     document.getElementById('add-btn').classList.add('btn-warning');
-    
     let data = parseCode(item.code);
-    if(data){
-        showResult(data);
-    }
-    
+    if(data) showResult(data);
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('input').classList.add('active');
     document.querySelector('.nav-item').classList.add('active');
-    
     document.getElementById('code').focus();
 }
 
@@ -1258,127 +1209,85 @@ function cancelEdit(){
 
 function addWork(){
     let code = document.getElementById('code').value;
-    let resultDiv = document.getElementById('result');
-    let errorDiv = document.getElementById('error');
-    
-    resultDiv.classList.remove('show');
-    errorDiv.classList.remove('show');
-    
-    if(!code){
-        showError('Введите код');
-        return;
-    }
-    
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('error').classList.remove('show');
+    if(!code){showError('Введите код');return;}
     let data = parseCode(code);
-    if(!data){
-        showError('Код не распознан. Проверьте префикс и формат.<br><br>Пример: ВП162100 800/522 500-ВБ-154.002');
-        return;
-    }
-    
+    if(!data){showError('Код не распознан.<br><br>Пример: ВП162100 800/522 500-ВБ-154.002');return;}
     if(editingIndex >= 0){
-        history[editingIndex] = {
-            ...history[editingIndex],
-            date: history[editingIndex].date,
-            code: data.code,
-            type: data.type,
-            params: data.params,
-            sizes: data.sizes,
-            sizeDetails: data.sizeDetails,
-            amount: data.amount,
-            unit: data.unit,
-            payment: data.payment,
-            edited: new Date().toLocaleString('ru-RU')
-        };
-        saveHistory();
-        updateTotalDisplay();
-        cancelEdit();
-        alert('✅ Запись обновлена!');
-        return;
+        history[editingIndex] = {...history[editingIndex], code: data.code, type: data.type, params: data.params, sizes: data.sizes, sizeDetails: data.sizeDetails, amount: data.amount, unit: data.unit, payment: data.payment, edited: new Date().toLocaleString('ru-RU')};
+        saveHistory();updateTotalDisplay();cancelEdit();
+        alert('✅ Запись обновлена!');return;
     }
-    
-    history.push({
-        date: new Date().toLocaleString('ru-RU'),
-        code: data.code,
-        type: data.type,
-        params: data.params,
-        sizes: data.sizes,
-        sizeDetails: data.sizeDetails,
-        amount: data.amount,
-        unit: data.unit,
-        payment: data.payment,
-        closed: false
-    });
-    saveHistory();
-    updateTotalDisplay();
-    
-    showResult(data);
-    
+    history.push({date: new Date().toLocaleString('ru-RU'), code: data.code, type: data.type, params: data.params, sizes: data.sizes, sizeDetails: data.sizeDetails, amount: data.amount, unit: data.unit, payment: data.payment, closed: false, planned: false, done: false});
+    saveHistory();updateTotalDisplay();showResult(data);
     document.getElementById('code').value = '';
     setTimeout(() => document.getElementById('code').focus(), 100);
 }
 
 function showResult(data){
     document.getElementById('r-type').textContent = data.type;
-    
-    let paramsHtml = '';
-    if(data.params.length > 0){
-        paramsHtml = '<p><b>Параметры:</b> ' + data.params.join(', ') + '</p>';
-    }
-    document.getElementById('r-params-block').innerHTML = paramsHtml;
-    
+    document.getElementById('r-params-block').innerHTML = data.params.length > 0 ? '<p><b>Параметры:</b> ' + data.params.join(', ') + '</p>' : '';
     let sizesHtml = '';
     if(data.sizeDetails.length > 0){
         sizesHtml = '<div class="sizes-list">';
-        data.sizeDetails.forEach(s => {
-            sizesHtml += '<div class="size-item"><span class="size-label">Размер #' + s.num + ': ' + s.dims + '</span><span class="size-value">' + s.amount.toFixed(4) + ' ' + data.unit + ' = <span class="size-pay">' + s.payment + ' ₽</span></span></div>';
-        });
+        data.sizeDetails.forEach(s => {sizesHtml += '<div class="size-item"><span class="size-label">Размер #' + s.num + ': ' + s.dims + '</span><span class="size-value">' + s.amount.toFixed(4) + ' ' + data.unit + ' = <span class="size-pay">' + s.payment + ' ₽</span></span></div>';});
         sizesHtml += '</div>';
     }
     document.getElementById('r-sizes-block').innerHTML = sizesHtml;
-    
     document.getElementById('r-amount').textContent = data.amount.toFixed(4) + ' ' + data.unit;
     document.getElementById('r-pay').textContent = data.payment.toLocaleString('ru-RU');
     document.getElementById('result').classList.add('show');
 }
 
-function showError(msg){
-    let errorDiv = document.getElementById('error');
-    errorDiv.innerHTML = '️ ' + msg;
-    errorDiv.classList.add('show');
+function showError(msg){let e = document.getElementById('error');e.innerHTML = '⚠️ ' + msg;e.classList.add('show');}
+
+function togglePlanned(idx){
+    if(history[idx].closed){alert('⛔ Сначала откройте закрытую сделку.');return;}
+    history[idx].planned = !history[idx].planned;
+    if(history[idx].planned) history[idx].done = false;
+    saveHistory();renderHistory();
 }
 
-// Закрыть/открыть сделку
+function toggleDone(idx){
+    if(history[idx].closed){alert(' Сначала откройте закрытую сделку.');return;}
+    history[idx].done = !history[idx].done;
+    if(history[idx].done) history[idx].planned = false;
+    saveHistory();renderHistory();
+}
+
 function toggleCloseDeal(idx){
     history[idx].closed = !history[idx].closed;
     if(history[idx].closed){
         history[idx].closedDate = new Date().toLocaleString('ru-RU');
+        history[idx].planned = false;
+        history[idx].done = false;
     } else {
         delete history[idx].closedDate;
     }
-    saveHistory();
-    renderHistory();
+    saveHistory();renderHistory();
 }
 
 function renderHistory(){
     let list = document.getElementById('history-list');
     let total = 0;
-    
-    if(history.length === 0){
-        list.innerHTML = '<div class="empty">Нет записей</div>';
-        updateTotalDisplay();
-        return;
-    }
-    
+    if(history.length === 0){list.innerHTML = '<div class="empty">Нет записей</div>';updateTotalDisplay();return;}
     list.innerHTML = '';
     let reversed = [...history].reverse();
-    
     reversed.forEach((item, idx) => {
         total += item.payment;
         let realIdx = history.length - 1 - idx;
         let isClosed = item.closed === true;
+        let isPlanned = item.planned === true;
+        let isDone = item.done === true;
+        
+        let statusClass = '';
+        if(isClosed) statusClass = 'closed';
+        else if(isDone) statusClass = 'done';
+        else if(isPlanned) statusClass = 'planned';
         
         let div = document.createElement('div');
-        div.className = 'h-item' + (isClosed ? ' closed' : '');
+        div.className = 'h-item' + (statusClass ? ' ' + statusClass : '');
         
         let sizesHtml = '';
         if(item.sizeDetails && item.sizeDetails.length > 0){
@@ -1387,10 +1296,20 @@ function renderHistory(){
         
         let editedMark = item.edited ? '<div class="h-time">✏️ ' + item.edited + '</div>' : '';
         
-        // Кнопка закрытия/открытия
         let closeBtn = isClosed 
-            ? '<button class="h-btn h-btn-open" onclick="toggleCloseDeal(' + realIdx + ')" title="Открыть сделку"></button>'
+            ? '<button class="h-btn h-btn-open" onclick="toggleCloseDeal(' + realIdx + ')" title="Открыть сделку">🔓</button>'
             : '<button class="h-btn h-btn-close" onclick="toggleCloseDeal(' + realIdx + ')" title="Закрыть сделку">🔒</button>';
+        let plannedBtn = '<button class="h-btn h-btn-planned' + (isPlanned ? ' active' : '') + '" onclick="togglePlanned(' + realIdx + ')" title="Запланировано">📅</button>';
+        let doneBtn = '<button class="h-btn h-btn-done' + (isDone ? ' active' : '') + '" onclick="toggleDone(' + realIdx + ')" title="Готово">✅</button>';
+        
+        let statusBadge = '';
+        if(isClosed){
+            statusBadge = '<div class="status-badge closed-badge"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> СДЕЛКА ЗАКРЫТА' + (item.closedDate ? ' • ' + item.closedDate : '') + '</div>';
+        } else if(isDone){
+            statusBadge = '<div class="status-badge done-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> ГОТОВО</div>';
+        } else if(isPlanned){
+            statusBadge = '<div class="status-badge planned-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ЗАПЛАНИРОВАНО</div>';
+        }
         
         div.innerHTML = `
             <div class="h-item-left">
@@ -1401,62 +1320,38 @@ function renderHistory(){
                 <div class="h-time">${item.date}</div>
                 ${editedMark}
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
                 <div class="h-pay">${item.payment.toLocaleString('ru-RU')} ₽</div>
                 <div class="h-actions">
+                    ${plannedBtn}
+                    ${doneBtn}
                     ${closeBtn}
                     <button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="Редактировать">✏️</button>
                     <button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить">🗑️</button>
                 </div>
             </div>
-            ${isClosed ? '<div class="closed-badge"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> СДЕЛКА ЗАКРЫТА' + (item.closedDate ? ' • ' + item.closedDate : '') + '</div>' : ''}
+            ${statusBadge}
         `;
         list.appendChild(div);
     });
-    
     updateTotalDisplay();
 }
 
-function deleteItem(idx){
-    if(confirm('Удалить эту запись?')){
-        history.splice(idx, 1);
-        saveHistory();
-        renderHistory();
-    }
-}
-
-function clearHistory(){
-    if(confirm('Очистить всю историю?')){
-        history = [];
-        saveHistory();
-        renderHistory();
-    }
-}
+function deleteItem(idx){if(confirm('Удалить эту запись?')){history.splice(idx, 1);saveHistory();renderHistory();}}
+function clearHistory(){if(confirm('Очистить всю историю?')){history = [];saveHistory();renderHistory();}}
 
 function renderTypes(){
     let list = document.getElementById('types-list');
-    
-    if(types.length === 0){
-        list.innerHTML = '<div class="empty">Нет типов</div>';
-        return;
-    }
-    
+    if(types.length === 0){list.innerHTML = '<div class="empty">Нет типов</div>';return;}
     list.innerHTML = '';
     types.forEach((t, idx) => {
         let div = document.createElement('div');
         div.className = 'wt-card';
-        
-        let paramsText = t.params && t.params.length > 0 
-            ? t.params.map(p => p.name + ' (' + p.length + ')').join(', ')
-            : 'нет';
-        
+        let paramsText = t.params && t.params.length > 0 ? t.params.map(p => p.name + ' (' + p.length + ')').join(', ') : 'нет';
         div.innerHTML = `
-            <div class="wt-head">
-                <div class="wt-name">${t.name}</div>
-                <div class="wt-code">${t.prefix}</div>
-            </div>
+            <div class="wt-head"><div class="wt-name">${t.name}</div><div class="wt-code">${t.prefix}</div></div>
             <div class="wt-info">Параметры: ${paramsText}</div>
-            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
+            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : ' пог.м'} • ${t.rate} ${t.unit}</div>
             <div class="wt-formula">${t.formula}</div>
             <div style="display:flex;gap:10px;margin-top:12px">
                 <button class="btn btn-glass btn-sm" onclick="editType(${idx})" style="flex:1">✏️ Редактировать</button>
@@ -1479,50 +1374,24 @@ function showTypeForm(){
     document.getElementById('t-unit').value = '₽/м²';
     renderParams();
 }
-
-function hideTypeForm(){
-    document.getElementById('type-form').style.display = 'none';
-}
-
-function addParam(){
-    tempParams.push({name:'',length:1,unit:''});
-    renderParams();
-}
-
+function hideTypeForm(){document.getElementById('type-form').style.display = 'none';}
+function addParam(){tempParams.push({name:'',length:1,unit:''});renderParams();}
 function renderParams(){
     let container = document.getElementById('params-container');
-    if(tempParams.length === 0){
-        container.innerHTML = '<div class="hint">Параметры не добавлены (например, толщина)</div>';
-        return;
-    }
-    
+    if(tempParams.length === 0){container.innerHTML = '<div class="hint">Параметры не добавлены</div>';return;}
     container.innerHTML = '';
     tempParams.forEach((p, idx) => {
         let div = document.createElement('div');
         div.className = 'param-row';
-        div.innerHTML = `
-            <input type="text" placeholder="Название" value="${p.name}" onchange="tempParams[${idx}].name=this.value" class="fi">
-            <input type="number" placeholder="Длина" value="${p.length}" min="1" onchange="tempParams[${idx}].length=parseInt(this.value)" class="fi">
-            <button onclick="tempParams.splice(${idx},1);renderParams()" class="btn btn-danger btn-sm">✖</button>
-        `;
+        div.innerHTML = `<input type="text" placeholder="Название" value="${p.name}" onchange="tempParams[${idx}].name=this.value" class="fi"><input type="number" placeholder="Длина" value="${p.length}" min="1" onchange="tempParams[${idx}].length=parseInt(this.value)" class="fi"><button onclick="tempParams.splice(${idx},1);renderParams()" class="btn btn-danger btn-sm">✖</button>`;
         container.appendChild(div);
     });
 }
-
 function updateFormula(){
     let mode = document.getElementById('t-mode').value;
-    let formula = document.getElementById('t-formula');
-    let unit = document.getElementById('t-unit');
-    
-    if(mode === 'area'){
-        formula.value = '(Длина * Ширина / 1000000)';
-        unit.value = '₽/м²';
-    } else {
-        formula.value = '(Длина / 1000)';
-        unit.value = '₽/м.п.';
-    }
+    if(mode === 'area'){document.getElementById('t-formula').value = '(Длина * Ширина / 1000000)';document.getElementById('t-unit').value = '₽/м²';}
+    else{document.getElementById('t-formula').value = '(Длина / 1000)';document.getElementById('t-unit').value = '₽/м.п.';}
 }
-
 function saveType(){
     let prefix = document.getElementById('t-prefix').value.toUpperCase().trim();
     let name = document.getElementById('t-name').value.trim();
@@ -1530,25 +1399,14 @@ function saveType(){
     let formula = document.getElementById('t-formula').value.trim();
     let rate = parseFloat(document.getElementById('t-rate').value);
     let unit = document.getElementById('t-unit').value.trim();
-    
-    if(!prefix || !name || !formula){
-        alert('Заполните префикс, название и формулу');
-        return;
-    }
-    
+    if(!prefix || !name || !formula){alert('Заполните префикс, название и формулу');return;}
     let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
-    
     types.push({prefix, name, mode, formula, rate, unit, dims, params: tempParams.filter(p => p.name)});
-    saveTypes();
-    hideTypeForm();
-    renderTypes();
-    alert('✅ Сохранено!');
+    saveTypes();hideTypeForm();renderTypes();alert('✅ Сохранено!');
 }
-
 function editType(idx){
     let t = types[idx];
     tempParams = t.params ? JSON.parse(JSON.stringify(t.params)) : [];
-    
     document.getElementById('type-form').style.display = 'block';
     document.getElementById('form-title').textContent = 'Редактировать';
     document.getElementById('t-prefix').value = t.prefix;
@@ -1557,10 +1415,8 @@ function editType(idx){
     document.getElementById('t-formula').value = t.formula;
     document.getElementById('t-rate').value = t.rate;
     document.getElementById('t-unit').value = t.unit;
-    
     renderParams();
     window.editingTypeIdx = idx;
-    
     let originalSaveType = saveType;
     saveType = function(){
         let prefix = document.getElementById('t-prefix').value.toUpperCase().trim();
@@ -1569,74 +1425,42 @@ function editType(idx){
         let formula = document.getElementById('t-formula').value.trim();
         let rate = parseFloat(document.getElementById('t-rate').value);
         let unit = document.getElementById('t-unit').value.trim();
-        
-        if(!prefix || !name || !formula){
-            alert('Заполните все обязательные поля');
-            return;
-        }
-        
+        if(!prefix || !name || !formula){alert('Заполните все поля');return;}
         let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
-        
         types[window.editingTypeIdx] = {prefix, name, mode, formula, rate, unit, dims, params: tempParams.filter(p => p.name)};
-        saveTypes();
-        hideTypeForm();
-        renderTypes();
-        alert('✅ Обновлено!');
+        saveTypes();hideTypeForm();renderTypes();alert('✅ Обновлено!');
         saveType = originalSaveType;
     };
 }
-
-function deleteType(idx){
-    if(confirm('Удалить тип?')){
-        types.splice(idx, 1);
-        saveTypes();
-        renderTypes();
-    }
-}
+function deleteType(idx){if(confirm('Удалить тип?')){types.splice(idx, 1);saveTypes();renderTypes();}}
 
 function exportData(){
     let data = {types, history, date: new Date().toISOString()};
     let blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
     let url = URL.createObjectURL(blob);
     let a = document.createElement('a');
-    a.href = url;
-    a.download = 'backup_' + new Date().toISOString().split('T')[0] + '.json';
-    a.click();
-    
-    notifications.lastBackupTime = Date.now();
-    saveNotifications();
+    a.href = url;a.download = 'backup_' + new Date().toISOString().split('T')[0] + '.json';a.click();
+    notifications.lastBackupTime = Date.now();saveNotifications();
     updateBellState(history.reduce((sum, item) => sum + item.payment, 0));
 }
-
 function importData(event){
-    let file = event.target.files[0];
-    if(!file) return;
-    
+    let file = event.target.files[0];if(!file) return;
     let reader = new FileReader();
     reader.onload = function(e){
         try{
             let data = JSON.parse(e.target.result);
             if(data.types) types = data.types;
             if(data.history) history = data.history;
-            saveTypes();
-            saveHistory();
-            updateTotalDisplay();
-            alert('✅ Импорт выполнен!');
-        }catch(err){
-            alert('Ошибка: ' + err.message);
-        }
+            saveTypes();saveHistory();updateTotalDisplay();alert('✅ Импорт выполнен!');
+        }catch(err){alert('Ошибка: ' + err.message);}
     };
-    reader.readAsText(file);
-    event.target.value = '';
+    reader.readAsText(file);event.target.value = '';
 }
-
 function resetAll(){
     if(confirm('⚠️ Удалить ВСЕ данные?')){
-        if(confirm('Точно? Это нельзя отменить!')){
-            localStorage.removeItem('workTypes');
-            localStorage.removeItem('workHistory');
-            localStorage.removeItem('lastBackupTime');
-            localStorage.removeItem('milestone5000Seen');
+        if(confirm('Точно?')){
+            localStorage.removeItem('workTypes');localStorage.removeItem('workHistory');
+            localStorage.removeItem('lastBackupTime');localStorage.removeItem('milestone5000Seen');
             location.reload();
         }
     }
@@ -1644,10 +1468,7 @@ function resetAll(){
 
 updateTotalDisplay();
 renderTypesAccordion();
-
-document.getElementById('code').addEventListener('keypress', function(e){
-    if(e.key === 'Enter') addWork();
-});
+document.getElementById('code').addEventListener('keypress', function(e){if(e.key === 'Enter') addWork();});
 </script>
 
 </body>
