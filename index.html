@@ -358,7 +358,6 @@ body::before{
 }
 .h-item:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover);transform:translateY(-1px)}
 
-/* Статус: Запланировано - желтоватый */
 .h-item.planned{
     background:rgba(255,193,7,0.08);
     border-color:rgba(255,193,7,0.25);
@@ -371,7 +370,6 @@ body::before{
 .h-item.planned .h-code{color:#ffd54f}
 .h-item.planned .h-amount{color:#ffd54f}
 
-/* Статус: Готово - зеленоватый */
 .h-item.done{
     background:rgba(76,175,80,0.08);
     border-color:rgba(76,175,80,0.25);
@@ -382,7 +380,6 @@ body::before{
     border-color:rgba(76,175,80,0.35);
 }
 
-/* Статус: Закрыто - серый (приоритет выше) */
 .h-item.closed{
     background:rgba(128,128,128,0.1);
     border-color:rgba(128,128,128,0.2);
@@ -412,36 +409,58 @@ body::before{
 .h-amount{font-size:11px;color:var(--accent-yellow);font-weight:600;margin-top:3px}
 .h-time{font-size:10px;color:var(--text-muted);margin-top:3px}
 .h-pay{font-size:17px;font-weight:700;color:#81c784;text-align:right;white-space:nowrap}
-.h-actions{display:flex;gap:5px;flex-shrink:0;flex-direction:column}
+
+/* Кнопки в ряд */
+.h-actions{
+    display:flex;
+    gap:5px;
+    flex-shrink:0;
+    flex-direction:row;
+    align-items:center;
+}
 .h-btn{
-    width:30px;height:30px;
+    width:32px;height:32px;
     border-radius:8px;
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;
-    font-size:12px;
     transition:var(--transition);
     border:1px solid;
     background:var(--glass-bg);
+    padding:0;
+}
+.h-btn svg{
+    width:16px;height:16px;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    fill:none;
 }
 .h-btn:hover{transform:translateY(-1px)}
-.h-btn-edit{background:rgba(79,172,254,0.15);border-color:rgba(79,172,254,0.3);color:var(--accent-blue)}
-.h-btn-edit:hover{background:rgba(79,172,254,0.25)}
-.h-btn-delete{background:rgba(244,67,54,0.15);border-color:rgba(244,67,54,0.3);color:#ef5350}
-.h-btn-delete:hover{background:rgba(244,67,54,0.25)}
-.h-btn-close{background:rgba(76,175,80,0.15);border-color:rgba(76,175,80,0.3);color:#81c784}
-.h-btn-close:hover{background:rgba(76,175,80,0.25)}
-.h-btn-open{background:rgba(255,152,0,0.15);border-color:rgba(255,152,0,0.3);color:#ffb74d}
-.h-btn-open:hover{background:rgba(255,152,0,0.25)}
+
 .h-btn-planned{background:rgba(255,193,7,0.15);border-color:rgba(255,193,7,0.3);color:var(--accent-yellow)}
 .h-btn-planned:hover{background:rgba(255,193,7,0.25)}
-.h-btn-planned.active{background:rgba(255,193,7,0.35);border-color:var(--accent-yellow);color:#fff}
+.h-btn-planned.active{background:rgba(255,193,7,0.4);border-color:var(--accent-yellow);color:#fff}
+
 .h-btn-done{background:rgba(76,175,80,0.15);border-color:rgba(76,175,80,0.3);color:#81c784}
 .h-btn-done:hover{background:rgba(76,175,80,0.25)}
-.h-btn-done.active{background:rgba(76,175,80,0.35);border-color:var(--accent-green);color:#fff}
+.h-btn-done.active{background:rgba(76,175,80,0.4);border-color:var(--accent-green);color:#fff}
 
-.h-item.closed .h-btn-edit,
+.h-btn-close{background:rgba(156,39,176,0.15);border-color:rgba(156,39,176,0.3);color:#ce93d8}
+.h-btn-close:hover{background:rgba(156,39,176,0.25)}
+
+.h-btn-open{background:rgba(255,152,0,0.15);border-color:rgba(255,152,0,0.3);color:#ffb74d}
+.h-btn-open:hover{background:rgba(255,152,0,0.25)}
+
+.h-btn-edit{background:rgba(79,172,254,0.15);border-color:rgba(79,172,254,0.3);color:var(--accent-blue)}
+.h-btn-edit:hover{background:rgba(79,172,254,0.25)}
+
+.h-btn-delete{background:rgba(244,67,54,0.15);border-color:rgba(244,67,54,0.3);color:#ef5350}
+.h-btn-delete:hover{background:rgba(244,67,54,0.25)}
+
 .h-item.closed .h-btn-planned,
-.h-item.closed .h-btn-done{
+.h-item.closed .h-btn-done,
+.h-item.closed .h-btn-edit{
     opacity:0.3;
     cursor:not-allowed;
     pointer-events:none;
@@ -666,60 +685,19 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
     box-shadow:0 20px 60px rgba(0,0,0,0.5);
     animation:slideIn 0.4s ease;
 }
-.notification-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-}
-.notification-title{
-    font-size:18px;
-    font-weight:700;
-    background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-}
-.notification-close{
-    width:32px;height:32px;
-    border-radius:10px;
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    color:var(--text-primary);
-    cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    transition:var(--transition);
-    font-size:18px;
-}
+.notification-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.notification-title{font-size:18px;font-weight:700;background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.8) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.notification-close{width:32px;height:32px;border-radius:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-size:18px}
 .notification-close:hover{background:var(--glass-bg-hover)}
-.notification-item{
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    border-radius:var(--r-sm);
-    padding:16px;
-    margin-bottom:12px;
-    display:flex;
-    align-items:flex-start;
-    gap:14px;
-    animation:slideIn 0.3s ease;
-}
+.notification-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:14px;animation:slideIn 0.3s ease}
 .notification-item:last-child{margin-bottom:0}
-.notification-icon{
-    width:44px;height:44px;
-    border-radius:12px;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-    font-size:22px;
-}
+.notification-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px}
 .notification-icon.success{background:linear-gradient(135deg,rgba(76,175,80,0.3) 0%,rgba(69,160,73,0.2) 100%);border:1px solid rgba(76,175,80,0.4)}
 .notification-icon.warning{background:linear-gradient(135deg,rgba(244,67,54,0.3) 0%,rgba(211,47,47,0.2) 100%);border:1px solid rgba(244,67,54,0.4)}
 .notification-text{flex:1}
 .notification-text-title{font-weight:600;margin-bottom:4px;font-size:15px}
 .notification-text-desc{font-size:13px;color:var(--text-secondary);line-height:1.5}
-.notification-empty{
-    text-align:center;
-    padding:30px 20px;
-    color:var(--text-muted);
-}
+.notification-empty{text-align:center;padding:30px 20px;color:var(--text-muted)}
 .notification-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
 
 @media(min-width:768px){
@@ -798,7 +776,7 @@ select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xm
         </button>
         
         <div id="result" class="result">
-            <h3> Расшифровка</h3>
+            <h3>📋 Расшифровка</h3>
             <p><b>Тип:</b> <span id="r-type"></span></p>
             <div id="r-params-block"></div>
             <div id="r-sizes-block"></div>
@@ -985,14 +963,11 @@ function updateTotalDisplay(){
 function updateBellState(total){
     const bell = document.getElementById('bell-btn');
     bell.className = 'icon-btn';
-    
     const oldBadge = bell.querySelector('.notification-badge');
     if(oldBadge) oldBadge.remove();
-    
     const now = Date.now();
     const hoursSinceBackup = (now - notifications.lastBackupTime) / (1000 * 60 * 60);
     const needsBackup = notifications.lastBackupTime === 0 || hoursSinceBackup >= 12;
-    
     if(needsBackup){
         bell.classList.add('bell-red');
         bell.title = '⚠️ Нужно сделать резервную копию!';
@@ -1001,7 +976,7 @@ function updateBellState(total){
         bell.appendChild(badge);
     } else if(total >= 5000 && !notifications.milestone5000Seen){
         bell.classList.add('bell-green');
-        bell.title = ' Достигнуто 5000₽!';
+        bell.title = '🎉 Достигнуто 5000₽!';
         const badge = document.createElement('div');
         badge.className = 'notification-badge';
         bell.appendChild(badge);
@@ -1015,42 +990,21 @@ function openNotifications(){
     const now = Date.now();
     const hoursSinceBackup = (now - notifications.lastBackupTime) / (1000 * 60 * 60);
     const needsBackup = notifications.lastBackupTime === 0 || hoursSinceBackup >= 12;
-    
     const list = document.getElementById('notification-list');
     let html = '';
     let hasNotifications = false;
-    
     if(total >= 5000 && !notifications.milestone5000Seen){
         hasNotifications = true;
-        html += `
-            <div class="notification-item">
-                <div class="notification-icon success"></div>
-                <div class="notification-text">
-                    <div class="notification-text-title">Поздравляем!</div>
-                    <div class="notification-text-desc">Вы заработали <b style="color:var(--accent-green)">${total.toLocaleString('ru-RU')} ₽</b>! Отличная работа!</div>
-                </div>
-            </div>
-        `;
+        html += `<div class="notification-item"><div class="notification-icon success">🎉</div><div class="notification-text"><div class="notification-text-title">Поздравляем!</div><div class="notification-text-desc">Вы заработали <b style="color:var(--accent-green)">${total.toLocaleString('ru-RU')} ₽</b>! Отличная работа!</div></div></div>`;
     }
-    
     if(needsBackup){
         hasNotifications = true;
         const lastBackupText = notifications.lastBackupTime === 0 ? 'никогда' : Math.floor(hoursSinceBackup) + ' ч. назад';
-        html += `
-            <div class="notification-item">
-                <div class="notification-icon warning">️</div>
-                <div class="notification-text">
-                    <div class="notification-text-title">Нужна резервная копия</div>
-                    <div class="notification-text-desc">Последняя копия: <b>${lastBackupText}</b>. Сделайте новую в разделе "Настройки".</div>
-                </div>
-            </div>
-        `;
+        html += `<div class="notification-item"><div class="notification-icon warning">⚠️</div><div class="notification-text"><div class="notification-text-title">Нужна резервная копия</div><div class="notification-text-desc">Последняя копия: <b>${lastBackupText}</b>. Сделайте новую в разделе "Настройки".</div></div></div>`;
     }
-    
     if(!hasNotifications){
-        html = '<div class="notification-empty"><div class="notification-empty-icon">🔔</div><div>Нет новых уведомлений</div></div>';
+        html = '<div class="notification-empty"><div class="notification-empty-icon"></div><div>Нет новых уведомлений</div></div>';
     }
-    
     list.innerHTML = html;
     document.getElementById('notification-modal').classList.add('show');
 }
@@ -1098,7 +1052,7 @@ function renderTypesAccordion(){
         let paramsText = t.params && t.params.length > 0 
             ? t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.' + (p.unit ? ', ' + p.unit : '') + ')').join(', ')
             : 'нет';
-        let modeText = t.mode === 'area' ? ' Площадь (м²)' : '📏 Погонные метры';
+        let modeText = t.mode === 'area' ? '📐 Площадь (м²)' : '📏 Погонные метры';
         let dimsText = t.dims ? t.dims.join(' × ') : (t.mode === 'area' ? 'Длина × Ширина' : 'Длина');
         let exampleCode = t.prefix;
         if(t.params && t.params.length > 0) t.params.forEach(p => exampleCode += p.length === 1 ? 'X' : '16');
@@ -1250,7 +1204,7 @@ function togglePlanned(idx){
 }
 
 function toggleDone(idx){
-    if(history[idx].closed){alert(' Сначала откройте закрытую сделку.');return;}
+    if(history[idx].closed){alert('⛔ Сначала откройте закрытую сделку.');return;}
     history[idx].done = !history[idx].done;
     if(history[idx].done) history[idx].planned = false;
     saveHistory();renderHistory();
@@ -1296,19 +1250,26 @@ function renderHistory(){
         
         let editedMark = item.edited ? '<div class="h-time">✏️ ' + item.edited + '</div>' : '';
         
+        // Кнопки в один ряд с SVG иконками в стиле навигации
         let closeBtn = isClosed 
-            ? '<button class="h-btn h-btn-open" onclick="toggleCloseDeal(' + realIdx + ')" title="Открыть сделку">🔓</button>'
-            : '<button class="h-btn h-btn-close" onclick="toggleCloseDeal(' + realIdx + ')" title="Закрыть сделку">🔒</button>';
-        let plannedBtn = '<button class="h-btn h-btn-planned' + (isPlanned ? ' active' : '') + '" onclick="togglePlanned(' + realIdx + ')" title="Запланировано">📅</button>';
-        let doneBtn = '<button class="h-btn h-btn-done' + (isDone ? ' active' : '') + '" onclick="toggleDone(' + realIdx + ')" title="Готово">✅</button>';
+            ? `<button class="h-btn h-btn-open" onclick="toggleCloseDeal(${realIdx})" title="Открыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></button>`
+            : `<button class="h-btn h-btn-close" onclick="toggleCloseDeal(${realIdx})" title="Закрыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>`;
+        
+        let plannedBtn = `<button class="h-btn h-btn-planned${isPlanned ? ' active' : ''}" onclick="togglePlanned(${realIdx})" title="Запланировано"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
+        
+        let doneBtn = `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${realIdx})" title="Готово"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
+        
+        let editBtn = `<button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="Редактировать"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
+        
+        let deleteBtn = `<button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
         
         let statusBadge = '';
         if(isClosed){
             statusBadge = '<div class="status-badge closed-badge"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> СДЕЛКА ЗАКРЫТА' + (item.closedDate ? ' • ' + item.closedDate : '') + '</div>';
         } else if(isDone){
-            statusBadge = '<div class="status-badge done-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> ГОТОВО</div>';
+            statusBadge = '<div class="status-badge done-badge"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> ГОТОВО</div>';
         } else if(isPlanned){
-            statusBadge = '<div class="status-badge planned-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ЗАПЛАНИРОВАНО</div>';
+            statusBadge = '<div class="status-badge planned-badge"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ЗАПЛАНИРОВАНО</div>';
         }
         
         div.innerHTML = `
@@ -1320,14 +1281,14 @@ function renderHistory(){
                 <div class="h-time">${item.date}</div>
                 ${editedMark}
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
                 <div class="h-pay">${item.payment.toLocaleString('ru-RU')} ₽</div>
                 <div class="h-actions">
                     ${plannedBtn}
                     ${doneBtn}
                     ${closeBtn}
-                    <button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="Редактировать">✏️</button>
-                    <button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить">🗑️</button>
+                    ${editBtn}
+                    ${deleteBtn}
                 </div>
             </div>
             ${statusBadge}
@@ -1351,7 +1312,7 @@ function renderTypes(){
         div.innerHTML = `
             <div class="wt-head"><div class="wt-name">${t.name}</div><div class="wt-code">${t.prefix}</div></div>
             <div class="wt-info">Параметры: ${paramsText}</div>
-            <div class="wt-info">${t.mode === 'area' ? '📐 м²' : ' пог.м'} • ${t.rate} ${t.unit}</div>
+            <div class="wt-info">${t.mode === 'area' ? ' м²' : '📏 пог.м'} • ${t.rate} ${t.unit}</div>
             <div class="wt-formula">${t.formula}</div>
             <div style="display:flex;gap:10px;margin-top:12px">
                 <button class="btn btn-glass btn-sm" onclick="editType(${idx})" style="flex:1">✏️ Редактировать</button>
