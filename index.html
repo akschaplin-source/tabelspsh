@@ -641,7 +641,7 @@ select.fi{
 .param-row{display:grid;grid-template-columns:1fr 90px auto;gap:10px;margin-bottom:10px;align-items:end}
 .param-row input{font-size:13px;padding:11px 10px}
 
-.notification-modal,.time-modal,.date-modal{
+.notification-modal,.time-modal,.date-modal,.filter-modal{
     display:none;
     position:fixed;
     top:0;left:0;right:0;bottom:0;
@@ -654,9 +654,9 @@ select.fi{
     padding:20px;
     animation:fadeIn 0.3s ease;
 }
-.notification-modal.show,.time-modal.show,.date-modal.show{display:flex}
+.notification-modal.show,.time-modal.show,.date-modal.show,.filter-modal.show{display:flex}
 
-.notification-content,.time-content,.date-content{
+.notification-content,.time-content,.date-content,.filter-content{
     background:rgba(44,44,46,0.95);
     border:1px solid var(--glass-border);
     border-radius:var(--r-lg);
@@ -669,19 +669,19 @@ select.fi{
     overflow-y:auto;
 }
 
-.notification-header,.time-header,.date-header{
+.notification-header,.time-header,.date-header,.filter-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:24px;
 }
-.notification-title,.time-title,.date-title{
+.notification-title,.time-title,.date-title,.filter-title{
     font-size:20px;
     font-weight:700;
     color:var(--text-primary);
     letter-spacing:-0.5px;
 }
-.notification-close,.time-close,.date-close{
+.notification-close,.time-close,.date-close,.filter-close{
     width:32px;height:32px;
     border-radius:50%;
     background:rgba(255,255,255,0.1);
@@ -692,7 +692,7 @@ select.fi{
     transition:var(--transition);
     font-size:18px;
 }
-.notification-close:hover,.time-close:hover,.date-close:hover{background:rgba(255,255,255,0.15)}
+.notification-close:hover,.time-close:hover,.date-close:hover,.filter-close:hover{background:rgba(255,255,255,0.15)}
 
 .notification-item{
     background:var(--glass-bg);
@@ -721,9 +721,9 @@ select.fi{
 .notification-empty{text-align:center;padding:30px 20px;color:var(--text-muted)}
 .notification-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
 
-.time-input-group,.date-input-group{margin-bottom:18px}
-.time-input-label,.date-input-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
-.time-input,.date-input{
+.time-input-group,.date-input-group,.filter-input-group{margin-bottom:18px}
+.time-input-label,.date-input-label,.filter-input-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
+.time-input,.date-input,.filter-input{
     width:100%;
     padding:13px 16px;
     background:rgba(0,0,0,0.3);
@@ -733,13 +733,13 @@ select.fi{
     font-size:15px;
     transition:var(--transition);
 }
-.time-input:focus,.date-input:focus{
+.time-input:focus,.date-input:focus,.filter-input:focus{
     outline:none;
     border-color:var(--accent-gray-light);
     background:rgba(0,0,0,0.4);
     box-shadow:0 0 0 3px rgba(142,142,147,0.15);
 }
-.time-input::placeholder,.date-input::placeholder{color:var(--text-muted)}
+.time-input::placeholder,.date-input::placeholder,.filter-input::placeholder{color:var(--text-muted)}
 textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-family:inherit}
 
 .time-unit-toggle{display:flex;gap:8px;margin-bottom:16px}
@@ -778,7 +778,7 @@ textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-fam
 }
 .time-calc-details{font-size:12px;color:var(--text-muted);margin-top:6px}
 
-.time-submit-btn,.date-submit-btn{
+.time-submit-btn,.date-submit-btn,.filter-submit-btn{
     width:100%;
     padding:16px;
     background:linear-gradient(135deg,var(--accent-gray) 0%,var(--accent-gray-dark) 100%);
@@ -792,12 +792,77 @@ textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-fam
     margin-top:16px;
     letter-spacing:-0.2px;
 }
-.time-submit-btn:hover,.date-submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(142,142,147,0.4)}
-.time-submit-btn:active,.date-submit-btn:active{transform:scale(0.98)}
+.time-submit-btn:hover,.date-submit-btn:hover,.filter-submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(142,142,147,0.4)}
+.time-submit-btn:active,.date-submit-btn:active,.filter-submit-btn:active{transform:scale(0.98)}
 .time-submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 .date-submit-btn{background:linear-gradient(135deg,var(--accent-gray) 0%,var(--accent-gray-dark) 100%)}
 .date-submit-btn:hover{box-shadow:0 6px 20px rgba(142,142,147,0.4)}
-.date-hint{font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center}
+.filter-submit-btn{background:linear-gradient(135deg,var(--accent-gray) 0%,var(--accent-gray-dark) 100%)}
+.filter-submit-btn:hover{box-shadow:0 6px 20px rgba(142,142,147,0.4)}
+.date-hint,.filter-hint{font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center}
+
+.filter-section{
+    margin-bottom:20px;
+    padding-bottom:20px;
+    border-bottom:1px solid var(--glass-border);
+}
+.filter-section:last-child{
+    border-bottom:none;
+    margin-bottom:0;
+    padding-bottom:0;
+}
+.filter-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+.filter-clear-btn{
+    background:rgba(255,69,58,0.15);
+    color:#ff453a;
+    border:1px solid rgba(255,69,58,0.3);
+}
+.filter-clear-btn:hover{
+    background:rgba(255,69,58,0.25);
+}
+
+.history-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:10px;
+}
+.filter-btn{
+    background:rgba(142,142,147,0.15);
+    border:1px solid rgba(142,142,147,0.25);
+    color:var(--accent-gray-light);
+    padding:10px 16px;
+    border-radius:var(--r-sm);
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:var(--transition);
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+.filter-btn:hover{
+    background:rgba(142,142,147,0.25);
+    transform:translateY(-1px);
+}
+.filter-btn.active{
+    background:rgba(142,142,147,0.3);
+    border-color:var(--accent-gray-light);
+}
+.filter-count{
+    background:var(--accent-gray);
+    color:#000;
+    padding:2px 8px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+}
 
 @media(min-width:768px){
     body{max-width:520px;margin:0 auto;box-shadow:0 0 80px rgba(0,0,0,0.5)}
@@ -890,6 +955,84 @@ textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-fam
     </div>
 </div>
 
+<div class="filter-modal" id="filter-modal">
+    <div class="filter-content">
+        <div class="filter-header">
+            <div class="filter-title">Фильтр заказов</div>
+            <button class="filter-close" onclick="closeFilterModal()">✕</button>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-input-group">
+                <label class="filter-input-label">По дате</label>
+                <input type="date" id="filter-date" class="filter-input">
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-input-group">
+                <label class="filter-input-label">По номеру заказа</label>
+                <input type="text" id="filter-order" class="filter-input" placeholder="Например: 12345 или ВП">
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-input-group">
+                <label class="filter-input-label">По сумме (от - до)</label>
+                <div class="filter-row">
+                    <input type="number" id="filter-amount-min" class="filter-input" placeholder="От">
+                    <input type="number" id="filter-amount-max" class="filter-input" placeholder="До">
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-input-group">
+                <label class="filter-input-label">По типу работы</label>
+                <select id="filter-type" class="filter-input">
+                    <option value="">Все типы</option>
+                    <option value="code">По коду</option>
+                    <option value="time">По времени</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-input-group">
+                <label class="filter-input-label">По площади (м², от - до)</label>
+                <div class="filter-row">
+                    <input type="number" id="filter-area-min" class="filter-input" placeholder="От" step="0.01">
+                    <input type="number" id="filter-area-max" class="filter-input" placeholder="До" step="0.01">
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-input-group">
+                <label class="filter-input-label">По погонным метрам (от - до)</label>
+                <div class="filter-row">
+                    <input type="number" id="filter-linear-min" class="filter-input" placeholder="От" step="0.01">
+                    <input type="number" id="filter-linear-max" class="filter-input" placeholder="До" step="0.01">
+                </div>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-input-group">
+                <label class="filter-input-label">По префиксу</label>
+                <input type="text" id="filter-prefix" class="filter-input" placeholder="Например: ВП, НП, Н">
+            </div>
+        </div>
+        
+        <button class="btn filter-clear-btn" onclick="clearFilters()">
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            Сбросить фильтры
+        </button>
+        
+        <button class="filter-submit-btn" onclick="applyFilters()">Применить фильтры</button>
+    </div>
+</div>
+
 <div class="content">
 
 <div id="input" class="panel active">
@@ -953,9 +1096,16 @@ textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-fam
 </div>
 
 <div id="history" class="panel">
-    <div style="margin-bottom:20px">
-        <h1 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text-primary);letter-spacing:-0.5px">История</h1>
-        <p style="font-size:13px;color:var(--text-secondary)">Все выполненные работы</p>
+    <div class="history-header">
+        <div>
+            <h1 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text-primary);letter-spacing:-0.5px">История</h1>
+            <p style="font-size:13px;color:var(--text-secondary)">Все выполненные работы</p>
+        </div>
+        <button class="filter-btn" id="filter-btn" onclick="openFilterModal()">
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            Фильтр
+            <span class="filter-count" id="filter-count" style="display:none">0</span>
+        </button>
     </div>
     
     <div class="total-card">
@@ -1057,6 +1207,7 @@ let tempParams = [];
 let editingIndex = -1;
 let timeUnit = 'minutes';
 let editingDateIndex = -1;
+let activeFilters = {};
 
 let notifications = {
     lastBackupTime: parseInt(localStorage.getItem('lastBackupTime') || '0'),
@@ -1284,6 +1435,145 @@ document.getElementById('date-modal').addEventListener('click', function(e){
     if(e.target === this) closeDateModal();
 });
 
+function openFilterModal(){
+    document.getElementById('filter-modal').classList.add('show');
+    document.getElementById('filter-date').value = activeFilters.date || '';
+    document.getElementById('filter-order').value = activeFilters.order || '';
+    document.getElementById('filter-amount-min').value = activeFilters.amountMin || '';
+    document.getElementById('filter-amount-max').value = activeFilters.amountMax || '';
+    document.getElementById('filter-type').value = activeFilters.type || '';
+    document.getElementById('filter-area-min').value = activeFilters.areaMin || '';
+    document.getElementById('filter-area-max').value = activeFilters.areaMax || '';
+    document.getElementById('filter-linear-min').value = activeFilters.linearMin || '';
+    document.getElementById('filter-linear-max').value = activeFilters.linearMax || '';
+    document.getElementById('filter-prefix').value = activeFilters.prefix || '';
+}
+
+function closeFilterModal(){
+    document.getElementById('filter-modal').classList.remove('show');
+}
+
+function clearFilters(){
+    activeFilters = {};
+    document.getElementById('filter-date').value = '';
+    document.getElementById('filter-order').value = '';
+    document.getElementById('filter-amount-min').value = '';
+    document.getElementById('filter-amount-max').value = '';
+    document.getElementById('filter-type').value = '';
+    document.getElementById('filter-area-min').value = '';
+    document.getElementById('filter-area-max').value = '';
+    document.getElementById('filter-linear-min').value = '';
+    document.getElementById('filter-linear-max').value = '';
+    document.getElementById('filter-prefix').value = '';
+    document.getElementById('filter-count').style.display = 'none';
+    document.getElementById('filter-btn').classList.remove('active');
+    renderHistory();
+}
+
+function applyFilters(){
+    activeFilters = {};
+    
+    const date = document.getElementById('filter-date').value;
+    if(date) activeFilters.date = date;
+    
+    const order = document.getElementById('filter-order').value.trim();
+    if(order) activeFilters.order = order;
+    
+    const amountMin = document.getElementById('filter-amount-min').value;
+    if(amountMin) activeFilters.amountMin = parseFloat(amountMin);
+    
+    const amountMax = document.getElementById('filter-amount-max').value;
+    if(amountMax) activeFilters.amountMax = parseFloat(amountMax);
+    
+    const type = document.getElementById('filter-type').value;
+    if(type) activeFilters.type = type;
+    
+    const areaMin = document.getElementById('filter-area-min').value;
+    if(areaMin) activeFilters.areaMin = parseFloat(areaMin);
+    
+    const areaMax = document.getElementById('filter-area-max').value;
+    if(areaMax) activeFilters.areaMax = parseFloat(areaMax);
+    
+    const linearMin = document.getElementById('filter-linear-min').value;
+    if(linearMin) activeFilters.linearMin = parseFloat(linearMin);
+    
+    const linearMax = document.getElementById('filter-linear-max').value;
+    if(linearMax) activeFilters.linearMax = parseFloat(linearMax);
+    
+    const prefix = document.getElementById('filter-prefix').value.trim().toUpperCase();
+    if(prefix) activeFilters.prefix = prefix;
+    
+    const filterCount = Object.keys(activeFilters).length;
+    if(filterCount > 0){
+        document.getElementById('filter-count').textContent = filterCount;
+        document.getElementById('filter-count').style.display = 'inline-block';
+        document.getElementById('filter-btn').classList.add('active');
+    } else {
+        document.getElementById('filter-count').style.display = 'none';
+        document.getElementById('filter-btn').classList.remove('active');
+    }
+    
+    closeFilterModal();
+    renderHistory();
+}
+
+function filterHistory(items){
+    if(Object.keys(activeFilters).length === 0) return items;
+    
+    return items.filter(item => {
+        if(activeFilters.date){
+            const itemDate = item.date.split(', ')[0];
+            const filterDate = activeFilters.date.split('-').reverse().join('.');
+            if(itemDate !== filterDate) return false;
+        }
+        
+        if(activeFilters.order){
+            const searchTerm = activeFilters.order.toLowerCase();
+            const codeMatch = item.code && item.code.toLowerCase().includes(searchTerm);
+            const orderMatch = item.orderNumber && item.orderNumber.toString().includes(searchTerm);
+            if(!codeMatch && !orderMatch) return false;
+        }
+        
+        if(activeFilters.amountMin !== undefined || activeFilters.amountMax !== undefined){
+            const payment = item.payment || 0;
+            if(activeFilters.amountMin !== undefined && payment < activeFilters.amountMin) return false;
+            if(activeFilters.amountMax !== undefined && payment > activeFilters.amountMax) return false;
+        }
+        
+        if(activeFilters.type){
+            if(item.workType !== activeFilters.type) return false;
+        }
+        
+        if(activeFilters.areaMin !== undefined || activeFilters.areaMax !== undefined){
+            if(item.workType === 'code' && item.amount !== undefined){
+                if(activeFilters.areaMin !== undefined && item.amount < activeFilters.areaMin) return false;
+                if(activeFilters.areaMax !== undefined && item.amount > activeFilters.areaMax) return false;
+            } else {
+                return false;
+            }
+        }
+        
+        if(activeFilters.linearMin !== undefined || activeFilters.linearMax !== undefined){
+            if(item.workType === 'code' && item.amount !== undefined){
+                if(activeFilters.linearMin !== undefined && item.amount < activeFilters.linearMin) return false;
+                if(activeFilters.linearMax !== undefined && item.amount > activeFilters.linearMax) return false;
+            } else {
+                return false;
+            }
+        }
+        
+        if(activeFilters.prefix){
+            if(item.workType === 'code' && item.code){
+                if(!item.code.toUpperCase().startsWith(activeFilters.prefix)) return false;
+            } else {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 function showPanel(id){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -1498,11 +1788,19 @@ function renderStatusCounters(){
 
 function renderHistory(){
     let list = document.getElementById('history-list');
-    if(history.length === 0){list.innerHTML = '<div class="empty">Нет записей</div>';updateTotalDisplay();renderStatusCounters();return;}
+    let filteredHistory = filterHistory([...history]);
+    
+    if(filteredHistory.length === 0){
+        list.innerHTML = '<div class="empty">Нет записей' + (Object.keys(activeFilters).length > 0 ? ' по выбранным фильтрам' : '') + '</div>';
+        updateTotalDisplay();
+        renderStatusCounters();
+        return;
+    }
+    
     list.innerHTML = '';
-    let reversed = [...history].reverse();
+    let reversed = [...filteredHistory].reverse();
     reversed.forEach((item, idx) => {
-        let realIdx = history.length - 1 - idx;
+        const originalIdx = history.indexOf(item);
         let isClosed = item.closed === true;
         let isPlanned = item.planned === true;
         let isDone = item.done === true;
@@ -1537,18 +1835,18 @@ function renderHistory(){
         const canEdit = !isDone && !isClosed && !isTimeWork;
         
         let closeBtn = isClosed 
-            ? `<button class="h-btn h-btn-open" onclick="toggleCloseDeal(${realIdx})" title="Открыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></button>`
-            : `<button class="h-btn h-btn-close" onclick="toggleCloseDeal(${realIdx})" title="Закрыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>`;
+            ? `<button class="h-btn h-btn-open" onclick="toggleCloseDeal(${originalIdx})" title="Открыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></button>`
+            : `<button class="h-btn h-btn-close" onclick="toggleCloseDeal(${originalIdx})" title="Закрыть сделку"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>`;
         
-        let plannedBtn = isTimeWork ? '' : `<button class="h-btn h-btn-planned${isPlanned ? ' active' : ''}" onclick="togglePlanned(${realIdx})" title="Запланировано" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
+        let plannedBtn = isTimeWork ? '' : `<button class="h-btn h-btn-planned${isPlanned ? ' active' : ''}" onclick="togglePlanned(${originalIdx})" title="Запланировано" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
         
-        let doneBtn = isTimeWork ? '' : `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${realIdx})" title="${isDone ? 'Готово' : 'Отметить как готово'}" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
+        let doneBtn = isTimeWork ? '' : `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${originalIdx})" title="${isDone ? 'Готово' : 'Отметить как готово'}" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
         
-        let dateBtn = `<button class="h-btn h-btn-date" onclick="openDateModal(${realIdx})" title="Редактировать дату"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
+        let dateBtn = `<button class="h-btn h-btn-date" onclick="openDateModal(${originalIdx})" title="Редактировать дату"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
         
-        let editBtn = `<button class="h-btn h-btn-edit" onclick="startEdit(${realIdx})" title="${canEdit ? 'Редактировать' : 'Нельзя редактировать'}" ${!canEdit ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
+        let editBtn = `<button class="h-btn h-btn-edit" onclick="startEdit(${originalIdx})" title="${canEdit ? 'Редактировать' : 'Нельзя редактировать'}" ${!canEdit ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
         
-        let deleteBtn = `<button class="h-btn h-btn-delete" onclick="deleteItem(${realIdx})" title="Удалить"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
+        let deleteBtn = `<button class="h-btn h-btn-delete" onclick="deleteItem(${originalIdx})" title="Удалить"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
         
         let statusBadge = '';
         if(isClosed){
