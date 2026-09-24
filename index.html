@@ -27,10 +27,7 @@
     --prefix-n:rgba(220,180,100,0.25);
     --prefix-default:rgba(180,150,220,0.25);
 }
-html,body{
-    overscroll-behavior-y:none;
-    -webkit-text-size-adjust:100%;
-}
+html,body{overscroll-behavior-y:none;-webkit-text-size-adjust:100%}
 body{
     font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Roboto,sans-serif;
     background:#0a0a0f;
@@ -44,66 +41,18 @@ body{
     -webkit-font-smoothing:antialiased;
     touch-action:manipulation;
 }
-
-/* ===== ФОНОВЫЕ СЛОИ С ТЕКСТУРАМИ ===== */
-.bg-layer{
+body::before{
+    content:'';
     position:fixed;
     top:0;left:0;right:0;bottom:0;
-    z-index:-2;
-    opacity:0;
-    transition:opacity 0.3s ease;
+    background:radial-gradient(ellipse at top left,rgba(142,142,147,0.08) 0%,transparent 50%),
+               radial-gradient(ellipse at bottom right,rgba(142,142,147,0.06) 0%,transparent 50%);
+    z-index:-1;
 }
-.bg-layer.active{opacity:1}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bellRing{0%,100%{transform:rotate(0)}10%,30%{transform:rotate(-8deg)}20%,40%{transform:rotate(8deg)}50%{transform:rotate(0)}}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(142,142,147,0.4)}50%{box-shadow:0 0 0 6px rgba(142,142,147,0)}}
 
-/* Текстура металла/цеха для ВВОД */
-.bg-input{
-    background-color:#0d1117;
-    background-image:
-        linear-gradient(180deg,rgba(0,0,0,0.4) 0%,rgba(0,0,0,0.1) 100%),
-        repeating-linear-gradient(90deg,transparent 0px,transparent 3px,rgba(100,140,180,0.08) 3px,rgba(100,140,180,0.08) 4px),
-        repeating-linear-gradient(0deg,transparent 0px,transparent 8px,rgba(80,120,160,0.05) 8px,rgba(80,120,160,0.05) 9px),
-        radial-gradient(ellipse at 15% 25%,rgba(80,140,200,0.15) 0%,transparent 50%),
-        radial-gradient(ellipse at 85% 75%,rgba(60,120,180,0.1) 0%,transparent 45%);
-}
-
-/* Текстура дерева для ИСТОРИЯ */
-.bg-history{
-    background-color:#14100c;
-    background-image:
-        linear-gradient(180deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0.1) 100%),
-        repeating-linear-gradient(92deg,transparent 0px,transparent 2px,rgba(160,120,70,0.08) 2px,rgba(160,120,70,0.08) 3px),
-        repeating-linear-gradient(88deg,transparent 0px,transparent 5px,rgba(140,100,50,0.05) 5px,rgba(140,100,50,0.05) 6px),
-        repeating-linear-gradient(0deg,transparent 0px,transparent 40px,rgba(180,140,80,0.04) 40px,rgba(180,140,80,0.04) 41px),
-        radial-gradient(ellipse at 25% 35%,rgba(180,130,70,0.12) 0%,transparent 50%),
-        radial-gradient(ellipse at 75% 65%,rgba(160,110,50,0.08) 0%,transparent 45%);
-}
-
-/* Текстура бетона/цеха для ТИПЫ */
-.bg-types{
-    background-color:#0f1310;
-    background-image:
-        linear-gradient(180deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0.1) 100%),
-        radial-gradient(circle at 1px 1px,rgba(100,140,110,0.08) 1px,transparent 0),
-        radial-gradient(circle at 1px 1px,rgba(80,120,90,0.06) 1px,transparent 0),
-        repeating-linear-gradient(45deg,transparent 0px,transparent 20px,rgba(90,130,100,0.04) 20px,rgba(90,130,100,0.04) 21px),
-        radial-gradient(ellipse at 30% 40%,rgba(80,140,100,0.1) 0%,transparent 45%),
-        radial-gradient(ellipse at 70% 70%,rgba(60,120,80,0.08) 0%,transparent 40%);
-}
-.bg-types{background-size:100% 100%,100% 100%,8px 8px,100% 100%,100% 100%,100% 100%}
-
-/* Текстура чертежа/сетки для НАСТРОЙКИ */
-.bg-settings{
-    background-color:#12101a;
-    background-image:
-        linear-gradient(180deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0.1) 100%),
-        linear-gradient(rgba(140,110,200,0.06) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(140,110,200,0.06) 1px,transparent 1px),
-        radial-gradient(ellipse at 35% 45%,rgba(130,100,200,0.1) 0%,transparent 50%),
-        radial-gradient(ellipse at 65% 65%,rgba(110,80,180,0.08) 0%,transparent 40%);
-}
-.bg-settings{background-size:100% 100%,24px 24px,24px 24px,100% 100%,100% 100%}
-
-/* ===== ШАПКА ===== */
 .header{
     background:rgba(10,10,15,0.85);
     border-bottom:1px solid rgba(255,255,255,0.08);
@@ -112,27 +61,9 @@ body{
     top:0;
     z-index:100;
 }
-.header-content{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-.logo{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    font-size:18px;
-    font-weight:600;
-    color:var(--text-primary);
-    letter-spacing:-0.3px;
-}
-.logo svg{
-    width:20px;
-    height:20px;
-    stroke:var(--accent-gray-light);
-    stroke-width:2;
-    fill:none;
-}
+.header-content{display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px}
+.logo svg{width:20px;height:20px;stroke:var(--accent-gray-light);stroke-width:2;fill:none}
 .header-icons{display:flex;gap:8px;align-items:center}
 .icon-btn{
     width:36px;height:36px;
@@ -147,7 +78,7 @@ body{
 .icon-btn:active{background:rgba(255,255,255,0.15)}
 .icon-btn svg{width:17px;height:17px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .icon-btn.bell-green{color:#5dd878;background:rgba(52,199,89,0.15);border-color:rgba(52,199,89,0.3)}
-.icon-btn.bell-red{color:#ff6b6b;border-color:rgba(255,69,58,0.3);background:rgba(255,69,58,0.15)}
+.icon-btn.bell-red{color:#ff6b6b;border-color:rgba(255,69,58,0.3);background:rgba(255,69,58,0.15);animation:bellRing 2s ease-in-out infinite}
 .notification-badge{position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--accent-gray-light);border:2px solid #0a0a0f}
 .avatar{
     width:36px;height:36px;
@@ -157,12 +88,10 @@ body{
     display:flex;align-items:center;justify-content:center;
     font-weight:600;font-size:12px;color:#fff;
 }
-
 .content{padding:12px 10px;position:relative;z-index:1}
 .panel{display:none}
-.panel.active{display:block}
+.panel.active{display:block;animation:fadeIn 0.2s ease}
 
-/* ===== КАРТОЧКИ БЕЗ BLUR ===== */
 .glass-card{
     background:var(--glass-bg);
     border:1px solid var(--glass-border);
@@ -170,16 +99,7 @@ body{
     padding:14px;
     margin-bottom:10px;
 }
-
-.card-title{
-    font-size:15px;
-    font-weight:600;
-    margin-bottom:12px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    letter-spacing:-0.2px;
-}
+.card-title{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;letter-spacing:-0.2px}
 .card-title svg{width:17px;height:17px;stroke:var(--accent-gray-light);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
 
 .code-input{
@@ -196,15 +116,10 @@ body{
     text-align:center;
     margin-bottom:10px;
 }
-.code-input:focus{
-    outline:none;
-    border-color:rgba(255,255,255,0.2);
-    background:rgba(0,0,0,0.4);
-}
+.code-input:focus{outline:none;border-color:rgba(255,255,255,0.2);background:rgba(0,0,0,0.4)}
 .code-input::placeholder{color:var(--text-muted);font-size:13px;letter-spacing:0;font-family:inherit}
 .code-input.editing{border-color:rgba(255,255,255,0.2);background:rgba(0,0,0,0.4)}
 
-/* ===== КНОПКИ ===== */
 .btn{
     width:100%;
     padding:12px 14px;
@@ -224,46 +139,16 @@ body{
 .btn:active{opacity:0.85}
 .btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
 
-.btn-primary{
-    background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);
-    color:#fff;
-    border:1px solid rgba(255,255,255,0.1);
-}
-.btn-glass{
-    background:rgba(255,255,255,0.08);
-    color:var(--text-primary);
-    border:1px solid rgba(255,255,255,0.1);
-}
-.btn-success{
-    background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);
-    color:#fff;
-    border:1px solid rgba(255,255,255,0.1);
-}
-.btn-danger{
-    background:linear-gradient(135deg,rgba(255,69,58,0.3) 0%,rgba(255,59,48,0.3) 100%);
-    color:#fff;
-    border:1px solid rgba(255,69,58,0.3);
-}
-.btn-warning{
-    background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);
-    color:#fff;
-    border:1px solid rgba(255,255,255,0.1);
-}
-.btn-time{
-    background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);
-    color:#fff;
-    border:1px solid rgba(255,255,255,0.1);
-}
+.btn-primary{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;border:1px solid rgba(255,255,255,0.1)}
+.btn-glass{background:rgba(255,255,255,0.08);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1)}
+.btn-success{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;border:1px solid rgba(255,255,255,0.1)}
+.btn-danger{background:linear-gradient(135deg,rgba(255,69,58,0.3) 0%,rgba(255,59,48,0.3) 100%);color:#fff;border:1px solid rgba(255,69,58,0.3)}
+.btn-warning{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;border:1px solid rgba(255,255,255,0.1)}
+.btn-time{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;border:1px solid rgba(255,255,255,0.1)}
+.btn-print{background:linear-gradient(135deg,rgba(10,132,255,0.35) 0%,rgba(90,200,250,0.35) 100%);color:#fff;border:1px solid rgba(10,132,255,0.3)}
 .btn-sm{padding:8px 11px;font-size:12px;width:auto;border-radius:8px;min-height:auto}
 
-.result{
-    background:rgba(142,142,147,0.1);
-    border:1px solid rgba(142,142,147,0.15);
-    border-radius:var(--r-lg);
-    padding:14px;
-    margin:10px 0;
-    display:none;
-}
+.result{background:rgba(142,142,147,0.1);border:1px solid rgba(142,142,147,0.15);border-radius:var(--r-lg);padding:14px;margin:10px 0;display:none}
 .result.show{display:block}
 .result h3{font-size:14px;margin-bottom:10px;color:var(--accent-gray-light);font-weight:600}
 .result p{font-size:13px;margin:6px 0;color:rgba(255,255,255,0.9);line-height:1.5}
@@ -275,65 +160,19 @@ body{
 .size-value{font-weight:600;color:var(--accent-gray-light);white-space:nowrap}
 .size-pay{color:var(--accent-gray-light);font-weight:600}
 
-.error{
-    background:rgba(255,69,58,0.1);
-    border:1px solid rgba(255,69,58,0.2);
-    border-radius:var(--r);
-    padding:10px 12px;
-    margin:10px 0;
-    display:none;
-    color:#ff6b6b;
-    font-size:13px;
-    line-height:1.5;
-}
+.error{background:rgba(255,69,58,0.1);border:1px solid rgba(255,69,58,0.2);border-radius:var(--r);padding:10px 12px;margin:10px 0;display:none;color:#ff6b6b;font-size:13px;line-height:1.5}
 .error.show{display:block}
 
-.total-card{
-    background:rgba(142,142,147,0.12);
-    border:1px solid rgba(142,142,147,0.15);
-    border-radius:var(--r-lg);
-    padding:18px 14px;
-    margin-bottom:12px;
-    text-align:right;
-}
+.total-card{background:rgba(142,142,147,0.12);border:1px solid rgba(142,142,147,0.15);border-radius:var(--r-lg);padding:18px 14px;margin-bottom:12px;text-align:right}
 .total-lbl{font-size:11px;color:var(--text-secondary);margin-bottom:5px;font-weight:500}
-.total-amt{
-    font-size:30px;
-    font-weight:700;
-    background:linear-gradient(135deg,var(--accent-gray-light) 0%,#fff 100%);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-clip:text;
-    letter-spacing:-0.6px;
-}
+.total-amt{font-size:30px;font-weight:700;background:linear-gradient(135deg,var(--accent-gray-light) 0%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.6px}
 
-.total-inline{
-    background:rgba(142,142,147,0.1);
-    border:1px solid rgba(142,142,147,0.12);
-    border-radius:var(--r-lg);
-    padding:16px;
-    margin-bottom:12px;
-    text-align:center;
-}
+.total-inline{background:rgba(142,142,147,0.1);border:1px solid rgba(142,142,147,0.12);border-radius:var(--r-lg);padding:16px;margin-bottom:12px;text-align:center}
 .total-inline .label{font-size:12px;color:var(--text-secondary);margin-bottom:7px;font-weight:500}
-.total-inline .amount{
-    font-size:26px;
-    font-weight:700;
-    background:linear-gradient(135deg,var(--accent-gray-light) 0%,#fff 100%);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-clip:text;
-    letter-spacing:-0.6px;
-}
+.total-inline .amount{font-size:26px;font-weight:700;background:linear-gradient(135deg,var(--accent-gray-light) 0%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.6px}
 
 .status-counters{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px}
-.status-counter{
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    border-radius:8px;
-    padding:7px 3px;
-    text-align:center;
-}
+.status-counter{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;padding:7px 3px;text-align:center}
 .status-counter .sc-value{font-size:15px;font-weight:700;margin-bottom:1px}
 .status-counter .sc-label{font-size:8px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px}
 .status-counter.sc-earned{border-color:rgba(52,199,89,0.2);background:rgba(52,199,89,0.1)}
@@ -344,30 +183,14 @@ body{
 .status-counter.sc-planned .sc-value{color:#ffd60a}
 
 .h-list{display:flex;flex-direction:column;gap:7px}
-.h-item{
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    border-radius:var(--r);
-    padding:10px;
-    position:relative;
-    overflow:hidden;
-    border-left:3px solid transparent;
-}
-
+.h-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r);padding:10px;position:relative;overflow:hidden;border-left:3px solid transparent}
 .h-item.planned{background:rgba(255,214,10,0.08);border-color:rgba(255,214,10,0.15);border-left-color:#ffd60a}
 .h-item.done{background:rgba(52,199,89,0.08);border-color:rgba(52,199,89,0.15);border-left-color:#34c759}
 .h-item.closed{background:rgba(128,128,128,0.08);border-color:rgba(128,128,128,0.12);border-left-color:#888;opacity:0.65}
 .h-item.time-work{background:rgba(175,130,255,0.08);border-color:rgba(175,130,255,0.15);border-left-color:#af82ff}
 
-.h-item-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:8px;
-    margin-bottom:6px;
-}
+.h-item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
 .h-item-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-
 .h-order-number{
     font-family:'SF Mono',monospace;
     font-size:15px;
@@ -384,7 +207,6 @@ body{
     max-width:100%;
     display:inline-block;
 }
-
 .h-type{font-size:11px;color:var(--text-secondary);font-weight:500}
 .h-info-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
 .h-sizes{font-size:10px;color:var(--text-muted);line-height:1.3}
@@ -395,14 +217,7 @@ body{
 .h-pay{font-size:14px;font-weight:700;color:#5dd878;text-align:right;white-space:nowrap}
 .h-pay.not-counted{color:var(--text-muted);font-size:12px;font-weight:600}
 
-.h-actions{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:4px;
-    margin-top:7px;
-    padding-top:7px;
-    border-top:1px solid rgba(255,255,255,0.05);
-}
+.h-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,0.05)}
 .h-btn{
     aspect-ratio:1;
     min-height:36px;
@@ -428,138 +243,42 @@ body{
 .h-btn-date{background:rgba(142,142,147,0.12);border-color:rgba(142,142,147,0.2);color:var(--accent-gray-light)}
 .h-btn-comment{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.1);color:var(--accent-gray-light)}
 
-.status-badge{
-    position:absolute;
-    bottom:0;left:0;right:0;
-    padding:3px 8px;
-    font-size:8px;
-    text-align:center;
-    font-weight:600;
-    letter-spacing:0.4px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:3px;
-    text-transform:uppercase;
-}
+.status-badge{position:absolute;bottom:0;left:0;right:0;padding:3px 8px;font-size:8px;text-align:center;font-weight:600;letter-spacing:0.4px;display:flex;align-items:center;justify-content:center;gap:3px;text-transform:uppercase}
 .status-badge.planned-badge{background:rgba(255,214,10,0.15);border-top:1px solid rgba(255,214,10,0.2);color:#ffd60a}
 .status-badge.done-badge{background:rgba(52,199,89,0.15);border-top:1px solid rgba(52,199,89,0.2);color:#5dd878}
 .status-badge.closed-badge{background:rgba(128,128,128,0.18);border-top:1px solid rgba(128,128,128,0.2);color:rgba(255,255,255,0.6)}
 .status-badge.time-badge{background:rgba(175,130,255,0.15);border-top:1px solid rgba(175,130,255,0.2);color:#af82ff}
 
-.wt-card{
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    border-radius:var(--r-lg);
-    padding:12px;
-    margin-bottom:8px;
-    border-left:3px solid var(--accent-gray);
-}
+.wt-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:12px;margin-bottom:8px;border-left:3px solid var(--accent-gray)}
 .wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
 .wt-name{font-size:13px;font-weight:600;min-width:0;flex:1}
-.wt-code{
-    background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);
-    color:#fff;
-    padding:3px 9px;
-    border-radius:7px;
-    font-family:'SF Mono',monospace;
-    font-weight:700;
-    font-size:11px;
-    flex-shrink:0;
-    border:1px solid rgba(255,255,255,0.1);
-}
+.wt-code{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;padding:3px 9px;border-radius:7px;font-family:'SF Mono',monospace;font-weight:700;font-size:11px;flex-shrink:0;border:1px solid rgba(255,255,255,0.1)}
 .wt-info{font-size:11px;color:var(--text-secondary);margin:3px 0;line-height:1.4}
-.wt-formula{
-    background:rgba(0,0,0,0.3);
-    padding:7px 9px;
-    border-radius:7px;
-    font-family:'SF Mono',monospace;
-    font-size:10px;
-    margin:8px 0;
-    word-break:break-all;
-    color:var(--accent-gray-light);
-    border:1px solid rgba(255,255,255,0.05);
-}
+.wt-formula{background:rgba(0,0,0,0.3);padding:7px 9px;border-radius:7px;font-family:'SF Mono',monospace;font-size:10px;margin:8px 0;word-break:break-all;color:var(--accent-gray-light);border:1px solid rgba(255,255,255,0.05)}
 
 .types-accordion{margin-top:8px}
-.accordion-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 13px;
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    border-radius:var(--r);
-    cursor:pointer;
-    user-select:none;
-}
+.accordion-header{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r);cursor:pointer;user-select:none}
 .accordion-header:active{background:var(--glass-bg-hover)}
 .accordion-header.open{border-radius:var(--r) var(--r) 0 0;border-color:rgba(142,142,147,0.2)}
 .accordion-header .acc-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
 .accordion-header .acc-title svg{width:15px;height:15px;stroke:var(--accent-gray-light);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
-.accordion-header .acc-arrow{font-size:13px;color:var(--accent-gray-light)}
+.accordion-header .acc-arrow{font-size:13px;color:var(--accent-gray-light);transition:transform 0.2s}
 .accordion-header.open .acc-arrow{transform:rotate(180deg)}
-.accordion-body{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height 0.3s ease;
-    background:rgba(0,0,0,0.25);
-    border:1px solid var(--glass-border);
-    border-top:none;
-    border-radius:0 0 var(--r) var(--r);
-}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease;background:rgba(0,0,0,0.25);border:1px solid var(--glass-border);border-top:none;border-radius:0 0 var(--r) var(--r)}
 .accordion-body.open{max-height:3000px;padding:10px}
 
-.type-accordion-item{
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    border-radius:var(--r);
-    padding:10px;
-    margin-bottom:7px;
-    border-left:3px solid var(--accent-gray);
-}
+.type-accordion-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r);padding:10px;margin-bottom:7px;border-left:3px solid var(--accent-gray)}
 .type-accordion-item:last-child{margin-bottom:0}
 .type-acc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;gap:7px}
 .type-acc-name{font-size:12px;font-weight:600;min-width:0;flex:1}
-.type-acc-prefix{
-    background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);
-    color:#fff;
-    padding:2px 8px;
-    border-radius:7px;
-    font-family:'SF Mono',monospace;
-    font-weight:700;
-    font-size:11px;
-    flex-shrink:0;
-    border:1px solid rgba(255,255,255,0.1);
-}
+.type-acc-prefix{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;padding:2px 8px;border-radius:7px;font-family:'SF Mono',monospace;font-weight:700;font-size:11px;flex-shrink:0;border:1px solid rgba(255,255,255,0.1)}
 .type-acc-detail{font-size:10px;color:var(--text-secondary);margin:2px 0;line-height:1.4}
 .type-acc-detail b{color:var(--text-primary)}
-.type-acc-formula{
-    background:rgba(0,0,0,0.3);
-    padding:7px 9px;
-    border-radius:7px;
-    font-family:'SF Mono',monospace;
-    font-size:10px;
-    margin:7px 0;
-    word-break:break-all;
-    color:var(--accent-gray-light);
-    border:1px solid rgba(255,255,255,0.05);
-}
-.type-acc-example{
-    background:rgba(142,142,147,0.08);
-    border:1px dashed rgba(142,142,147,0.15);
-    border-radius:7px;
-    padding:7px 9px;
-    margin-top:7px;
-    font-family:'SF Mono',monospace;
-    font-size:10px;
-    color:var(--accent-gray-light);
-    word-break:break-all;
-}
+.type-acc-formula{background:rgba(0,0,0,0.3);padding:7px 9px;border-radius:7px;font-family:'SF Mono',monospace;font-size:10px;margin:7px 0;word-break:break-all;color:var(--accent-gray-light);border:1px solid rgba(255,255,255,0.05)}
+.type-acc-example{background:rgba(142,142,147,0.08);border:1px dashed rgba(142,142,147,0.15);border-radius:7px;padding:7px 9px;margin-top:7px;font-family:'SF Mono',monospace;font-size:10px;color:var(--accent-gray-light);word-break:break-all}
 .type-acc-example-label{font-family:inherit;font-size:9px;color:var(--text-secondary);margin-bottom:3px;font-weight:600}
 .empty-types-msg{text-align:center;padding:18px;color:var(--text-secondary);font-size:12px}
 
-/* ===== НАВИГАЦИЯ ===== */
 .bottom-nav{
     position:fixed;
     bottom:0;left:0;right:0;
@@ -570,22 +289,7 @@ body{
     padding:7px 7px calc(7px + env(safe-area-inset-bottom));
     z-index:100;
 }
-.nav-item{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:6px 3px;
-    color:var(--text-secondary);
-    font-size:9px;
-    cursor:pointer;
-    border:none;
-    background:none;
-    border-radius:8px;
-    margin:0 2px;
-    min-height:48px;
-    justify-content:center;
-}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 3px;color:var(--text-secondary);font-size:9px;cursor:pointer;border:none;background:none;border-radius:8px;margin:0 2px;min-height:48px;justify-content:center}
 .nav-item:active{background:rgba(255,255,255,0.06)}
 .nav-item.active{color:var(--accent-gray-light);background:rgba(142,142,147,0.12)}
 .nav-icon{width:20px;height:20px;margin-bottom:2px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
@@ -595,37 +299,15 @@ body{
 
 .fg{margin-bottom:12px}
 .fl{display:block;font-size:11px;font-weight:600;margin-bottom:5px;color:var(--text-secondary)}
-.fi{
-    width:100%;
-    padding:11px 13px;
-    background:rgba(0,0,0,0.3);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:var(--r-sm);
-    color:var(--text-primary);
-    font-size:14px;
-    font-family:inherit;
-}
-.fi:focus{
-    outline:none;
-    border-color:rgba(255,255,255,0.2);
-    background:rgba(0,0,0,0.4);
-}
+.fi{width:100%;padding:11px 13px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-sm);color:var(--text-primary);font-size:14px;font-family:inherit}
+.fi:focus{outline:none;border-color:rgba(255,255,255,0.2);background:rgba(0,0,0,0.4)}
 .fi::placeholder{color:var(--text-muted)}
 textarea.fi{min-height:65px;resize:vertical;font-family:'SF Mono',monospace;font-size:13px}
-select.fi{
-    cursor:pointer;
-    appearance:none;
-    -webkit-appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;
-    background-position:right 11px center;
-    padding-right:32px;
-}
+select.fi{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px}
 .param-row{display:grid;grid-template-columns:1fr 70px auto;gap:6px;margin-bottom:6px;align-items:end}
 .param-row input{font-size:12px;padding:9px 7px}
 
-/* ===== МОДАЛЬНЫЕ ОКНА ===== */
-.notification-modal,.time-modal,.date-modal,.filter-modal,.comment-modal{
+.notification-modal,.time-modal,.date-modal,.filter-modal,.comment-modal,.print-modal{
     display:none;
     position:fixed;
     top:0;left:0;right:0;bottom:0;
@@ -635,9 +317,9 @@ select.fi{
     justify-content:center;
     padding:0;
 }
-.notification-modal.show,.time-modal.show,.date-modal.show,.filter-modal.show,.comment-modal.show{display:flex}
+.notification-modal.show,.time-modal.show,.date-modal.show,.filter-modal.show,.comment-modal.show,.print-modal.show{display:flex}
 
-.notification-content,.time-content,.date-content,.filter-content,.comment-content{
+.notification-content,.time-content,.date-content,.filter-content,.comment-content,.print-content{
     background:rgba(20,20,28,0.96);
     border:1px solid rgba(255,255,255,0.1);
     border-bottom:none;
@@ -648,19 +330,19 @@ select.fi{
     overflow-y:auto;
 }
 
-.notification-header,.time-header,.date-header,.filter-header,.comment-header{
+.notification-header,.time-header,.date-header,.filter-header,.comment-header,.print-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:16px;
 }
-.notification-title,.time-title,.date-title,.filter-title,.comment-title{
+.notification-title,.time-title,.date-title,.filter-title,.comment-title,.print-title{
     font-size:17px;
     font-weight:700;
     color:var(--text-primary);
     letter-spacing:-0.3px;
 }
-.notification-close,.time-close,.date-close,.filter-close,.comment-close{
+.notification-close,.time-close,.date-close,.filter-close,.comment-close,.print-close{
     width:30px;height:30px;
     border-radius:50%;
     background:rgba(255,255,255,0.08);
@@ -670,26 +352,11 @@ select.fi{
     display:flex;align-items:center;justify-content:center;
     font-size:15px;
 }
-.notification-close:active,.time-close:active,.date-close:active,.filter-close:active,.comment-close:active{background:rgba(255,255,255,0.15)}
+.notification-close:active,.time-close:active,.date-close:active,.filter-close:active,.comment-close:active,.print-close:active{background:rgba(255,255,255,0.15)}
 
-.notification-item{
-    background:var(--glass-bg);
-    border:1px solid var(--glass-border);
-    border-radius:var(--r);
-    padding:12px;
-    margin-bottom:8px;
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-}
+.notification-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r);padding:12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
 .notification-item:last-child{margin-bottom:0}
-.notification-icon{
-    width:38px;height:38px;
-    border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-    font-size:18px;
-}
+.notification-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
 .notification-icon.success{background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.25)}
 .notification-icon.warning{background:rgba(255,69,58,0.15);border:1px solid rgba(255,69,58,0.25)}
 .notification-text{flex:1;min-width:0}
@@ -698,9 +365,9 @@ select.fi{
 .notification-empty{text-align:center;padding:22px 14px;color:var(--text-muted)}
 .notification-empty-icon{font-size:36px;margin-bottom:8px;opacity:0.5}
 
-.time-input-group,.date-input-group,.filter-input-group,.comment-input-group{margin-bottom:12px}
-.time-input-label,.date-input-label,.filter-input-label,.comment-input-label{display:block;font-size:11px;font-weight:600;margin-bottom:5px;color:var(--text-secondary)}
-.time-input,.date-input,.filter-input,.comment-input{
+.time-input-group,.date-input-group,.filter-input-group,.comment-input-group,.print-input-group{margin-bottom:12px}
+.time-input-label,.date-input-label,.filter-input-label,.comment-input-label,.print-input-label{display:block;font-size:11px;font-weight:600;margin-bottom:5px;color:var(--text-secondary)}
+.time-input,.date-input,.filter-input,.comment-input,.print-input{
     width:100%;
     padding:11px 13px;
     background:rgba(0,0,0,0.3);
@@ -710,51 +377,21 @@ select.fi{
     font-size:14px;
     font-family:inherit;
 }
-.time-input:focus,.date-input:focus,.filter-input:focus,.comment-input:focus{
-    outline:none;
-    border-color:rgba(255,255,255,0.2);
-    background:rgba(0,0,0,0.4);
-}
-.time-input::placeholder,.date-input::placeholder,.filter-input::placeholder,.comment-input::placeholder{color:var(--text-muted)}
+.time-input:focus,.date-input:focus,.filter-input:focus,.comment-input:focus,.print-input:focus{outline:none;border-color:rgba(255,255,255,0.2);background:rgba(0,0,0,0.4)}
+.time-input::placeholder,.date-input::placeholder,.filter-input::placeholder,.comment-input::placeholder,.print-input::placeholder{color:var(--text-muted)}
 textarea.time-input,textarea.date-input,textarea.comment-input{min-height:70px;resize:vertical;font-family:inherit}
 
 .time-unit-toggle{display:flex;gap:5px;margin-bottom:10px}
-.time-unit-btn{
-    flex:1;
-    padding:10px;
-    background:rgba(255,255,255,0.05);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:8px;
-    color:var(--text-secondary);
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-    text-align:center;
-    min-height:40px;
-}
+.time-unit-btn{flex:1;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;text-align:center;min-height:40px}
 .time-unit-btn:active{background:rgba(255,255,255,0.1)}
 .time-unit-btn.active{background:rgba(142,142,147,0.18);border-color:rgba(142,142,147,0.3);color:var(--accent-gray-light)}
 
-.time-calc-result{
-    background:rgba(142,142,147,0.1);
-    border:1px solid rgba(142,142,147,0.15);
-    border-radius:9px;
-    padding:12px;
-    margin:12px 0;
-    text-align:center;
-}
+.time-calc-result{background:rgba(142,142,147,0.1);border:1px solid rgba(142,142,147,0.15);border-radius:9px;padding:12px;margin:12px 0;text-align:center}
 .time-calc-label{font-size:10px;color:var(--text-secondary);margin-bottom:3px}
-.time-calc-value{
-    font-size:22px;
-    font-weight:700;
-    background:linear-gradient(135deg,var(--accent-gray-light) 0%,#fff 100%);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    letter-spacing:-0.4px;
-}
+.time-calc-value{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--accent-gray-light) 0%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.4px}
 .time-calc-details{font-size:10px;color:var(--text-muted);margin-top:3px}
 
-.time-submit-btn,.date-submit-btn,.filter-submit-btn,.comment-submit-btn{
+.time-submit-btn,.date-submit-btn,.filter-submit-btn,.comment-submit-btn,.print-submit-btn{
     width:100%;
     padding:13px;
     background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);
@@ -768,63 +405,119 @@ textarea.time-input,textarea.date-input,textarea.comment-input{min-height:70px;r
     letter-spacing:-0.1px;
     min-height:46px;
 }
-.time-submit-btn:active,.date-submit-btn:active,.filter-submit-btn:active,.comment-submit-btn:active{opacity:0.85}
+.time-submit-btn:active,.date-submit-btn:active,.filter-submit-btn:active,.comment-submit-btn:active,.print-submit-btn:active{opacity:0.85}
 .time-submit-btn:disabled{opacity:0.4}
 .date-hint,.filter-hint,.comment-hint{font-size:10px;color:var(--text-muted);margin-top:5px;text-align:center}
 
-.filter-section{
-    margin-bottom:14px;
-    padding-bottom:14px;
-    border-bottom:1px solid var(--glass-border);
-}
-.filter-section:last-child{
-    border-bottom:none;
-    margin-bottom:0;
-    padding-bottom:0;
-}
-.filter-clear-btn{
-    background:rgba(255,69,58,0.18);
-    color:#ff6b6b;
-    border:1px solid rgba(255,69,58,0.25);
-}
+.filter-section{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--glass-border)}
+.filter-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.filter-clear-btn{background:rgba(255,69,58,0.18);color:#ff6b6b;border:1px solid rgba(255,69,58,0.25)}
 
-.history-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:12px;
-    gap:8px;
-}
+.history-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
 .history-header h1{font-size:20px !important}
 .history-header p{font-size:10px !important}
-.filter-btn{
-    background:rgba(142,142,147,0.15);
-    border:1px solid rgba(142,142,147,0.2);
-    color:var(--accent-gray-light);
-    padding:8px 11px;
-    border-radius:var(--r-sm);
-    font-size:12px;
-    font-weight:600;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    gap:5px;
-    white-space:nowrap;
-    min-height:38px;
-}
+.filter-btn{background:rgba(142,142,147,0.15);border:1px solid rgba(142,142,147,0.2);color:var(--accent-gray-light);padding:8px 11px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;min-height:38px}
 .filter-btn:active{background:rgba(142,142,147,0.25)}
 .filter-btn.active{background:rgba(142,142,147,0.25);border-color:rgba(142,142,147,0.3)}
-.filter-count{
-    background:var(--accent-gray);
-    color:#000;
-    padding:1px 6px;
-    border-radius:8px;
-    font-size:10px;
-    font-weight:700;
-}
+.filter-count{background:var(--accent-gray);color:#000;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:700}
 
 .panel-title{font-size:20px !important;font-weight:700 !important;margin-bottom:2px !important;color:var(--text-primary) !important;letter-spacing:-0.3px !important}
 .panel-subtitle{font-size:10px !important;color:var(--text-secondary) !important;margin-bottom:12px !important}
+
+/* ===== Стили для листа печати ===== */
+.print-preview{
+    background:#fff;
+    color:#000;
+    padding:20px;
+    border-radius:8px;
+    margin:10px 0;
+    max-height:60vh;
+    overflow-y:auto;
+    font-family:'SF Mono',monospace;
+    font-size:11px;
+}
+.print-preview h2{
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:8px;
+    text-align:center;
+    border-bottom:2px solid #000;
+    padding-bottom:6px;
+}
+.print-preview h3{
+    font-size:13px;
+    font-weight:600;
+    margin:10px 0 6px 0;
+    color:#333;
+}
+.print-table{
+    width:100%;
+    border-collapse:collapse;
+    margin:8px 0;
+    font-size:10px;
+}
+.print-table th,.print-table td{
+    border:1px solid #ccc;
+    padding:4px 6px;
+    text-align:left;
+}
+.print-table th{
+    background:#f0f0f0;
+    font-weight:600;
+    font-size:9px;
+}
+.print-totals{
+    margin-top:12px;
+    padding:10px;
+    background:#f5f5f5;
+    border:1px solid #ddd;
+    border-radius:6px;
+}
+.print-totals-row{
+    display:flex;
+    justify-content:space-between;
+    padding:3px 0;
+    font-size:11px;
+}
+.print-totals-row.total{
+    font-weight:700;
+    font-size:13px;
+    border-top:2px solid #000;
+    margin-top:6px;
+    padding-top:6px;
+}
+.print-date-info{
+    text-align:right;
+    font-size:9px;
+    color:#666;
+    margin-bottom:8px;
+}
+.print-empty{text-align:center;padding:30px;color:#999;font-size:12px}
+
+.print-options{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+    flex-wrap:wrap;
+}
+.print-option{
+    flex:1;
+    min-width:120px;
+    padding:8px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:8px;
+    font-size:11px;
+    color:var(--text-secondary);
+    cursor:pointer;
+    text-align:center;
+}
+.print-option.active{
+    background:rgba(10,132,255,0.15);
+    border-color:rgba(10,132,255,0.3);
+    color:#5ac8fa;
+}
+.print-option:active{opacity:0.7}
 
 @media(min-width:500px){
     .content{padding:14px}
@@ -832,17 +525,28 @@ textarea.time-input,textarea.date-input,textarea.comment-input{min-height:70px;r
     .h-order-number{font-size:17px}
 }
 
+/* ===== СТИЛИ ДЛЯ ПЕЧАТИ ===== */
+@media print{
+    body *{visibility:hidden}
+    #print-area,#print-area *{visibility:visible}
+    #print-area{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        background:#fff;
+        color:#000;
+        padding:20px;
+        font-family:'SF Mono',monospace;
+    }
+    .no-print{display:none !important}
+}
+
 ::-webkit-scrollbar{width:0;height:0}
 input,select,textarea,button{font-family:inherit}
 </style>
 </head>
 <body>
-
-<!-- Фоновые слои -->
-<div class="bg-layer bg-input active" id="bg-input"></div>
-<div class="bg-layer bg-history" id="bg-history"></div>
-<div class="bg-layer bg-types" id="bg-types"></div>
-<div class="bg-layer bg-settings" id="bg-settings"></div>
 
 <header class="header">
     <div class="header-content">
@@ -866,7 +570,7 @@ input,select,textarea,button{font-family:inherit}
     <div class="notification-content">
         <div class="notification-header">
             <div class="notification-title">Уведомления</div>
-            <button class="notification-close" onclick="closeNotifications()"></button>
+            <button class="notification-close" onclick="closeNotifications()">✕</button>
         </div>
         <div id="notification-list"></div>
     </div>
@@ -945,21 +649,18 @@ input,select,textarea,button{font-family:inherit}
             <div class="filter-title">Фильтр и сортировка</div>
             <button class="filter-close" onclick="closeFilterModal()">✕</button>
         </div>
-        
         <div class="filter-section">
             <div class="filter-input-group">
                 <label class="filter-input-label">По дате</label>
                 <input type="date" id="filter-date" class="filter-input">
             </div>
         </div>
-        
         <div class="filter-section">
             <div class="filter-input-group">
                 <label class="filter-input-label">По номеру заказа</label>
                 <input type="text" id="filter-order" class="filter-input" placeholder="Например: 12345 или ВП">
             </div>
         </div>
-        
         <div class="filter-section">
             <div class="filter-input-group">
                 <label class="filter-input-label">Сортировка по сумме</label>
@@ -970,7 +671,6 @@ input,select,textarea,button{font-family:inherit}
                 </select>
             </div>
         </div>
-        
         <div class="filter-section">
             <div class="filter-input-group">
                 <label class="filter-input-label">По типу работы</label>
@@ -981,7 +681,6 @@ input,select,textarea,button{font-family:inherit}
                 </select>
             </div>
         </div>
-        
         <div class="filter-section">
             <div class="filter-input-group">
                 <label class="filter-input-label">Сортировка по площади (м²)</label>
@@ -992,7 +691,6 @@ input,select,textarea,button{font-family:inherit}
                 </select>
             </div>
         </div>
-        
         <div class="filter-section">
             <div class="filter-input-group">
                 <label class="filter-input-label">Сортировка по погонным метрам</label>
@@ -1003,22 +701,58 @@ input,select,textarea,button{font-family:inherit}
                 </select>
             </div>
         </div>
-        
         <div class="filter-section">
             <div class="filter-input-group">
                 <label class="filter-input-label">По префиксу</label>
                 <input type="text" id="filter-prefix" class="filter-input" placeholder="Например: ВП, НП, Н">
             </div>
         </div>
-        
         <button class="btn filter-clear-btn" onclick="clearFilters()">
             <svg viewBox="0 0 24 24" style="width:15px;height:15px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             Сбросить фильтры
         </button>
-        
         <button class="filter-submit-btn" onclick="applyFilters()">Применить</button>
     </div>
 </div>
+
+<!-- Модальное окно печати -->
+<div class="print-modal" id="print-modal">
+    <div class="print-content">
+        <div class="print-header">
+            <div class="print-title">📄 Распечатка заказов</div>
+            <button class="print-close" onclick="closePrintModal()">✕</button>
+        </div>
+        
+        <div class="print-options">
+            <div class="print-option active" id="opt-all" onclick="setPrintOption('all')">Все заказы</div>
+            <div class="print-option" id="opt-done" onclick="setPrintOption('done')">Только готовые</div>
+            <div class="print-option" id="opt-filtered" onclick="setPrintOption('filtered')">По фильтру</div>
+        </div>
+        
+        <div class="print-input-group">
+            <label class="print-input-label">Заголовок документа</label>
+            <input type="text" id="print-title-input" class="print-input" placeholder="Например: Отчет за сентябрь 2024" value="Отчет по выполненным работам">
+        </div>
+        
+        <div id="print-preview-container" class="print-preview">
+            <div class="print-empty">Нажмите "Сформировать" для предпросмотра</div>
+        </div>
+        
+        <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-print" onclick="generatePrintPreview()" style="flex:1">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Сформировать
+            </button>
+            <button class="btn btn-success" onclick="doPrint()" style="flex:1">
+                <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Печать
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Скрытая область для печати -->
+<div id="print-area" style="display:none"></div>
 
 <div class="content">
 
@@ -1027,20 +761,16 @@ input,select,textarea,button{font-family:inherit}
         <h1 class="panel-title">Ввод кода</h1>
         <p class="panel-subtitle">Введите код работы для расчета</p>
     </div>
-    
     <div class="total-inline">
         <div class="label">Всего заработано (готовые)</div>
         <div class="amount"><span id="current-total">0</span> ₽</div>
     </div>
-    
     <div class="glass-card">
         <div class="card-title">
             <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
             <span id="input-title">Ввод кода</span>
         </div>
-        
         <input type="text" id="code" class="code-input" placeholder="ВВЕДИТЕ КОД" autocomplete="off" autocapitalize="characters">
-        
         <div style="display:flex;gap:7px;margin-bottom:9px">
             <button class="btn btn-primary" id="add-btn" onclick="addWork()" style="flex:1">
                 <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -1051,21 +781,16 @@ input,select,textarea,button{font-family:inherit}
                 Время
             </button>
         </div>
-        
         <div id="result" class="result">
             <h3>Расшифровка</h3>
             <p><b>Тип:</b> <span id="r-type"></span></p>
             <div id="r-params-block"></div>
             <div id="r-sizes-block"></div>
             <p><b>Итого:</b> <span id="r-amount"></span></p>
-            <div style="font-size:20px;margin-top:9px;text-align:center;font-weight:700">
-                <b><span id="r-pay"></span> ₽</b>
-            </div>
+            <div style="font-size:20px;margin-top:9px;text-align:center;font-weight:700"><b><span id="r-pay"></span> ₽</b></div>
         </div>
-        
         <div id="error" class="error"></div>
     </div>
-    
     <div class="glass-card">
         <div class="types-accordion">
             <div class="accordion-header" id="types-acc-header" onclick="toggleTypesAccordion()">
@@ -1075,9 +800,7 @@ input,select,textarea,button{font-family:inherit}
                 </div>
                 <div class="acc-arrow">▼</div>
             </div>
-            <div class="accordion-body" id="types-acc-body">
-                <div id="types-acc-content"></div>
-            </div>
+            <div class="accordion-body" id="types-acc-body"><div id="types-acc-content"></div></div>
         </div>
     </div>
 </div>
@@ -1094,14 +817,11 @@ input,select,textarea,button{font-family:inherit}
             <span class="filter-count" id="filter-count" style="display:none">0</span>
         </button>
     </div>
-    
     <div class="total-card">
         <div class="total-lbl">Всего заработано (готовые + закрытые)</div>
         <div class="total-amt"><span id="total-sum">0</span> ₽</div>
     </div>
-
     <div class="status-counters" id="status-counters"></div>
-    
     <div class="h-list" id="history-list"></div>
     <button class="btn btn-danger" onclick="clearHistory()" style="margin-top:10px">
         <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -1114,7 +834,6 @@ input,select,textarea,button{font-family:inherit}
         <h1 class="panel-title">Типы работ</h1>
         <p class="panel-subtitle">Управление типами работ</p>
     </div>
-    
     <div class="glass-card">
         <button class="btn btn-success" onclick="showTypeForm()">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1122,7 +841,6 @@ input,select,textarea,button{font-family:inherit}
         </button>
     </div>
     <div id="types-list"></div>
-    
     <div id="type-form" class="glass-card" style="display:none">
         <h2 id="form-title" style="margin-bottom:12px;font-size:17px;font-weight:700;color:var(--text-primary);letter-spacing:-0.3px">Новый тип</h2>
         <div class="fg"><div class="fl">Префикс</div><input type="text" id="t-prefix" class="fi" placeholder="ВП" autocapitalize="characters"></div>
@@ -1144,7 +862,6 @@ input,select,textarea,button{font-family:inherit}
         <h1 class="panel-title">Настройки</h1>
         <p class="panel-subtitle">Управление данными</p>
     </div>
-    
     <div class="glass-card">
         <div class="card-title">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1159,6 +876,10 @@ input,select,textarea,button{font-family:inherit}
             Импорт данных
         </button>
         <input type="file" id="import" style="display:none" accept=".json" onchange="importData(event)">
+        <button class="btn btn-print" onclick="openPrintModal()">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Создать распечатку
+        </button>
         <button class="btn btn-danger" onclick="resetAll()">
             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             Сбросить всё
@@ -1196,6 +917,7 @@ let timeUnit = 'minutes';
 let editingDateIndex = -1;
 let editingCommentIndex = -1;
 let activeFilters = {};
+let printOption = 'all';
 
 let notifications = {
     lastBackupTime: parseInt(localStorage.getItem('lastBackupTime') || '0'),
@@ -1310,9 +1032,7 @@ function openTimeModal(){
     setTimeUnit('minutes');
 }
 
-function closeTimeModal(){
-    document.getElementById('time-modal').classList.remove('show');
-}
+function closeTimeModal(){document.getElementById('time-modal').classList.remove('show')}
 
 function setTimeUnit(unit){
     timeUnit = unit;
@@ -1450,9 +1170,7 @@ function openFilterModal(){
     document.getElementById('filter-prefix').value = activeFilters.prefix || '';
 }
 
-function closeFilterModal(){
-    document.getElementById('filter-modal').classList.remove('show');
-}
+function closeFilterModal(){document.getElementById('filter-modal').classList.remove('show')}
 
 function clearFilters(){
     activeFilters = {};
@@ -1552,20 +1270,6 @@ function getOrderNumber(code){
     return code;
 }
 
-function switchBackground(panelId){
-    document.querySelectorAll('.bg-layer').forEach(l => l.classList.remove('active'));
-    const bgMap = {
-        'input': 'bg-input',
-        'history': 'bg-history',
-        'types': 'bg-types',
-        'settings': 'bg-settings'
-    };
-    const bgId = bgMap[panelId];
-    if(bgId){
-        document.getElementById(bgId).classList.add('active');
-    }
-}
-
 function showPanel(id, btn){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -1578,7 +1282,6 @@ function showPanel(id, btn){
         const navItems = document.querySelectorAll('.nav-item');
         if(idx !== -1 && navItems[idx]) navItems[idx].classList.add('active');
     }
-    switchBackground(id);
     window.scrollTo(0,0);
     if(id === 'history') renderHistory();
     if(id === 'types') renderTypes();
@@ -1677,13 +1380,11 @@ function startEdit(idx){
     document.getElementById('add-btn').classList.add('btn-warning');
     let data = parseCode(item.code);
     if(data) showResult(data);
-    
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.getElementById('input').classList.add('active');
     const navItems = document.querySelectorAll('.nav-item');
     if(navItems[0]) navItems[0].classList.add('active');
-    switchBackground('input');
     window.scrollTo(0,0);
     setTimeout(() => document.getElementById('code').focus(), 100);
 }
@@ -1790,14 +1491,12 @@ function renderStatusCounters(){
 function renderHistory(){
     let list = document.getElementById('history-list');
     let filteredHistory = filterAndSortHistory([...history]);
-    
     if(filteredHistory.length === 0){
         list.innerHTML = '<div class="empty">Нет записей' + (Object.keys(activeFilters).length > 0 ? ' по выбранным фильтрам' : '') + '</div>';
         updateTotalDisplay();
         renderStatusCounters();
         return;
     }
-    
     list.innerHTML = '';
     let reversed = [...filteredHistory].reverse();
     reversed.forEach((item) => {
@@ -1806,51 +1505,37 @@ function renderHistory(){
         let isPlanned = item.planned === true;
         let isDone = item.done === true;
         let isTimeWork = item.workType === 'time';
-        
         let statusClass = '';
         if(isClosed) statusClass = 'closed';
         else if(isDone) statusClass = 'done';
         else if(isPlanned) statusClass = 'planned';
         if(isTimeWork && !isClosed && !isDone && !isPlanned) statusClass = 'time-work';
-        
         let div = document.createElement('div');
         div.className = 'h-item' + (statusClass ? ' ' + statusClass : '');
-        
         let typeDisplay = isTimeWork ? 'Работа по времени' : item.type;
         let sizesHtml = '';
-        
         if(isTimeWork){
             let timeDisplay = item.timeHours >= 1 ? `${item.timeHours.toFixed(2)} ч` : `${Math.round(item.timeMinutes)} мин`;
             sizesHtml = `<div class="h-sizes">${timeDisplay} × 350 ₽/ч</div>`;
         } else if(item.sizeDetails && item.sizeDetails.length > 0){
             sizesHtml = '<div class="h-sizes">' + item.sizeDetails.map(s => '#' + s.num + ': ' + s.dims).join(' | ') + '</div>';
         }
-        
         let orderNumber = isTimeWork ? (item.orderNumber || '') : getOrderNumber(item.code);
         let commentHtml = item.comment ? `<div class="h-comment">💬 ${item.comment}</div>` : '';
         let editedMark = item.edited ? '<div class="h-time">✏️ ' + item.edited + '</div>' : '';
         let payClass = (isDone || isClosed) ? 'h-pay' : 'h-pay not-counted';
         let paySuffix = (isDone || isClosed) ? ' ₽' : ' ₽ (не учтено)';
-        
         const canChangeStatus = !isDone && !isClosed && !isTimeWork;
         const canEdit = !isDone && !isClosed && !isTimeWork;
-        
         let closeBtn = isClosed 
             ? `<button class="h-btn h-btn-open" onclick="toggleCloseDeal(${originalIdx})"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></button>`
             : `<button class="h-btn h-btn-close" onclick="toggleCloseDeal(${originalIdx})"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>`;
-        
         let plannedBtn = isTimeWork ? '' : `<button class="h-btn h-btn-planned${isPlanned ? ' active' : ''}" onclick="togglePlanned(${originalIdx})" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
-        
         let doneBtn = isTimeWork ? '' : `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${originalIdx})" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
-        
         let dateBtn = `<button class="h-btn h-btn-date" onclick="openDateModal(${originalIdx})"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
-        
         let commentBtn = `<button class="h-btn h-btn-comment" onclick="openCommentModal(${originalIdx})"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>`;
-        
         let editBtn = `<button class="h-btn h-btn-edit" onclick="startEdit(${originalIdx})" ${!canEdit ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
-        
         let deleteBtn = `<button class="h-btn h-btn-delete" onclick="deleteItem(${originalIdx})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
-        
         let statusBadge = '';
         if(isClosed){
             statusBadge = '<div class="status-badge closed-badge">ЗАКРЫТА' + (item.closedDate ? ' • ' + item.closedDate : '') + '</div>';
@@ -1861,7 +1546,6 @@ function renderHistory(){
         } else if(isTimeWork){
             statusBadge = '<div class="status-badge time-badge">ПО ВРЕМЕНИ</div>';
         }
-        
         div.innerHTML = `
             <div class="h-item-top">
                 <div class="h-item-left">
@@ -2025,9 +1709,186 @@ function resetAll(){
     }
 }
 
+// ===== ФУНКЦИИ ПЕЧАТИ =====
+function openPrintModal(){
+    document.getElementById('print-modal').classList.add('show');
+    document.getElementById('print-preview-container').innerHTML = '<div class="print-empty">Нажмите "Сформировать" для предпросмотра</div>';
+    setPrintOption('all');
+}
+
+function closePrintModal(){
+    document.getElementById('print-modal').classList.remove('show');
+}
+
+function setPrintOption(option){
+    printOption = option;
+    document.querySelectorAll('.print-option').forEach(el => el.classList.remove('active'));
+    document.getElementById('opt-' + option).classList.add('active');
+}
+
+function getPrintItems(){
+    if(printOption === 'all') return [...history];
+    if(printOption === 'done') return history.filter(item => item.done || item.closed);
+    if(printOption === 'filtered') return filterAndSortHistory([...history]);
+    return [...history];
+}
+
+function generatePrintPreview(){
+    const items = getPrintItems();
+    const title = document.getElementById('print-title-input').value.trim() || 'Отчет по выполненным работам';
+    const printDate = new Date().toLocaleString('ru-RU');
+    
+    if(items.length === 0){
+        document.getElementById('print-preview-container').innerHTML = '<div class="print-empty">Нет данных для печати</div>';
+        return;
+    }
+    
+    // Подсчет итогов
+    let totalPayment = 0;
+    let totalArea = 0;
+    let totalLinear = 0;
+    let totalItems = items.length;
+    
+    items.forEach(item => {
+        if(item.done || item.closed){
+            totalPayment += item.payment || 0;
+        }
+        if(item.workType === 'code' && item.amount){
+            const type = types.find(t => item.code && item.code.startsWith(t.prefix));
+            if(type && type.mode === 'area'){
+                totalArea += item.amount;
+            } else if(type && type.mode === 'linear'){
+                totalLinear += item.amount;
+            }
+        }
+    });
+    
+    // Генерация HTML для предпросмотра
+    let html = `
+        <h2>${title}</h2>
+        <div class="print-date-info">Дата формирования: ${printDate}<br>Всего записей: ${totalItems}</div>
+        
+        <h3>Список заказов</h3>
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Заказ</th>
+                    <th>Тип</th>
+                    <th>Параметры</th>
+                    <th>Размеры</th>
+                    <th>Кол-во</th>
+                    <th>Статус</th>
+                    <th>Сумма</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    items.forEach((item, idx) => {
+        const orderNumber = item.workType === 'time' ? (item.orderNumber || '') : getOrderNumber(item.code);
+        const typeDisplay = item.workType === 'time' ? 'По времени' : item.type;
+        
+        let paramsText = '';
+        if(item.params && item.params.length > 0){
+            paramsText = item.params.join(', ');
+        }
+        
+        let sizesText = '';
+        if(item.workType === 'time'){
+            const timeDisplay = item.timeHours >= 1 ? `${item.timeHours.toFixed(2)} ч` : `${Math.round(item.timeMinutes)} мин`;
+            sizesText = `${timeDisplay} × 350 ₽/ч`;
+        } else if(item.sizeDetails && item.sizeDetails.length > 0){
+            sizesText = item.sizeDetails.map(s => '#' + s.num + ': ' + s.dims).join('; ');
+        }
+        
+        let amountText = '';
+        if(item.workType !== 'time' && item.amount){
+            amountText = item.amount.toFixed(4) + ' ' + item.unit;
+        }
+        
+        let statusText = '';
+        if(item.closed) statusText = 'Закрыта';
+        else if(item.done) statusText = 'Готово';
+        else if(item.planned) statusText = 'Заплан.';
+        else statusText = 'Обычный';
+        
+        const paymentText = (item.done || item.closed) ? item.payment.toLocaleString('ru-RU') + ' ₽' : '—';
+        
+        html += `
+            <tr>
+                <td>${idx + 1}</td>
+                <td><b>${orderNumber}</b></td>
+                <td>${typeDisplay}</td>
+                <td>${paramsText || '—'}</td>
+                <td>${sizesText || '—'}</td>
+                <td>${amountText || '—'}</td>
+                <td>${statusText}</td>
+                <td><b>${paymentText}</b></td>
+                <td>${item.date}</td>
+            </tr>
+        `;
+        
+        if(item.comment){
+            html += `<tr><td colspan="9" style="font-style:italic;color:#666">💬 ${item.comment}</td></tr>`;
+        }
+    });
+    
+    html += `
+            </tbody>
+        </table>
+        
+        <h3>Итоговые подсчеты</h3>
+        <div class="print-totals">
+            <div class="print-totals-row">
+                <span>Всего заказов:</span>
+                <span><b>${totalItems} шт.</b></span>
+            </div>
+            <div class="print-totals-row">
+                <span>Всего площадь (м²):</span>
+                <span><b>${totalArea.toFixed(4)} м²</b></span>
+            </div>
+            <div class="print-totals-row">
+                <span>Всего погонные метры:</span>
+                <span><b>${totalLinear.toFixed(4)} м.п.</b></span>
+            </div>
+            <div class="print-totals-row total">
+                <span>ИТОГОВАЯ СТОИМОСТЬ:</span>
+                <span><b>${totalPayment.toLocaleString('ru-RU')} ₽</b></span>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('print-preview-container').innerHTML = html;
+    
+    // Сохраняем HTML для печати
+    document.getElementById('print-area').innerHTML = `
+        <div style="padding:20px;font-family:Arial,sans-serif">
+            ${html}
+        </div>
+    `;
+}
+
+function doPrint(){
+    const printArea = document.getElementById('print-area');
+    if(!printArea.innerHTML.trim()){
+        alert('Сначала сформируйте предпросмотр');
+        return;
+    }
+    printArea.style.display = 'block';
+    window.print();
+    setTimeout(() => {
+        printArea.style.display = 'none';
+    }, 500);
+}
+
+document.getElementById('print-modal').addEventListener('click', function(e){
+    if(e.target === this) closePrintModal();
+});
+
 updateTotalDisplay();
 renderTypesAccordion();
-switchBackground('input');
 document.getElementById('code').addEventListener('keypress', function(e){if(e.key === 'Enter') addWork();});
 </script>
 
