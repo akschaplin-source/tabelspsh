@@ -249,35 +249,71 @@ body::before{
 .status-badge.closed-badge{background:rgba(128,128,128,0.18);border-top:1px solid rgba(128,128,128,0.2);color:rgba(255,255,255,0.6)}
 .status-badge.time-badge{background:rgba(175,130,255,0.15);border-top:1px solid rgba(175,130,255,0.2);color:#af82ff}
 
+/* Список префиксов */
+.prefix-list{display:flex;flex-direction:column;gap:8px}
+.prefix-item{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r);
+    padding:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    transition:var(--transition);
+    position:relative;
+    overflow:hidden;
+}
+.prefix-item:active{background:var(--glass-bg-hover);transform:scale(0.98)}
+.prefix-item::before{
+    content:'';
+    position:absolute;
+    left:0;top:0;bottom:0;
+    width:4px;
+    background:var(--accent-gray);
+}
+.prefix-item.area::before{background:#5ac8fa}
+.prefix-item.linear::before{background:#ffd60a}
+
+.prefix-code{
+    font-family:'SF Mono',monospace;
+    font-size:14px;
+    font-weight:700;
+    color:var(--accent-gray-light);
+    background:rgba(142,142,147,0.15);
+    padding:4px 10px;
+    border-radius:6px;
+    min-width:40px;
+    text-align:center;
+    flex-shrink:0;
+}
+.prefix-info{flex:1;min-width:0}
+.prefix-name{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prefix-details{font-size:10px;color:var(--text-secondary);display:flex;gap:8px;flex-wrap:wrap}
+.prefix-mode{
+    font-size:9px;
+    padding:2px 6px;
+    border-radius:4px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+}
+.prefix-mode.area{background:rgba(90,200,250,0.15);color:#5ac8fa}
+.prefix-mode.linear{background:rgba(255,214,10,0.15);color:#ffd60a}
+.prefix-arrow{
+    color:var(--text-muted);
+    font-size:16px;
+    flex-shrink:0;
+}
+
+.empty-prefixes{text-align:center;padding:20px;color:var(--text-muted);font-size:12px}
+
 .wt-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:12px;margin-bottom:8px;border-left:3px solid var(--accent-gray)}
 .wt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
 .wt-name{font-size:13px;font-weight:600;min-width:0;flex:1}
 .wt-code{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;padding:3px 9px;border-radius:7px;font-family:'SF Mono',monospace;font-weight:700;font-size:11px;flex-shrink:0;border:1px solid rgba(255,255,255,0.1)}
 .wt-info{font-size:11px;color:var(--text-secondary);margin:3px 0;line-height:1.4}
 .wt-formula{background:rgba(0,0,0,0.3);padding:7px 9px;border-radius:7px;font-family:'SF Mono',monospace;font-size:10px;margin:8px 0;word-break:break-all;color:var(--accent-gray-light);border:1px solid rgba(255,255,255,0.05)}
-
-.types-accordion{margin-top:8px}
-.accordion-header{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r);cursor:pointer;user-select:none}
-.accordion-header:active{background:var(--glass-bg-hover)}
-.accordion-header.open{border-radius:var(--r) var(--r) 0 0;border-color:rgba(142,142,147,0.2)}
-.accordion-header .acc-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
-.accordion-header .acc-title svg{width:15px;height:15px;stroke:var(--accent-gray-light);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
-.accordion-header .acc-arrow{font-size:13px;color:var(--accent-gray-light);transition:transform 0.2s}
-.accordion-header.open .acc-arrow{transform:rotate(180deg)}
-.accordion-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease;background:rgba(0,0,0,0.25);border:1px solid var(--glass-border);border-top:none;border-radius:0 0 var(--r) var(--r)}
-.accordion-body.open{max-height:3000px;padding:10px}
-
-.type-accordion-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--r);padding:10px;margin-bottom:7px;border-left:3px solid var(--accent-gray)}
-.type-accordion-item:last-child{margin-bottom:0}
-.type-acc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;gap:7px}
-.type-acc-name{font-size:12px;font-weight:600;min-width:0;flex:1}
-.type-acc-prefix{background:linear-gradient(135deg,rgba(142,142,147,0.35) 0%,rgba(99,99,102,0.35) 100%);color:#fff;padding:2px 8px;border-radius:7px;font-family:'SF Mono',monospace;font-weight:700;font-size:11px;flex-shrink:0;border:1px solid rgba(255,255,255,0.1)}
-.type-acc-detail{font-size:10px;color:var(--text-secondary);margin:2px 0;line-height:1.4}
-.type-acc-detail b{color:var(--text-primary)}
-.type-acc-formula{background:rgba(0,0,0,0.3);padding:7px 9px;border-radius:7px;font-family:'SF Mono',monospace;font-size:10px;margin:7px 0;word-break:break-all;color:var(--accent-gray-light);border:1px solid rgba(255,255,255,0.05)}
-.type-acc-example{background:rgba(142,142,147,0.08);border:1px dashed rgba(142,142,147,0.15);border-radius:7px;padding:7px 9px;margin-top:7px;font-family:'SF Mono',monospace;font-size:10px;color:var(--accent-gray-light);word-break:break-all}
-.type-acc-example-label{font-family:inherit;font-size:9px;color:var(--text-secondary);margin-bottom:3px;font-weight:600}
-.empty-types-msg{text-align:center;padding:18px;color:var(--text-secondary);font-size:12px}
 
 .bottom-nav{
     position:fixed;
@@ -424,7 +460,6 @@ textarea.time-input,textarea.date-input,textarea.comment-input{min-height:70px;r
 .panel-title{font-size:20px !important;font-weight:700 !important;margin-bottom:2px !important;color:var(--text-primary) !important;letter-spacing:-0.3px !important}
 .panel-subtitle{font-size:10px !important;color:var(--text-secondary) !important;margin-bottom:12px !important}
 
-/* ===== Стили для листа печати ===== */
 .print-preview{
     background:#fff;
     color:#000;
@@ -436,87 +471,20 @@ textarea.time-input,textarea.date-input,textarea.comment-input{min-height:70px;r
     font-family:'SF Mono',monospace;
     font-size:11px;
 }
-.print-preview h2{
-    font-size:16px;
-    font-weight:700;
-    margin-bottom:8px;
-    text-align:center;
-    border-bottom:2px solid #000;
-    padding-bottom:6px;
-}
-.print-preview h3{
-    font-size:13px;
-    font-weight:600;
-    margin:10px 0 6px 0;
-    color:#333;
-}
-.print-table{
-    width:100%;
-    border-collapse:collapse;
-    margin:8px 0;
-    font-size:10px;
-}
-.print-table th,.print-table td{
-    border:1px solid #ccc;
-    padding:4px 6px;
-    text-align:left;
-}
-.print-table th{
-    background:#f0f0f0;
-    font-weight:600;
-    font-size:9px;
-}
-.print-totals{
-    margin-top:12px;
-    padding:10px;
-    background:#f5f5f5;
-    border:1px solid #ddd;
-    border-radius:6px;
-}
-.print-totals-row{
-    display:flex;
-    justify-content:space-between;
-    padding:3px 0;
-    font-size:11px;
-}
-.print-totals-row.total{
-    font-weight:700;
-    font-size:13px;
-    border-top:2px solid #000;
-    margin-top:6px;
-    padding-top:6px;
-}
-.print-date-info{
-    text-align:right;
-    font-size:9px;
-    color:#666;
-    margin-bottom:8px;
-}
+.print-preview h2{font-size:16px;font-weight:700;margin-bottom:8px;text-align:center;border-bottom:2px solid #000;padding-bottom:6px}
+.print-preview h3{font-size:13px;font-weight:600;margin:10px 0 6px 0;color:#333}
+.print-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:10px}
+.print-table th,.print-table td{border:1px solid #ccc;padding:4px 6px;text-align:left}
+.print-table th{background:#f0f0f0;font-weight:600;font-size:9px}
+.print-totals{margin-top:12px;padding:10px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px}
+.print-totals-row{display:flex;justify-content:space-between;padding:3px 0;font-size:11px}
+.print-totals-row.total{font-weight:700;font-size:13px;border-top:2px solid #000;margin-top:6px;padding-top:6px}
+.print-date-info{text-align:right;font-size:9px;color:#666;margin-bottom:8px}
 .print-empty{text-align:center;padding:30px;color:#999;font-size:12px}
 
-.print-options{
-    display:flex;
-    gap:8px;
-    margin-bottom:12px;
-    flex-wrap:wrap;
-}
-.print-option{
-    flex:1;
-    min-width:120px;
-    padding:8px;
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:8px;
-    font-size:11px;
-    color:var(--text-secondary);
-    cursor:pointer;
-    text-align:center;
-}
-.print-option.active{
-    background:rgba(10,132,255,0.15);
-    border-color:rgba(10,132,255,0.3);
-    color:#5ac8fa;
-}
+.print-options{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.print-option{flex:1;min-width:120px;padding:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:11px;color:var(--text-secondary);cursor:pointer;text-align:center}
+.print-option.active{background:rgba(10,132,255,0.15);border-color:rgba(10,132,255,0.3);color:#5ac8fa}
 .print-option:active{opacity:0.7}
 
 @media(min-width:500px){
@@ -525,20 +493,10 @@ textarea.time-input,textarea.date-input,textarea.comment-input{min-height:70px;r
     .h-order-number{font-size:17px}
 }
 
-/* ===== СТИЛИ ДЛЯ ПЕЧАТИ ===== */
 @media print{
     body *{visibility:hidden}
     #print-area,#print-area *{visibility:visible}
-    #print-area{
-        position:absolute;
-        left:0;
-        top:0;
-        width:100%;
-        background:#fff;
-        color:#000;
-        padding:20px;
-        font-family:'SF Mono',monospace;
-    }
+    #print-area{position:absolute;left:0;top:0;width:100%;background:#fff;color:#000;padding:20px;font-family:'SF Mono',monospace}
     .no-print{display:none !important}
 }
 
@@ -629,7 +587,7 @@ input,select,textarea,button{font-family:inherit}
     <div class="comment-content">
         <div class="comment-header">
             <div class="comment-title">Комментарий</div>
-            <button class="comment-close" onclick="closeCommentModal()">✕</button>
+            <button class="comment-close" onclick="closeCommentModal()"></button>
         </div>
         <div class="comment-input-group">
             <label class="comment-input-label">Текущий комментарий</label>
@@ -715,29 +673,24 @@ input,select,textarea,button{font-family:inherit}
     </div>
 </div>
 
-<!-- Модальное окно печати -->
 <div class="print-modal" id="print-modal">
     <div class="print-content">
         <div class="print-header">
             <div class="print-title">📄 Распечатка заказов</div>
             <button class="print-close" onclick="closePrintModal()">✕</button>
         </div>
-        
         <div class="print-options">
             <div class="print-option active" id="opt-all" onclick="setPrintOption('all')">Все заказы</div>
             <div class="print-option" id="opt-done" onclick="setPrintOption('done')">Только готовые</div>
             <div class="print-option" id="opt-filtered" onclick="setPrintOption('filtered')">По фильтру</div>
         </div>
-        
         <div class="print-input-group">
             <label class="print-input-label">Заголовок документа</label>
             <input type="text" id="print-title-input" class="print-input" placeholder="Например: Отчет за сентябрь 2024" value="Отчет по выполненным работам">
         </div>
-        
         <div id="print-preview-container" class="print-preview">
             <div class="print-empty">Нажмите "Сформировать" для предпросмотра</div>
         </div>
-        
         <div style="display:flex;gap:8px;margin-top:12px">
             <button class="btn btn-print" onclick="generatePrintPreview()" style="flex:1">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -751,7 +704,6 @@ input,select,textarea,button{font-family:inherit}
     </div>
 </div>
 
-<!-- Скрытая область для печати -->
 <div id="print-area" style="display:none"></div>
 
 <div class="content">
@@ -791,17 +743,14 @@ input,select,textarea,button{font-family:inherit}
         </div>
         <div id="error" class="error"></div>
     </div>
+    
+    <!-- Список префиксов вместо справочника -->
     <div class="glass-card">
-        <div class="types-accordion">
-            <div class="accordion-header" id="types-acc-header" onclick="toggleTypesAccordion()">
-                <div class="acc-title">
-                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    Справочник типов
-                </div>
-                <div class="acc-arrow">▼</div>
-            </div>
-            <div class="accordion-body" id="types-acc-body"><div id="types-acc-content"></div></div>
+        <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Префиксы типов работ
         </div>
+        <div class="prefix-list" id="prefix-list"></div>
     </div>
 </div>
 
@@ -1285,32 +1234,71 @@ function showPanel(id, btn){
     window.scrollTo(0,0);
     if(id === 'history') renderHistory();
     if(id === 'types') renderTypes();
-    if(id === 'input') renderTypesAccordion();
+    if(id === 'input') renderPrefixList();
 }
 
-function toggleTypesAccordion(){
-    let header = document.getElementById('types-acc-header');
-    let body = document.getElementById('types-acc-body');
-    header.classList.toggle('open');
-    body.classList.toggle('open');
-    if(body.classList.contains('open')) renderTypesAccordion();
-}
-
-function renderTypesAccordion(){
-    let container = document.getElementById('types-acc-content');
-    if(types.length === 0){container.innerHTML = '<div class="empty-types-msg">Нет типов работ.</div>';return;}
+// Рендер списка префиксов
+function renderPrefixList(){
+    const container = document.getElementById('prefix-list');
+    if(types.length === 0){
+        container.innerHTML = '<div class="empty-prefixes">Нет типов работ. Добавьте в разделе "Типы".</div>';
+        return;
+    }
+    
     let html = '';
-    types.forEach(t => {
-        let paramsText = t.params && t.params.length > 0 ? t.params.map(p => '<b>' + p.name + '</b> (' + p.length + ' симв.)').join(', ') : 'нет';
-        let modeText = t.mode === 'area' ? 'Площадь (м²)' : 'Погонные метры';
-        let dimsText = t.dims ? t.dims.join(' × ') : (t.mode === 'area' ? 'Длина × Ширина' : 'Длина');
-        let exampleCode = t.prefix;
-        if(t.params && t.params.length > 0) t.params.forEach(p => exampleCode += p.length === 1 ? 'X' : '16');
-        exampleCode += t.mode === 'area' ? '2100 800/1500 600' : '2100/1500';
-        exampleCode += '-ДЕТ-001';
-        html += `<div class="type-accordion-item"><div class="type-acc-head"><div class="type-acc-name">${t.name}</div><div class="type-acc-prefix">${t.prefix}</div></div><div class="type-acc-detail"><b>Режим:</b> ${modeText}</div><div class="type-acc-detail"><b>Параметры:</b> ${paramsText}</div><div class="type-acc-detail"><b>Размеры:</b> ${dimsText}</div><div class="type-acc-detail"><b>Тариф:</b> ${t.rate} ${t.unit}</div><div class="type-acc-formula">${t.formula}</div><div class="type-acc-example-label">Пример кода:</div><div class="type-acc-example">${exampleCode}</div></div>`;
+    types.forEach((t, idx) => {
+        const modeClass = t.mode === 'area' ? 'area' : 'linear';
+        const modeText = t.mode === 'area' ? 'м²' : 'пог.м';
+        const paramsText = t.params && t.params.length > 0 
+            ? t.params.map(p => p.name + ' (' + p.length + ')').join(', ')
+            : 'нет';
+        
+        html += `
+            <div class="prefix-item ${modeClass}" onclick="createOrderFromPrefix('${t.prefix}')">
+                <div class="prefix-code">${t.prefix}</div>
+                <div class="prefix-info">
+                    <div class="prefix-name">${t.name}</div>
+                    <div class="prefix-details">
+                        <span class="prefix-mode ${modeClass}">${modeText}</span>
+                        <span>${t.rate} ${t.unit}</span>
+                        <span>Пар: ${paramsText}</span>
+                    </div>
+                </div>
+                <div class="prefix-arrow">›</div>
+            </div>
+        `;
     });
+    
     container.innerHTML = html;
+}
+
+// Создание заказа из префикса
+function createOrderFromPrefix(prefix){
+    // Переключаемся на вкладку ввода
+    showPanel('input');
+    
+    // Вставляем префикс в поле ввода
+    const codeInput = document.getElementById('code');
+    codeInput.value = prefix;
+    codeInput.focus();
+    
+    // Показываем подсказку
+    const type = types.find(t => t.prefix === prefix);
+    if(type){
+        let hint = `Префикс "${prefix}" вставлен. Теперь введите параметры и размеры.\n\n`;
+        hint += `Формат: ${prefix}`;
+        if(type.params && type.params.length > 0){
+            type.params.forEach(p => {
+                hint += p.length === 1 ? 'X' : '16';
+            });
+        }
+        hint += type.mode === 'area' ? '2100 800' : '2100';
+        hint += '-НОМЕР-001';
+        
+        setTimeout(() => {
+            alert(hint);
+        }, 100);
+    }
 }
 
 function parseCode(code){
@@ -1636,7 +1624,7 @@ function saveType(){
     if(!prefix || !name || !formula){alert('Заполните префикс, название и формулу');return;}
     let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
     types.push({prefix, name, mode, formula, rate, unit, dims, params: tempParams.filter(p => p.name)});
-    saveTypes();hideTypeForm();renderTypes();alert('Сохранено!');
+    saveTypes();hideTypeForm();renderTypes();renderPrefixList();alert('Сохранено!');
 }
 function editType(idx){
     let t = types[idx];
@@ -1662,11 +1650,11 @@ function editType(idx){
         if(!prefix || !name || !formula){alert('Заполните все поля');return;}
         let dims = mode === 'area' ? ['Длина','Ширина'] : ['Длина'];
         types[window.editingTypeIdx] = {prefix, name, mode, formula, rate, unit, dims, params: tempParams.filter(p => p.name)};
-        saveTypes();hideTypeForm();renderTypes();alert('Обновлено!');
+        saveTypes();hideTypeForm();renderTypes();renderPrefixList();alert('Обновлено!');
         saveType = originalSaveType;
     };
 }
-function deleteType(idx){if(confirm('Удалить тип?')){types.splice(idx, 1);saveTypes();renderTypes();}}
+function deleteType(idx){if(confirm('Удалить тип?')){types.splice(idx, 1);saveTypes();renderTypes();renderPrefixList();}}
 
 function exportData(){
     let data = {types, history, date: new Date().toISOString()};
@@ -1694,7 +1682,7 @@ function importData(event){
                     if(item.comment === undefined) item.comment = '';
                 });
             }
-            saveTypes();saveHistory();updateTotalDisplay();renderHistory();alert('Импорт выполнен!');
+            saveTypes();saveHistory();updateTotalDisplay();renderHistory();renderPrefixList();alert('Импорт выполнен!');
         }catch(err){alert('Ошибка: ' + err.message);}
     };
     reader.readAsText(file);event.target.value = '';
@@ -1709,7 +1697,6 @@ function resetAll(){
     }
 }
 
-// ===== ФУНКЦИИ ПЕЧАТИ =====
 function openPrintModal(){
     document.getElementById('print-modal').classList.add('show');
     document.getElementById('print-preview-container').innerHTML = '<div class="print-empty">Нажмите "Сформировать" для предпросмотра</div>';
@@ -1743,7 +1730,6 @@ function generatePrintPreview(){
         return;
     }
     
-    // Подсчет итогов
     let totalPayment = 0;
     let totalArea = 0;
     let totalLinear = 0;
@@ -1763,11 +1749,9 @@ function generatePrintPreview(){
         }
     });
     
-    // Генерация HTML для предпросмотра
     let html = `
         <h2>${title}</h2>
         <div class="print-date-info">Дата формирования: ${printDate}<br>Всего записей: ${totalItems}</div>
-        
         <h3>Список заказов</h3>
         <table class="print-table">
             <thead>
@@ -1789,12 +1773,10 @@ function generatePrintPreview(){
     items.forEach((item, idx) => {
         const orderNumber = item.workType === 'time' ? (item.orderNumber || '') : getOrderNumber(item.code);
         const typeDisplay = item.workType === 'time' ? 'По времени' : item.type;
-        
         let paramsText = '';
         if(item.params && item.params.length > 0){
             paramsText = item.params.join(', ');
         }
-        
         let sizesText = '';
         if(item.workType === 'time'){
             const timeDisplay = item.timeHours >= 1 ? `${item.timeHours.toFixed(2)} ч` : `${Math.round(item.timeMinutes)} мин`;
@@ -1802,20 +1784,16 @@ function generatePrintPreview(){
         } else if(item.sizeDetails && item.sizeDetails.length > 0){
             sizesText = item.sizeDetails.map(s => '#' + s.num + ': ' + s.dims).join('; ');
         }
-        
         let amountText = '';
         if(item.workType !== 'time' && item.amount){
             amountText = item.amount.toFixed(4) + ' ' + item.unit;
         }
-        
         let statusText = '';
         if(item.closed) statusText = 'Закрыта';
         else if(item.done) statusText = 'Готово';
         else if(item.planned) statusText = 'Заплан.';
         else statusText = 'Обычный';
-        
         const paymentText = (item.done || item.closed) ? item.payment.toLocaleString('ru-RU') + ' ₽' : '—';
-        
         html += `
             <tr>
                 <td>${idx + 1}</td>
@@ -1829,7 +1807,6 @@ function generatePrintPreview(){
                 <td>${item.date}</td>
             </tr>
         `;
-        
         if(item.comment){
             html += `<tr><td colspan="9" style="font-style:italic;color:#666">💬 ${item.comment}</td></tr>`;
         }
@@ -1838,7 +1815,6 @@ function generatePrintPreview(){
     html += `
             </tbody>
         </table>
-        
         <h3>Итоговые подсчеты</h3>
         <div class="print-totals">
             <div class="print-totals-row">
@@ -1861,13 +1837,7 @@ function generatePrintPreview(){
     `;
     
     document.getElementById('print-preview-container').innerHTML = html;
-    
-    // Сохраняем HTML для печати
-    document.getElementById('print-area').innerHTML = `
-        <div style="padding:20px;font-family:Arial,sans-serif">
-            ${html}
-        </div>
-    `;
+    document.getElementById('print-area').innerHTML = `<div style="padding:20px;font-family:Arial,sans-serif">${html}</div>`;
 }
 
 function doPrint(){
@@ -1888,7 +1858,7 @@ document.getElementById('print-modal').addEventListener('click', function(e){
 });
 
 updateTotalDisplay();
-renderTypesAccordion();
+renderPrefixList();
 document.getElementById('code').addEventListener('keypress', function(e){if(e.key === 'Enter') addWork();});
 </script>
 
