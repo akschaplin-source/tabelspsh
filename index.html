@@ -368,7 +368,7 @@ body::before{
     background:var(--glass-bg);
     border:1px solid var(--glass-border);
     border-radius:var(--r);
-    padding:14px 16px;
+    padding:12px 14px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -383,44 +383,53 @@ body::before{
 
 .h-item.planned{background:rgba(255,214,10,0.06);border-color:rgba(255,214,10,0.15);border-left-color:#ffd60a}
 .h-item.planned:hover{background:rgba(255,214,10,0.1)}
-.h-item.planned .h-code{color:#ffd60a}
-.h-item.planned .h-amount{color:#ffd60a}
+.h-item.planned .h-order-number{color:#ffd60a}
 
 .h-item.done{background:rgba(52,199,89,0.06);border-color:rgba(52,199,89,0.15);border-left-color:#34c759}
 .h-item.done:hover{background:rgba(52,199,89,0.1)}
 
 .h-item.closed{background:rgba(128,128,128,0.06);border-color:rgba(128,128,128,0.12);border-left-color:#888;opacity:0.6;filter:grayscale(0.7)}
 .h-item.closed:hover{transform:none;background:rgba(128,128,128,0.08)}
-.h-item.closed .h-code,.h-item.closed .h-type,.h-item.closed .h-sizes,.h-item.closed .h-amount,.h-item.closed .h-time{color:rgba(255,255,255,0.4)}
+.h-item.closed .h-prefix,.h-item.closed .h-order-number,.h-item.closed .h-type,.h-item.closed .h-sizes,.h-item.closed .h-amount,.h-item.closed .h-time{color:rgba(255,255,255,0.4)}
 .h-item.closed .h-pay{color:rgba(52,199,89,0.5)}
 
 .h-item.time-work{background:rgba(175,130,255,0.06);border-color:rgba(175,130,255,0.15);border-left-color:#af82ff}
 .h-item.time-work:hover{background:rgba(175,130,255,0.1)}
-.h-item.time-work .h-code{color:#af82ff}
+.h-item.time-work .h-order-number{color:#af82ff}
 
-.h-item-left{flex:1;min-width:0}
-.h-code{
+.h-item-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.h-code-row{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+.h-prefix{
     font-family:'SF Mono',monospace;
-    font-size:18px;
+    font-size:11px;
+    font-weight:600;
+    padding:3px 8px;
+    border-radius:6px;
+    white-space:nowrap;
+    flex-shrink:0;
+}
+.h-order-number{
+    font-family:'SF Mono',monospace;
+    font-size:16px;
     font-weight:700;
     color:var(--accent-gray-light);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    max-width:100%;
-    margin-bottom:4px;
-    letter-spacing:0.5px;
+    flex:1;
 }
-.h-type{font-size:14px;color:var(--text-secondary);margin-bottom:3px;font-weight:500}
-.h-sizes{font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.4}
-.h-amount{font-size:14px;color:var(--accent-gray-light);font-weight:600;margin-top:4px}
-.h-time{font-size:11px;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:4px}
-.h-pay{font-size:17px;font-weight:700;color:#34c759;text-align:right;white-space:nowrap}
-.h-pay.not-counted{color:var(--text-muted);font-size:14px}
+.h-type{font-size:12px;color:var(--text-secondary);font-weight:500}
+.h-info-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.h-sizes{font-size:11px;color:var(--text-muted)}
+.h-amount{font-size:11px;color:var(--accent-gray-light);font-weight:600}
+.h-time{font-size:10px;color:var(--text-muted)}
+.h-comment{font-size:11px;color:var(--text-secondary);font-style:italic;margin-top:2px}
+.h-pay{font-size:16px;font-weight:700;color:#34c759;text-align:right;white-space:nowrap}
+.h-pay.not-counted{color:var(--text-muted);font-size:13px}
 
-.h-actions{display:flex;gap:5px;flex-shrink:0;flex-direction:row;align-items:center}
+.h-actions{display:flex;gap:4px;flex-shrink:0;flex-direction:row;align-items:center}
 .h-btn{
-    width:32px;height:32px;
+    width:30px;height:30px;
     border-radius:8px;
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;
@@ -429,7 +438,7 @@ body::before{
     background:rgba(255,255,255,0.06);
     padding:0;
 }
-.h-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.h-btn svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .h-btn:hover{transform:translateY(-1px)}
 .h-btn:disabled{opacity:0.3;cursor:not-allowed;pointer-events:none;transform:none}
 
@@ -456,14 +465,17 @@ body::before{
 .h-btn-date{background:rgba(142,142,147,0.1);border-color:rgba(142,142,147,0.2);color:var(--accent-gray-light)}
 .h-btn-date:hover:not(:disabled){background:rgba(142,142,147,0.15)}
 
+.h-btn-comment{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:var(--accent-gray-light)}
+.h-btn-comment:hover:not(:disabled){background:rgba(255,255,255,0.12)}
+
 .h-item.closed .h-btn-planned,.h-item.closed .h-btn-done,.h-item.closed .h-btn-edit{opacity:0.3;cursor:not-allowed;pointer-events:none}
 .h-item.done .h-btn-planned,.h-item.done .h-btn-done{opacity:0.3;cursor:not-allowed;pointer-events:none}
 
 .status-badge{
     position:absolute;
     bottom:0;left:0;right:0;
-    padding:5px 14px;
-    font-size:10px;
+    padding:4px 14px;
+    font-size:9px;
     text-align:center;
     font-weight:600;
     letter-spacing:0.5px;
@@ -473,7 +485,7 @@ body::before{
     gap:5px;
     text-transform:uppercase;
 }
-.status-badge svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.status-badge svg{width:10px;height:10px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .status-badge.planned-badge{background:rgba(255,214,10,0.12);border-top:1px solid rgba(255,214,10,0.2);color:#ffd60a}
 .status-badge.done-badge{background:rgba(52,199,89,0.12);border-top:1px solid rgba(52,199,89,0.2);color:#34c759}
 .status-badge.closed-badge{background:rgba(128,128,128,0.15);border-top:1px solid rgba(128,128,128,0.2);color:rgba(255,255,255,0.6)}
@@ -657,7 +669,7 @@ select.fi{
 .param-row{display:grid;grid-template-columns:1fr 90px auto;gap:10px;margin-bottom:10px;align-items:end}
 .param-row input{font-size:13px;padding:11px 10px}
 
-.notification-modal,.time-modal,.date-modal,.filter-modal{
+.notification-modal,.time-modal,.date-modal,.filter-modal,.comment-modal{
     display:none;
     position:fixed;
     top:0;left:0;right:0;bottom:0;
@@ -670,9 +682,9 @@ select.fi{
     padding:20px;
     animation:fadeIn 0.3s ease;
 }
-.notification-modal.show,.time-modal.show,.date-modal.show,.filter-modal.show{display:flex}
+.notification-modal.show,.time-modal.show,.date-modal.show,.filter-modal.show,.comment-modal.show{display:flex}
 
-.notification-content,.time-content,.date-content,.filter-content{
+.notification-content,.time-content,.date-content,.filter-content,.comment-content{
     background:rgba(44,44,46,0.95);
     border:1px solid var(--glass-border);
     border-radius:var(--r-lg);
@@ -685,19 +697,19 @@ select.fi{
     overflow-y:auto;
 }
 
-.notification-header,.time-header,.date-header,.filter-header{
+.notification-header,.time-header,.date-header,.filter-header,.comment-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:24px;
 }
-.notification-title,.time-title,.date-title,.filter-title{
+.notification-title,.time-title,.date-title,.filter-title,.comment-title{
     font-size:20px;
     font-weight:700;
     color:var(--text-primary);
     letter-spacing:-0.5px;
 }
-.notification-close,.time-close,.date-close,.filter-close{
+.notification-close,.time-close,.date-close,.filter-close,.comment-close{
     width:32px;height:32px;
     border-radius:50%;
     background:rgba(255,255,255,0.1);
@@ -708,7 +720,7 @@ select.fi{
     transition:var(--transition);
     font-size:18px;
 }
-.notification-close:hover,.time-close:hover,.date-close:hover,.filter-close:hover{background:rgba(255,255,255,0.15)}
+.notification-close:hover,.time-close:hover,.date-close:hover,.filter-close:hover,.comment-close:hover{background:rgba(255,255,255,0.15)}
 
 .notification-item{
     background:var(--glass-bg);
@@ -737,9 +749,9 @@ select.fi{
 .notification-empty{text-align:center;padding:30px 20px;color:var(--text-muted)}
 .notification-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
 
-.time-input-group,.date-input-group,.filter-input-group{margin-bottom:18px}
-.time-input-label,.date-input-label,.filter-input-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
-.time-input,.date-input,.filter-input{
+.time-input-group,.date-input-group,.filter-input-group,.comment-input-group{margin-bottom:18px}
+.time-input-label,.date-input-label,.filter-input-label,.comment-input-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-secondary)}
+.time-input,.date-input,.filter-input,.comment-input{
     width:100%;
     padding:13px 16px;
     background:rgba(0,0,0,0.3);
@@ -749,14 +761,14 @@ select.fi{
     font-size:15px;
     transition:var(--transition);
 }
-.time-input:focus,.date-input:focus,.filter-input:focus{
+.time-input:focus,.date-input:focus,.filter-input:focus,.comment-input:focus{
     outline:none;
     border-color:var(--accent-gray-light);
     background:rgba(0,0,0,0.4);
     box-shadow:0 0 0 3px rgba(142,142,147,0.15);
 }
-.time-input::placeholder,.date-input::placeholder,.filter-input::placeholder{color:var(--text-muted)}
-textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-family:inherit}
+.time-input::placeholder,.date-input::placeholder,.filter-input::placeholder,.comment-input::placeholder{color:var(--text-muted)}
+textarea.time-input,textarea.date-input,textarea.comment-input{min-height:80px;resize:vertical;font-family:inherit}
 
 .time-unit-toggle{display:flex;gap:8px;margin-bottom:16px}
 .time-unit-btn{
@@ -794,7 +806,7 @@ textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-fam
 }
 .time-calc-details{font-size:12px;color:var(--text-muted);margin-top:6px}
 
-.time-submit-btn,.date-submit-btn,.filter-submit-btn{
+.time-submit-btn,.date-submit-btn,.filter-submit-btn,.comment-submit-btn{
     width:100%;
     padding:16px;
     background:linear-gradient(135deg,var(--accent-gray) 0%,var(--accent-gray-dark) 100%);
@@ -808,14 +820,16 @@ textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-fam
     margin-top:16px;
     letter-spacing:-0.2px;
 }
-.time-submit-btn:hover,.date-submit-btn:hover,.filter-submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(142,142,147,0.4)}
-.time-submit-btn:active,.date-submit-btn:active,.filter-submit-btn:active{transform:scale(0.98)}
+.time-submit-btn:hover,.date-submit-btn:hover,.filter-submit-btn:hover,.comment-submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(142,142,147,0.4)}
+.time-submit-btn:active,.date-submit-btn:active,.filter-submit-btn:active,.comment-submit-btn:active{transform:scale(0.98)}
 .time-submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 .date-submit-btn{background:linear-gradient(135deg,var(--accent-gray) 0%,var(--accent-gray-dark) 100%)}
 .date-submit-btn:hover{box-shadow:0 6px 20px rgba(142,142,147,0.4)}
 .filter-submit-btn{background:linear-gradient(135deg,var(--accent-gray) 0%,var(--accent-gray-dark) 100%)}
 .filter-submit-btn:hover{box-shadow:0 6px 20px rgba(142,142,147,0.4)}
-.date-hint,.filter-hint{font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center}
+.comment-submit-btn{background:linear-gradient(135deg,var(--accent-gray) 0%,var(--accent-gray-dark) 100%)}
+.comment-submit-btn:hover{box-shadow:0 6px 20px rgba(142,142,147,0.4)}
+.date-hint,.filter-hint,.comment-hint{font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center}
 
 .filter-section{
     margin-bottom:20px;
@@ -963,6 +977,25 @@ textarea.time-input,textarea.date-input{min-height:80px;resize:vertical;font-fam
             <div class="date-hint">Выберите дату и время</div>
         </div>
         <button class="date-submit-btn" onclick="saveNewDate()">Сохранить дату</button>
+    </div>
+</div>
+
+<div class="comment-modal" id="comment-modal">
+    <div class="comment-content">
+        <div class="comment-header">
+            <div class="comment-title">Комментарий к заказу</div>
+            <button class="comment-close" onclick="closeCommentModal()">✕</button>
+        </div>
+        <div class="comment-input-group">
+            <label class="comment-input-label">Текущий комментарий</label>
+            <div id="current-comment-display" style="padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;color:var(--text-secondary);font-size:14px;min-height:40px"></div>
+        </div>
+        <div class="comment-input-group">
+            <label class="comment-input-label">Новый комментарий</label>
+            <textarea id="new-comment-input" class="comment-input" placeholder="Введите комментарий..."></textarea>
+            <div class="comment-hint">Оставьте пустым, чтобы удалить комментарий</div>
+        </div>
+        <button class="comment-submit-btn" onclick="saveComment()">Сохранить комментарий</button>
     </div>
 </div>
 
@@ -1221,6 +1254,7 @@ let tempParams = [];
 let editingIndex = -1;
 let timeUnit = 'minutes';
 let editingDateIndex = -1;
+let editingCommentIndex = -1;
 let activeFilters = {};
 
 let notifications = {
@@ -1233,6 +1267,7 @@ history.forEach(item => {
     if(item.planned === undefined) item.planned = false;
     if(item.done === undefined) item.done = false;
     if(item.workType === undefined) item.workType = 'code';
+    if(item.comment === undefined) item.comment = '';
 });
 
 if(types.length === 0){
@@ -1449,6 +1484,33 @@ document.getElementById('date-modal').addEventListener('click', function(e){
     if(e.target === this) closeDateModal();
 });
 
+function openCommentModal(idx){
+    editingCommentIndex = idx;
+    const item = history[idx];
+    document.getElementById('current-comment-display').textContent = item.comment || 'Нет комментария';
+    document.getElementById('new-comment-input').value = item.comment || '';
+    document.getElementById('comment-modal').classList.add('show');
+}
+
+function closeCommentModal(){
+    document.getElementById('comment-modal').classList.remove('show');
+    editingCommentIndex = -1;
+}
+
+function saveComment(){
+    if(editingCommentIndex < 0) return;
+    const newComment = document.getElementById('new-comment-input').value.trim();
+    history[editingCommentIndex].comment = newComment;
+    saveHistory();
+    closeCommentModal();
+    renderHistory();
+    alert('Комментарий сохранен!');
+}
+
+document.getElementById('comment-modal').addEventListener('click', function(e){
+    if(e.target === this) closeCommentModal();
+});
+
 function openFilterModal(){
     document.getElementById('filter-modal').classList.add('show');
     document.getElementById('filter-date').value = activeFilters.date || '';
@@ -1585,6 +1647,15 @@ function getPrefixColor(code){
     return 'var(--prefix-default)';
 }
 
+function getOrderNumber(code){
+    if(!code) return '';
+    const lastDashIndex = code.lastIndexOf('-');
+    if(lastDashIndex !== -1 && lastDashIndex < code.length - 1){
+        return code.substring(lastDashIndex + 1);
+    }
+    return code;
+}
+
 function showPanel(id){
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -1689,10 +1760,7 @@ function startEdit(idx){
     document.getElementById('add-btn').classList.add('btn-warning');
     let data = parseCode(item.code);
     if(data) showResult(data);
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.getElementById('input').classList.add('active');
-    document.querySelector('.nav-item').classList.add('active');
+    showPanel('input');
     document.getElementById('code').focus();
 }
 
@@ -1721,7 +1789,7 @@ function addWork(){
         saveHistory();updateTotalDisplay();cancelEdit();
         alert('Запись обновлена!');return;
     }
-    history.push({workType: 'code', date: new Date().toLocaleString('ru-RU'), code: data.code, type: data.type, params: data.params, sizes: data.sizes, sizeDetails: data.sizeDetails, amount: data.amount, unit: data.unit, payment: data.payment, closed: false, planned: false, done: false});
+    history.push({workType: 'code', date: new Date().toLocaleString('ru-RU'), code: data.code, type: data.type, params: data.params, sizes: data.sizes, sizeDetails: data.sizeDetails, amount: data.amount, unit: data.unit, payment: data.payment, closed: false, planned: false, done: false, comment: ''});
     saveHistory();updateTotalDisplay();showResult(data);
     document.getElementById('code').value = '';
     setTimeout(() => document.getElementById('code').focus(), 100);
@@ -1826,19 +1894,34 @@ function renderHistory(){
         let div = document.createElement('div');
         div.className = 'h-item' + (statusClass ? ' ' + statusClass : '');
         
-        let codeDisplay = isTimeWork ? `Заказ #${item.orderNumber}` : item.code;
+        let prefix = '';
+        let orderNumber = '';
+        if(isTimeWork){
+            prefix = 'ВР';
+            orderNumber = item.orderNumber;
+        } else {
+            const lastDashIndex = item.code.lastIndexOf('-');
+            if(lastDashIndex !== -1){
+                prefix = item.code.substring(0, lastDashIndex);
+                orderNumber = item.code.substring(lastDashIndex + 1);
+            } else {
+                prefix = '';
+                orderNumber = item.code;
+            }
+        }
+        
         let typeDisplay = isTimeWork ? 'Работа по времени' : item.type;
         let sizesHtml = '';
         
         if(isTimeWork){
             let timeDisplay = item.timeHours >= 1 ? `${item.timeHours.toFixed(2)} ч` : `${Math.round(item.timeMinutes)} мин`;
             sizesHtml = `<div class="h-sizes">${timeDisplay} × 350 ₽/ч</div>`;
-            if(item.comment) sizesHtml += `<div class="h-sizes">${item.comment}</div>`;
         } else if(item.sizeDetails && item.sizeDetails.length > 0){
             sizesHtml = '<div class="h-sizes">' + item.sizeDetails.map(s => '#' + s.num + ': ' + s.dims).join(' | ') + '</div>';
         }
         
-        let editedMark = item.edited ? '<div class="h-time">' + item.edited + '</div>' : '';
+        let commentHtml = item.comment ? `<div class="h-comment">💬 ${item.comment}</div>` : '';
+        let editedMark = item.edited ? '<div class="h-time">️ ' + item.edited + '</div>' : '';
         let payClass = (isDone || isClosed) ? 'h-pay' : 'h-pay not-counted';
         let paySuffix = (isDone || isClosed) ? ' ₽' : ' ₽ (не учтено)';
         
@@ -1856,6 +1939,8 @@ function renderHistory(){
         let doneBtn = isTimeWork ? '' : `<button class="h-btn h-btn-done${isDone ? ' active' : ''}" onclick="toggleDone(${originalIdx})" title="${isDone ? 'Готово' : 'Отметить как готово'}" ${!canChangeStatus ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></button>`;
         
         let dateBtn = `<button class="h-btn h-btn-date" onclick="openDateModal(${originalIdx})" title="Редактировать дату"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>`;
+        
+        let commentBtn = `<button class="h-btn h-btn-comment" onclick="openCommentModal(${originalIdx})" title="Комментарий"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>`;
         
         let editBtn = `<button class="h-btn h-btn-edit" onclick="startEdit(${originalIdx})" title="${canEdit ? 'Редактировать' : 'Нельзя редактировать'}" ${!canEdit ? 'disabled' : ''}><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
         
@@ -1876,19 +1961,26 @@ function renderHistory(){
         
         div.innerHTML = `
             <div class="h-item-left">
-                <div class="h-code" style="background:${prefixColor};padding:6px 10px;border-radius:8px;display:inline-block">${codeDisplay}</div>
+                <div class="h-code-row">
+                    ${prefix ? `<span class="h-prefix" style="background:${prefixColor}">${prefix}</span>` : ''}
+                    <span class="h-order-number">${orderNumber}</span>
+                </div>
                 <div class="h-type">${typeDisplay}</div>
-                ${sizesHtml}
-                ${!isTimeWork ? `<div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>` : ''}
+                <div class="h-info-row">
+                    ${sizesHtml}
+                    ${!isTimeWork ? `<div class="h-amount">${item.amount.toFixed(4)} ${item.unit}</div>` : ''}
+                </div>
+                ${commentHtml}
                 <div class="h-time">${item.date}</div>
                 ${editedMark}
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
                 <div class="${payClass}">${item.payment.toLocaleString('ru-RU')}${paySuffix}</div>
                 <div class="h-actions">
                     ${plannedBtn}
                     ${doneBtn}
                     ${closeBtn}
+                    ${commentBtn}
                     ${dateBtn}
                     ${editBtn}
                     ${deleteBtn}
@@ -2013,6 +2105,7 @@ function importData(event){
                     if(item.planned === undefined) item.planned = false;
                     if(item.done === undefined) item.done = false;
                     if(item.workType === undefined) item.workType = 'code';
+                    if(item.comment === undefined) item.comment = '';
                 });
             }
             saveTypes();saveHistory();updateTotalDisplay();renderHistory();alert('Импорт выполнен!');
