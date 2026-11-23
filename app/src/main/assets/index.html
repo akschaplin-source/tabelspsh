@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Кофе Трекер</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui;background:#f5f5f5;padding:12px}
+.c{max-width:600px;margin:0 auto;background:#fff;border-radius:12px;padding:14px}
+h1{color:#667eea;text-align:center;margin-bottom:12px;font-size:1.4em}
+.s{display:flex;gap:6px;margin-bottom:12px;align-items:center;justify-content:center}
+.s input{padding:6px;width:65px;border:1px solid #ddd;border-radius:4px;text-align:center}
+.s button{padding:6px 10px;background:#667eea;color:#fff;border:none;border-radius:4px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#f8f9fa;padding:12px;border-radius:8px}
+h2{color:#667eea;margin-bottom:8px;font-size:1em}
+.fg{margin-bottom:8px}
+.fg label{display:block;margin-bottom:2px;font-size:.8em;color:#666}
+.fg select,.fg input{width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:.85em}
+.btn{width:100%;padding:8px;background:#667eea;color:#fff;border:none;border-radius:4px;font-weight:bold}
+.tabs{display:flex;gap:4px;margin-bottom:8px}
+.tab{flex:1;padding:5px;background:#fff;border:1px solid #ddd;border-radius:4px;text-align:center;font-size:.8em;cursor:pointer}
+.tab.a{background:#667eea;color:#fff}
+.st{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;font-size:.85em}
+.sv{font-weight:bold;color:#667eea}
+.p{width:100%;height:10px;background:#e0e0e0;border-radius:5px;margin-top:8px;overflow:hidden}
+.pb{height:100%;background:#667eea;width:0%}
+.f{margin-bottom:8px}
+.f select{width:100%;padding:5px;border:1px solid #ddd;border-radius:4px;font-size:.85em}
+.h{max-height:40vh;overflow-y:auto}
+.i{background:#fff;padding:8px;border-radius:6px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
+.ii{flex:1}
+.it{font-weight:bold;color:#667eea;font-size:.85em}
+.id{font-size:.75em;color:#666;margin-top:2px}
+.d{background:#ff4757;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:.75em}
+.msg{padding:6px;border-radius:4px;margin-bottom:8px;font-size:.8em;text-align:center;display:none}
+.msg.s{display:block}
+.msg.o{background:#d4edda;color:#155724}
+.msg.w{background:#fff3cd;color:#856404}
+@media(max-width:768px){.g{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="c">
+<h1>☕ Кофе Трекер</h1>
+<div class="msg" id="msg"></div>
+<div class="s">
+<label>Норма мг:</label>
+<input type="number" id="l" value="400">
+<button onclick="saveL()">✓</button>
+</div>
+<div class="g">
+<div class="card">
+<h2>Добавить</h2>
+<div class="fg">
+<label>Напиток:</label>
+<select id="t" onchange="document.getElementById('cg').style.display=this.value==='custom'?'block':'none'">
+<option value="espresso">Эспрессо (63мг)</option>
+<option value="americano">Американо (63мг)</option>
+<option value="cappuccino">Капучино (63мг)</option>
+<option value="latte">Латте (63мг)</option>
+<option value="filter">Фильтр (95мг)</option>
+<option value="instant">Растворимый (62мг)</option>
+<option value="custom">Другое</option>
+</select>
+</div>
+<div class="fg">
+<label>Кол-во:</label>
+<input type="number" id="q" value="1" min="1">
+</div>
+<div class="fg" id="cg" style="display:none">
+<label>Кофеин мг:</label>
+<input type="number" id="cm" min="0">
+</div>
+<button class="btn" onclick="add()">Добавить</button>
+</div>
+<div class="card">
+<h2>Статистика</h2>
+<div class="tabs">
+<div class="tab a" onclick="setP('day',this)">День</div>
+<div class="tab" onclick="setP('week',this)">Неделя</div>
+<div class="tab" onclick="setP('month',this)">Месяц</div>
+</div>
+<div class="st"><span>Кофеин:</span><span class="sv" id="tm">0 мг</span></div>
+<div class="st"><span>Чашек:</span><span class="sv" id="tc">0</span></div>
+<div class="st"><span>Осталось:</span><span class="sv" id="r">400 мг</span></div>
+<div class="p"><div class="pb" id="b"></div></div>
+</div>
+</div>
+<div class="card" style="margin-top:10px">
+<h2>История</h2>
+<div class="f">
+<select id="fl" onchange="render()">
+<option value="all">Все напитки</option>
+<option value="espresso">Эспрессо</option>
+<option value="americano">Американо</option>
+<option value="cappuccino">Капучино</option>
+<option value="latte">Латте</option>
+<option value="filter">Фильтр</option>
+<option value="instant">Растворимый</option>
+<option value="custom">Другое</option>
+</select>
+</div>
+<div class="h" id="h"></div>
+</div>
+</div>
+<script>
+const M={espresso:63,americano:63,cappuccino:63,latte:63,filter:95,instant:62};
+const N={espresso:'Эспрессо',americano:'Американо',cappuccino:'Капучино',latte:'Латте',filter:'Фильтр',instant:'Растворимый',custom:'Другое'};
+let d=JSON.parse(localStorage.getItem('c')||'[]');
+let l=parseInt(localStorage.getItem('l'))||400;
+let p='day';
+let a=null;
+document.getElementById('l').value=l;
+
+function msg(t,c){const e=document.getElementById('msg');e.textContent=t;e.className='msg s '+c;setTimeout(()=>e.classList.remove('s'),3000)}
+
+function snd(){
+    try{
+        if(!a)a=new(window.AudioContext||window.webkitAudioContext)();
+        const o=a.createOscillator(),g=a.createGain();
+        o.connect(g);g.connect(a.destination);
+        o.frequency.value=800;
+        g.gain.setValueAtTime(.3,a.currentTime);
+        g.gain.exponentialRampToValueAtTime(.01,a.currentTime+.3);
+        o.start();o.stop(a.currentTime+.3);
+    }catch(e){}
+}
+
+function notif(t,b){
+    if(typeof Android!=='undefined'){
+        Android.notify(t,b);
+    }else if('Notification'in window&&Notification.permission==='granted'){
+        new Notification(t,{body:b});
+    }else{
+        msg(t+' '+b,'w');
+    }
+}
+
+function saveL(){l=parseInt(document.getElementById('l').value)||400;localStorage.setItem('l',l);msg('Сохранено: '+l+' мг','o');up()}
+
+function add(){
+    const t=document.getElementById('t').value;
+    const q=parseInt(document.getElementById('q').value)||1;
+    const m=t==='custom'?(parseInt(document.getElementById('cm').value)||0)*q:M[t]*q;
+    d.push({id:Date.now(),t,q,m,date:new Date().toISOString()});
+    localStorage.setItem('c',JSON.stringify(d));
+    document.getElementById('q').value=1;
+    document.getElementById('cm').value='';
+    snd();up();chk();
+    msg('Добавлено: '+m+' мг','o');
+}
+
+function setP(v,e){p=v;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('a'));e.classList.add('a');up()}
+
+function fd(){const n=Date.now(),dy=864e5;const c=p==='day'?n-dy:p==='week'?n-7*dy:n-30*dy;return d.filter(x=>new Date(x.date).getTime()>=c)}
+
+function up(){
+    const f=fd();
+    const tm=f.reduce((s,x)=>s+x.m,0);
+    const tc=f.reduce((s,x)=>s+x.q,0);
+    const r=l-tm;
+    document.getElementById('tm').textContent=tm+' мг';
+    document.getElementById('tc').textContent=tc;
+    document.getElementById('r').textContent=r+' мг';
+    const pc=Math.min((tm/l)*100,100);
+    const b=document.getElementById('b');
+    b.style.width=pc+'%';
+    b.style.background=pc>100?'#ff4757':'#667eea';
+    render();
+}
+
+function render(){
+    const fl=document.getElementById('fl').value;
+    const f=fl!=='all'?d.filter(x=>x.t===fl):d;
+    document.getElementById('h').innerHTML=f.slice(-20).reverse().map(x=>`
+        <div class="i">
+            <div class="ii">
+                <div class="it">${N[x.t]}</div>
+                <div class="id">${x.q} чаш • ${x.m} мг • ${new Date(x.date).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+            </div>
+            <button class="d" onclick="del(${x.id})">✕</button>
+        </div>
+    `).join('')||'<p style="text-align:center;color:#999;font-size:.85em">Нет записей</p>';
+}
+
+function del(id){d=d.filter(x=>x.id!==id);localStorage.setItem('c',JSON.stringify(d));up()}
+
+function chk(){
+    const td=d.filter(x=>new Date(x.date).toDateString()===new Date().toDateString());
+    const t=td.reduce((s,x)=>s+x.m,0);
+    if(t>l)notif('⚠️ Превышение!','Выпито '+t+' мг. Норма: '+l+' мг');
+    else if(t<l*.3&&new Date().getHours()>18)notif('☕ Мало кофеина','Сегодня только '+t+' мг');
+}
+
+up();
+</script>
+</body>
+</html>
