@@ -1,0 +1,32 @@
+name: Build APK
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/android @capacitor/cli @capacitor/local-notifications
+          npx cap init "Кофе Трекер" com.coffeetracker.app --web-dir=www
+          npx cap add android
+          npx cap sync
+      - run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coffee-tracker-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
